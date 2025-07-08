@@ -57,7 +57,7 @@ export default function Home() {
               
               {/* Professional Early Access Button */}
               <Button 
-                onClick={() => window.location.href = "/early-access"}
+                onClick={() => window.open('https://dentconnect.replit.app/', '_blank')}
                 className="bg-blue-600 text-white hover:bg-blue-700 transition-all duration-300 shadow-sm hover:shadow-md border-0"
                 size="sm"
               >

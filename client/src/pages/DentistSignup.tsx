@@ -197,7 +197,8 @@ export default function DentistSignup() {
               </ul>
             </div>
             <div className="space-y-4">
-              <Button onClick={() => window.location.href = "/early-access"} className="w-full bg-primary">
+              <Button onClick={() => window.open('https://dentconnect.replit.app/', '_blank')} className="w-full bg-primary">
+                <i className="fas fa-external-link-alt mr-2"></i>
                 Sign Up for Early Access
               </Button>
               <Button 
