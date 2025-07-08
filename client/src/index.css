@@ -1,0 +1,162 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(0, 0%, 13%);
+  --muted: hsl(0, 0%, 96%);
+  --muted-foreground: hsl(0, 0%, 38%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(0, 0%, 13%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(0, 0%, 13%);
+  --border: hsl(0, 0%, 90%);
+  --input: hsl(0, 0%, 90%);
+  --primary: hsl(236, 100%, 70%);
+  --primary-foreground: hsl(0, 0%, 98%);
+  --primary-light: hsl(226, 100%, 96%);
+  --primary-dark: hsl(236, 74%, 67%);
+  --secondary: hsl(0, 0%, 96%);
+  --secondary-foreground: hsl(0, 0%, 10%);
+  --accent: hsl(0, 0%, 96%);
+  --accent-foreground: hsl(0, 0%, 10%);
+  --destructive: hsl(0, 84%, 60%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(0, 0%, 13%);
+  --radius: 0.5rem;
+  --calm: hsl(122, 39%, 49%);
+  --calm-light: hsl(122, 39%, 95%);
+  --calm-dark: hsl(122, 53%, 28%);
+  --emergency: hsl(4, 90%, 64%);
+  --urgent: hsl(36, 100%, 50%);
+  --routine: hsl(122, 39%, 60%);
+  --warm-white: hsl(0, 0%, 98%);
+  --soft-gray: hsl(0, 0%, 96%);
+  --text-soft: hsl(0, 0%, 38%);
+  --text-primary: hsl(0, 0%, 13%);
+}
+
+.dark {
+  --background: hsl(240, 10%, 4%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(240, 4%, 16%);
+  --muted-foreground: hsl(240, 5%, 65%);
+  --popover: hsl(240, 10%, 4%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(240, 10%, 4%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(240, 4%, 16%);
+  --input: hsl(240, 4%, 16%);
+  --primary: hsl(236, 100%, 70%);
+  --primary-foreground: hsl(0, 0%, 98%);
+  --primary-light: hsl(236, 100%, 15%);
+  --primary-dark: hsl(236, 74%, 67%);
+  --secondary: hsl(240, 4%, 16%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(240, 4%, 16%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 63%, 31%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 5%, 84%);
+  --radius: 0.5rem;
+  --calm: hsl(122, 39%, 49%);
+  --calm-light: hsl(122, 39%, 15%);
+  --calm-dark: hsl(122, 53%, 28%);
+  --emergency: hsl(4, 90%, 64%);
+  --urgent: hsl(36, 100%, 50%);
+  --routine: hsl(122, 39%, 60%);
+  --warm-white: hsl(240, 10%, 4%);
+  --soft-gray: hsl(240, 4%, 16%);
+  --text-soft: hsl(240, 5%, 65%);
+  --text-primary: hsl(0, 0%, 98%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased;
+    background-color: hsl(var(--warm-white));
+    color: hsl(var(--text-primary));
+  }
+
+  .treatment-card {
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  .treatment-card:hover {
+    @apply transform -translate-y-1;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  .accessibility-option {
+    @apply transition-all duration-200 ease-in-out;
+  }
+
+  .accessibility-option:hover {
+    background-color: hsl(var(--primary-light));
+  }
+
+  .practice-pin {
+    @apply transform scale-90 transition-transform duration-200;
+  }
+
+  .practice-pin:hover {
+    @apply scale-100;
+  }
+
+  .floating-button {
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  .floating-button:hover {
+    @apply transform scale-105;
+  }
+
+  .bottom-sheet {
+    @apply transform translate-y-full transition-transform duration-300 ease-out;
+  }
+
+  .bottom-sheet.active {
+    @apply translate-y-0;
+  }
+
+  .onboarding-step {
+    @apply opacity-0 transform translate-y-5 transition-all duration-500 ease-out;
+  }
+
+  .onboarding-step.active {
+    @apply opacity-100 translate-y-0;
+  }
+
+  .progress-bar {
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  .gradient-bg {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--calm)) 100%);
+  }
+
+  .gentle-gradient {
+    background: linear-gradient(135deg, hsl(var(--primary-light)) 0%, hsl(var(--calm-light)) 100%);
+  }
+
+  .map-container {
+    background: linear-gradient(135deg, hsl(var(--primary-light)) 0%, hsl(var(--calm-light)) 100%);
+  }
+
+  .shadow-soft {
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .shadow-gentle {
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.12);
+  }
+
+  .shadow-floating {
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.16);
+  }
+}
