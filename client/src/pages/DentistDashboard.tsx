@@ -111,31 +111,74 @@ export default function DentistDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      {/* Enhanced Header with Navigation and Badges */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center space-x-4">
-              <DentConnectLogo width={180} height={35} />
-              <div className="h-8 w-px bg-gray-300" />
-              <div>
-                <h1 className="text-xl font-semibold text-gray-900">Dentist Dashboard</h1>
-                <p className="text-sm text-gray-500">Welcome back, Dr. Anderson</p>
+          <div className="py-4">
+            <div className="flex justify-between items-center mb-4">
+              <div className="flex items-center space-x-4">
+                <DentConnectLogo width={180} height={35} />
+                <div className="h-8 w-px bg-gray-300" />
+                <div>
+                  <h1 className="text-xl font-semibold text-gray-900">Dentist Dashboard</h1>
+                  <p className="text-sm text-gray-500">Welcome back, Dr. Anderson</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-3">
+                {/* Return to Patient Side Button */}
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => window.location.href = "/"}
+                  className="text-primary border-primary/30 hover:bg-primary/10 transition-all duration-300"
+                >
+                  <Users className="h-4 w-4 mr-2" />
+                  Patient View
+                </Button>
+                
+                {/* Enhanced Early Access Button with Importance Highlighting */}
+                <Button 
+                  onClick={() => window.location.href = "/early-access"}
+                  className="bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 hover:from-orange-600 hover:to-red-600 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl animate-pulse"
+                  size="sm"
+                >
+                  <i className="fas fa-rocket mr-2"></i>
+                  Get Early Access
+                </Button>
+                
+                <Button variant="outline" size="sm">
+                  <Bell className="h-4 w-4 mr-2" />
+                  Notifications
+                </Button>
+                <Button variant="outline" size="sm">
+                  <Settings className="h-4 w-4 mr-2" />
+                  Settings
+                </Button>
+                <Avatar>
+                  <AvatarImage src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300" />
+                  <AvatarFallback>DA</AvatarFallback>
+                </Avatar>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
-              <Button variant="outline" size="sm">
-                <Bell className="h-4 w-4 mr-2" />
-                Notifications
-              </Button>
-              <Button variant="outline" size="sm">
-                <Settings className="h-4 w-4 mr-2" />
-                Settings
-              </Button>
-              <Avatar>
-                <AvatarImage src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300" />
-                <AvatarFallback>DA</AvatarFallback>
-              </Avatar>
+            
+            {/* Royal College of Surgeons Badge */}
+            <div className="flex items-center justify-center">
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl px-4 py-2 animate-in fade-in-50 slide-in-from-bottom-4 duration-500">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                    <i className="fas fa-award text-white text-sm"></i>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-blue-800">
+                      🏆 Nominated for Innovation Award
+                    </p>
+                    <p className="text-xs text-blue-600">
+                      Royal College of Surgeons - Digital Health Excellence 2024
+                    </p>
+                  </div>
+                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

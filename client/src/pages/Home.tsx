@@ -39,20 +39,11 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-secondary/5">
       {/* Enhanced Mobile-First Header */}
       <div className="bg-white/90 backdrop-blur-md shadow-lg border-b border-primary/10 sticky top-0 z-50">
-        <div className="px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center">
-            <DentConnectLogo width={180} height={36} className="drop-shadow-sm" />
-          </div>
-          <div className="flex items-center space-x-2">
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => window.location.href = "/dentist-signup"}
-              className="text-primary hover:bg-primary/10 transition-all duration-300 hidden sm:flex"
-            >
-              <Stethoscope className="h-4 w-4 mr-1" />
-              Dentists
-            </Button>
+        <div className="px-4 py-3">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center">
+              <DentConnectLogo width={180} height={36} className="drop-shadow-sm" />
+            </div>
             <div className="flex items-center space-x-2">
               <Button 
                 variant="outline" 
@@ -63,6 +54,17 @@ export default function Home() {
                 <Users className="h-4 w-4 mr-1" />
                 Join as Dentist
               </Button>
+              
+              {/* Enhanced Early Access Button with Importance Highlighting */}
+              <Button 
+                onClick={() => window.location.href = "/early-access"}
+                className="bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 hover:from-orange-600 hover:to-red-600 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl animate-pulse"
+                size="sm"
+              >
+                <i className="fas fa-rocket mr-2"></i>
+                Get Early Access
+              </Button>
+              
               <div className="flex items-center space-x-1">
                 <button className="p-2 rounded-xl hover:bg-primary/10 transition-all duration-300 group relative">
                   <i className="fas fa-bell text-gray-600 group-hover:text-primary text-sm"></i>
@@ -71,6 +73,26 @@ export default function Home() {
                 <button className="p-2 rounded-xl hover:bg-primary/10 transition-all duration-300 group">
                   <i className="fas fa-user text-gray-600 group-hover:text-primary text-sm"></i>
                 </button>
+              </div>
+            </div>
+          </div>
+          
+          {/* Royal College of Surgeons Badge */}
+          <div className="flex items-center justify-center">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl px-4 py-2 animate-in fade-in-50 slide-in-from-bottom-4 duration-500">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                  <i className="fas fa-award text-white text-sm"></i>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-blue-800">
+                    🏆 Nominated for Innovation Award
+                  </p>
+                  <p className="text-xs text-blue-600">
+                    Royal College of Surgeons - Digital Health Excellence 2024
+                  </p>
+                </div>
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
               </div>
             </div>
           </div>
