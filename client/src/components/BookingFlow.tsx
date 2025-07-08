@@ -11,6 +11,7 @@ import { format } from "date-fns";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { DemoCompleteModal } from "./DemoCompleteModal";
 
 interface BookingFlowProps {
   practice: Practice | null;
@@ -23,6 +24,7 @@ interface BookingFlowProps {
 export function BookingFlow({ practice, selectedAppointment, isOpen, onClose, onSuccess }: BookingFlowProps) {
   const { currentStep, formData, updateFormData, nextStep, prevStep, resetFlow } = useBookingFlow();
   const { toast } = useToast();
+  const [showDemoComplete, setShowDemoComplete] = useState(false);
   
   const createBookingMutation = useMutation({
     mutationFn: async (bookingData: any) => {
@@ -36,6 +38,10 @@ export function BookingFlow({ practice, selectedAppointment, isOpen, onClose, on
         title: "Appointment Confirmed!",
         description: "Your appointment has been successfully booked.",
       });
+      // Show demo complete modal after 3 seconds
+      setTimeout(() => {
+        setShowDemoComplete(true);
+      }, 3000);
     },
     onError: (error) => {
       toast({
@@ -74,6 +80,7 @@ export function BookingFlow({ practice, selectedAppointment, isOpen, onClose, on
   if (!practice || !selectedAppointment) return null;
 
   return (
+    <>
     <Sheet open={isOpen} onOpenChange={handleClose}>
       <SheetContent side="bottom" className="rounded-t-3xl max-h-[90vh] overflow-y-auto">
         <SheetHeader>
@@ -283,5 +290,12 @@ export function BookingFlow({ practice, selectedAppointment, isOpen, onClose, on
         </div>
       </SheetContent>
     </Sheet>
+    
+    <DemoCompleteModal 
+      isOpen={showDemoComplete}
+      onClose={() => setShowDemoComplete(false)}
+      demoType="patient"
+    />
+  </>
   );
 }
