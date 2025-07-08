@@ -96,43 +96,18 @@ export default function DentistSignup() {
     },
   });
 
-  const submitMutation = useMutation({
-    mutationFn: async (data: DentistSignupData) => {
-      const formData = new FormData();
-      Object.entries(data).forEach(([key, value]) => {
-        if (value instanceof File) {
-          formData.append(key, value);
-        } else if (Array.isArray(value)) {
-          formData.append(key, JSON.stringify(value));
-        } else {
-          formData.append(key, String(value));
-        }
-      });
-      
-      return await apiRequest("/api/dentist-signup", {
-        method: "POST",
-        body: formData,
-      });
-    },
-    onSuccess: () => {
-      toast({
-        title: "Application Submitted",
-        description: "Your dentist application is under review. We'll contact you within 2-3 business days.",
-      });
-      setCurrentStep(5);
-      // Show demo complete modal after 3 seconds
-      setTimeout(() => {
-        setShowDemoComplete(true);
-      }, 3000);
-    },
-    onError: () => {
-      toast({
-        title: "Submission Failed",
-        description: "Unable to submit application. Please try again.",
-        variant: "destructive",
-      });
-    },
-  });
+  const handleDemoSubmission = () => {
+    // Instead of submitting the form, complete the demo
+    toast({
+      title: "Demo Complete!",
+      description: "Ready to join as a dentist? Sign up for early access.",
+    });
+    setCurrentStep(5);
+    // Show demo complete modal after 2 seconds
+    setTimeout(() => {
+      setShowDemoComplete(true);
+    }, 2000);
+  };
 
   const specializations = [
     "General Dentistry",
@@ -197,7 +172,7 @@ export default function DentistSignup() {
       });
       return;
     }
-    submitMutation.mutate(data);
+    handleDemoSubmission();
   };
 
   if (currentStep === 5) {
@@ -623,14 +598,13 @@ export default function DentistSignup() {
                   <Button
                     type="submit"
                     disabled={
-                      submitMutation.isPending ||
                       verificationStatus !== "verified" ||
                       !form.watch("agreedToTerms") ||
                       !form.watch("agreedToGDCGuidelines") ||
                       !form.watch("agreedToDataSharing")
                     }
                   >
-                    {submitMutation.isPending ? "Submitting..." : "Submit Application"}
+                    Complete Demo
                   </Button>
                 )}
               </div>

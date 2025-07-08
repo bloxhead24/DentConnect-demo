@@ -26,49 +26,27 @@ export function BookingFlow({ practice, selectedAppointment, isOpen, onClose, on
   const { toast } = useToast();
   const [showDemoComplete, setShowDemoComplete] = useState(false);
   
-  const createBookingMutation = useMutation({
-    mutationFn: async (bookingData: any) => {
-      return await apiRequest("POST", "/api/bookings", bookingData);
-    },
-    onSuccess: () => {
-      onSuccess();
-      resetFlow();
-      onClose();
-      toast({
-        title: "Appointment Confirmed!",
-        description: "Your appointment has been successfully booked.",
-      });
-      // Show demo complete modal after 3 seconds
-      setTimeout(() => {
-        setShowDemoComplete(true);
-      }, 3000);
-    },
-    onError: (error) => {
-      toast({
-        title: "Booking Failed",
-        description: "There was an error booking your appointment. Please try again.",
-        variant: "destructive",
-      });
-    },
-  });
+  const handleDemoBooking = () => {
+    // Instead of submitting the form, redirect to early access signup
+    onSuccess();
+    resetFlow();
+    onClose();
+    toast({
+      title: "Demo Complete!",
+      description: "Ready to book real appointments? Sign up for early access.",
+    });
+    // Show demo complete modal after 2 seconds
+    setTimeout(() => {
+      setShowDemoComplete(true);
+    }, 2000);
+  };
 
   const handleNext = () => {
     if (currentStep < 3) {
       nextStep();
     } else {
-      // Complete booking
-      if (selectedAppointment) {
-        createBookingMutation.mutate({
-          appointmentId: selectedAppointment.id,
-          treatmentCategory: formData.treatmentCategory,
-          accessibilityNeeds: JSON.stringify(formData.accessibilityNeeds),
-          medications: formData.medications,
-          allergies: formData.allergies,
-          lastDentalVisit: formData.lastDentalVisit,
-          anxietyLevel: formData.anxietyLevel,
-          specialRequests: formData.specialRequests,
-        });
-      }
+      // Complete the demo booking
+      handleDemoBooking();
     }
   };
 
@@ -282,9 +260,8 @@ export function BookingFlow({ practice, selectedAppointment, isOpen, onClose, on
             <Button 
               className="flex-1 bg-primary hover:bg-primary/90" 
               onClick={handleNext}
-              disabled={createBookingMutation.isPending}
             >
-              {createBookingMutation.isPending ? 'Booking...' : currentStep === 3 ? 'Confirm Booking' : 'Next'}
+              {currentStep === 3 ? 'Complete Demo' : 'Next'}
             </Button>
           </div>
         </div>
