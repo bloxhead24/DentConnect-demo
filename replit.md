@@ -113,7 +113,21 @@ DentConnect is a modern web application that connects patients with last-minute 
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes
+
+✓ **Enhanced Map Search Experience** (July 08, 2025)
+→ Added comprehensive questionnaire flow during search
+→ Interactive medical history and anxiety assessment
+→ Advanced search filtering with real-time practice matching
+→ Mobile-first design with Uber-inspired map interface
+
+✓ **Mobile App Design System** (July 08, 2025) 
+→ Calming teal/turquoise color scheme (inspired by Headspace)
+→ Smooth animations and transitions throughout user journey
+→ Enhanced accessibility features and questionnaire integration
+→ Professional healthcare imagery and visual cues
+
 ## Changelog
 
 Changelog:
-- July 08, 2025. Initial setup
+- July 08, 2025. Initial setup and mobile app enhancement

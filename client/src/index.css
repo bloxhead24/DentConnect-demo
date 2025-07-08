@@ -13,10 +13,10 @@
   --card-foreground: hsl(0, 0%, 13%);
   --border: hsl(0, 0%, 90%);
   --input: hsl(0, 0%, 90%);
-  --primary: hsl(236, 100%, 70%);
+  --primary: hsl(180, 62%, 55%);
   --primary-foreground: hsl(0, 0%, 98%);
-  --primary-light: hsl(226, 100%, 96%);
-  --primary-dark: hsl(236, 74%, 67%);
+  --primary-light: hsl(180, 62%, 95%);
+  --primary-dark: hsl(180, 62%, 45%);
   --secondary: hsl(0, 0%, 96%);
   --secondary-foreground: hsl(0, 0%, 10%);
   --accent: hsl(0, 0%, 96%);

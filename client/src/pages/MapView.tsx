@@ -5,8 +5,10 @@ import { PracticePin } from "@/components/PracticePin";
 import { PracticeBottomSheet } from "@/components/PracticeBottomSheet";
 import { BookingFlow } from "@/components/BookingFlow";
 import { SuccessModal } from "@/components/SuccessModal";
+import { EnhancedMapSearch } from "@/components/EnhancedMapSearch";
+import { SearchQuestionnaire, QuestionnaireData } from "@/components/SearchQuestionnaire";
+import { MapLoadingState } from "@/components/MapLoadingState";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Practice, Appointment } from "@shared/schema";
 
 interface MapViewProps {
@@ -21,7 +23,14 @@ export default function MapView({ selectedTreatment, selectedAccessibility, onBa
   const [showPracticeSheet, setShowPracticeSheet] = useState(false);
   const [showBookingFlow, setShowBookingFlow] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showQuestionnaire, setShowQuestionnaire] = useState(false);
+  const [questionnaireData, setQuestionnaireData] = useState<QuestionnaireData | null>(null);
   const [location, setLocation] = useState("Newcastle upon Tyne");
+  const [searchFilters, setSearchFilters] = useState<{
+    urgency?: string;
+    anxietyLevel?: string;
+    accessibilityNeeds?: string[];
+  }>({});
 
   const { data: practices = [], isLoading } = useQuery({
     queryKey: ["/api/practices", { location }],
@@ -43,6 +52,25 @@ export default function MapView({ selectedTreatment, selectedAccessibility, onBa
     setShowSuccess(true);
   };
 
+  const handleQuestionnaireComplete = (data: QuestionnaireData) => {
+    setQuestionnaireData(data);
+    setSearchFilters({
+      urgency: data.urgency,
+      anxietyLevel: data.anxietyLevel,
+      accessibilityNeeds: selectedAccessibility.map(need => need.name),
+    });
+    setShowQuestionnaire(false);
+  };
+
+  const handleLocationChange = (newLocation: string) => {
+    setLocation(newLocation);
+  };
+
+  const handleFilterToggle = () => {
+    // Future filter panel implementation
+    console.log("Filter panel toggle");
+  };
+
   // Mock practice positions for the map
   const practicePositions = [
     { top: "33%", left: "33%" },
@@ -52,26 +80,13 @@ export default function MapView({ selectedTreatment, selectedAccessibility, onBa
 
   return (
     <div className="onboarding-step active">
-      {/* Search Bar */}
-      <div className="absolute top-4 left-4 right-4 z-40">
-        <div className="bg-white rounded-2xl shadow-gentle p-4">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-              <i className="fas fa-search text-primary text-sm"></i>
-            </div>
-            <Input
-              type="text"
-              placeholder="Enter your location or postcode"
-              className="flex-1 border-none shadow-none focus-visible:ring-0"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-            />
-            <Button size="sm" variant="ghost" className="p-2 rounded-full hover:bg-primary/10">
-              <i className="fas fa-location-arrow text-primary text-sm"></i>
-            </Button>
-          </div>
-        </div>
-      </div>
+      {/* Enhanced Search Bar */}
+      <EnhancedMapSearch
+        onLocationChange={handleLocationChange}
+        onFilterToggle={handleFilterToggle}
+        onQuestionnaireOpen={() => setShowQuestionnaire(true)}
+        searchFilters={searchFilters}
+      />
 
       {/* Map Container */}
       <div className="map-container h-screen relative">
@@ -88,15 +103,8 @@ export default function MapView({ selectedTreatment, selectedAccessibility, onBa
           />
         ))}
         
-        {/* Loading State */}
-        {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center">
-              <i className="fas fa-spinner fa-spin text-primary text-2xl mb-2"></i>
-              <p className="text-text-soft">Finding nearby practices...</p>
-            </div>
-          </div>
-        )}
+        {/* Enhanced Loading State */}
+        <MapLoadingState isLoading={isLoading} searchQuery={location} />
       </div>
 
       {/* Filter Button */}
@@ -149,6 +157,13 @@ export default function MapView({ selectedTreatment, selectedAccessibility, onBa
         isOpen={showBookingFlow}
         onClose={() => setShowBookingFlow(false)}
         onSuccess={handleBookingSuccess}
+      />
+
+      {/* Search Questionnaire */}
+      <SearchQuestionnaire
+        isOpen={showQuestionnaire}
+        onClose={() => setShowQuestionnaire(false)}
+        onComplete={handleQuestionnaireComplete}
       />
 
       {/* Success Modal */}
