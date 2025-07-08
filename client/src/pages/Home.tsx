@@ -55,14 +55,14 @@ export default function Home() {
                 Join as Dentist
               </Button>
               
-              {/* Enhanced Early Access Button with Importance Highlighting */}
+              {/* Professional Early Access Button */}
               <Button 
                 onClick={() => window.location.href = "/early-access"}
-                className="bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 hover:from-orange-600 hover:to-red-600 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl animate-pulse"
+                className="bg-blue-600 text-white hover:bg-blue-700 transition-all duration-300 shadow-sm hover:shadow-md border-0"
                 size="sm"
               >
-                <i className="fas fa-rocket mr-2"></i>
-                Get Early Access
+                <i className="fas fa-star mr-2"></i>
+                Early Access
               </Button>
               
               <div className="flex items-center space-x-1">
@@ -89,7 +89,7 @@ export default function Home() {
                     🏆 Nominated for Innovation Award
                   </p>
                   <p className="text-xs text-blue-600">
-                    Royal College of Surgeons - Digital Health Excellence 2024
+                    Royal College of Surgeons - National Contribution to Dentistry 2024
                   </p>
                 </div>
                 <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
