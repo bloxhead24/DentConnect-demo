@@ -126,6 +126,131 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Early Access Registration
+  app.post("/api/early-access", async (req, res) => {
+    try {
+      const { name, email, userType, organization, message } = req.body;
+      
+      // In a real app, this would save to database
+      console.log("Early access request:", { name, email, userType, organization, message });
+      
+      res.json({ 
+        success: true, 
+        message: "Early access request submitted successfully" 
+      });
+    } catch (error) {
+      console.error("Error processing early access request:", error);
+      res.status(500).json({ message: "Failed to process request" });
+    }
+  });
+
+  // GDC Verification
+  app.post("/api/verify-gdc", async (req, res) => {
+    try {
+      const { gdcNumber } = req.body;
+      
+      // Mock GDC verification - in real app, this would call GDC API
+      const isValid = gdcNumber && gdcNumber.length >= 6;
+      
+      res.json({ 
+        verified: isValid,
+        details: isValid ? {
+          name: "Dr. Sample Name",
+          status: "Active",
+          registrationDate: "2015-01-01"
+        } : null
+      });
+    } catch (error) {
+      console.error("Error verifying GDC:", error);
+      res.status(500).json({ message: "Failed to verify GDC number" });
+    }
+  });
+
+  // Dentist Signup
+  app.post("/api/dentist-signup", async (req, res) => {
+    try {
+      // In a real app, this would save to database and process documents
+      console.log("Dentist signup request received");
+      
+      res.json({ 
+        success: true, 
+        message: "Dentist application submitted successfully",
+        applicationId: Date.now().toString()
+      });
+    } catch (error) {
+      console.error("Error processing dentist signup:", error);
+      res.status(500).json({ message: "Failed to process application" });
+    }
+  });
+
+  // Dentist Dashboard Stats
+  app.get("/api/dentist/stats/:period", async (req, res) => {
+    try {
+      // Mock dashboard stats
+      const stats = {
+        totalPatients: 1247,
+        todayAppointments: 8,
+        monthlyRevenue: 18500,
+        averageRating: 4.8,
+        cancelledAppointments: 12,
+        completedAppointments: 156,
+        pendingBookings: 23,
+        availableSlots: 15,
+      };
+      
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching dentist stats:", error);
+      res.status(500).json({ message: "Failed to fetch stats" });
+    }
+  });
+
+  // Dentist Recent Appointments
+  app.get("/api/dentist/recent-appointments", async (req, res) => {
+    try {
+      // Mock recent appointments
+      const appointments = [
+        {
+          id: 1,
+          patientName: "Sarah Johnson",
+          treatmentType: "Routine Cleaning",
+          appointmentTime: "09:00",
+          status: "scheduled",
+          revenue: 80,
+        },
+        {
+          id: 2,
+          patientName: "Michael Chen",
+          treatmentType: "Tooth Filling",
+          appointmentTime: "10:30",
+          status: "completed",
+          revenue: 150,
+        },
+        {
+          id: 3,
+          patientName: "Emma Wilson",
+          treatmentType: "Root Canal",
+          appointmentTime: "14:00",
+          status: "scheduled",
+          revenue: 400,
+        },
+        {
+          id: 4,
+          patientName: "James Brown",
+          treatmentType: "Emergency Treatment",
+          appointmentTime: "16:30",
+          status: "cancelled",
+          revenue: 0,
+        },
+      ];
+      
+      res.json(appointments);
+    } catch (error) {
+      console.error("Error fetching recent appointments:", error);
+      res.status(500).json({ message: "Failed to fetch appointments" });
+    }
+  });
+
   app.get("/api/bookings/user/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
