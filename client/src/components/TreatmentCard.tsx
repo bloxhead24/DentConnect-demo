@@ -26,19 +26,33 @@ export function TreatmentCard({ treatment, selected, onSelect }: TreatmentCardPr
   return (
     <Card
       className={cn(
-        "treatment-card p-4 cursor-pointer border-2 transition-all duration-300",
-        "hover:shadow-gentle",
-        selected ? "border-primary" : "border-transparent",
+        "treatment-card p-5 cursor-pointer border-2 transition-all duration-300 transform hover:scale-105",
+        "hover:shadow-xl",
+        selected ? "border-primary bg-gradient-to-br from-primary/10 to-primary/20 shadow-xl shadow-primary/20 scale-105" : "border-transparent hover:border-primary/30",
         colorClasses[treatment.category]
       )}
       onClick={() => onSelect(treatment)}
     >
-      <div className="text-center space-y-2">
-        <div className={cn("w-10 h-10 rounded-full flex items-center justify-center mx-auto", bgClasses[treatment.category])}>
-          <i className={`${treatment.icon} text-white text-sm`}></i>
+      <div className="text-center space-y-3">
+        <div className={cn(
+          "w-12 h-12 rounded-full flex items-center justify-center mx-auto shadow-lg",
+          selected ? "bg-primary" : bgClasses[treatment.category]
+        )}>
+          <i className={`${treatment.icon} text-white text-lg`}></i>
         </div>
-        <h4 className="font-medium text-text-primary">{treatment.name}</h4>
-        <p className="text-xs text-text-soft">{treatment.description}</p>
+        <div>
+          <h4 className={`font-bold ${selected ? 'text-primary' : 'text-gray-900'}`}>
+            {treatment.name}
+          </h4>
+          <p className={`text-xs ${selected ? 'text-primary/80' : 'text-gray-600'}`}>
+            {treatment.description}
+          </p>
+        </div>
+        {selected && (
+          <div className="flex items-center justify-center">
+            <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+          </div>
+        )}
       </div>
     </Card>
   );

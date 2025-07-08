@@ -215,9 +215,18 @@ export default function DentistSignup() {
                 <li>• Dashboard access setup</li>
               </ul>
             </div>
-            <Button onClick={() => window.location.href = "/"} className="w-full">
-              Return to Home
-            </Button>
+            <div className="space-y-4">
+              <Button onClick={() => window.location.href = "/early-access"} className="w-full bg-primary">
+                Sign Up for Early Access
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => window.location.href = "/"} 
+                className="w-full"
+              >
+                Return to Home
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -235,6 +244,26 @@ export default function DentistSignup() {
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Connect with patients looking for last-minute appointments and grow your practice.
           </p>
+          
+          {/* Demo Skip Feature */}
+          <div className="mt-8 p-6 bg-blue-50 border border-blue-200 rounded-xl max-w-md mx-auto animate-in fade-in-50 slide-in-from-bottom-4 duration-500">
+            <div className="flex items-center justify-center space-x-2 mb-4">
+              <i className="fas fa-info-circle text-blue-600 text-lg"></i>
+              <span className="font-bold text-blue-800">Demo Mode Available</span>
+            </div>
+            <p className="text-sm text-blue-700 mb-4 leading-relaxed">
+              This is a demonstration platform. Skip the verification process to explore the dentist dashboard 
+              with sample data including patient sign-ups, fees owed, and profit analytics.
+            </p>
+            <Button 
+              variant="outline" 
+              onClick={() => window.location.href = "/dentist-dashboard"}
+              className="w-full bg-blue-600 text-white border-blue-600 hover:bg-blue-700 transition-all duration-300"
+            >
+              <i className="fas fa-chart-line mr-2"></i>
+              Skip to Dashboard Demo
+            </Button>
+          </div>
         </div>
 
         {/* Progress Indicator */}

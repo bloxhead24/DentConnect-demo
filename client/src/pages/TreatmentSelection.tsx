@@ -46,23 +46,31 @@ export default function TreatmentSelection({ onTreatmentSelect, selectedTreatmen
   return (
     <div className="onboarding-step active">
       <div className="px-4 py-8 space-y-6">
-        {/* Welcome Message */}
-        <div className="text-center space-y-3">
-          <h2 className="text-2xl font-semibold text-text-primary">How can we help you today?</h2>
-          <p className="text-text-soft">Find the perfect dental appointment based on your needs</p>
+        {/* Welcome Message with Enhanced Design */}
+        <div className="text-center space-y-4">
+          <div className="w-20 h-20 bg-gradient-to-br from-primary via-primary/80 to-secondary rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl animate-pulse">
+            <i className="fas fa-tooth text-white text-3xl"></i>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 leading-tight">How can we help you today?</h2>
+          <p className="text-gray-600 text-lg">Find the perfect dental appointment based on your needs</p>
         </div>
 
-        {/* Treatment Type Selection */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium text-text-primary">What type of treatment do you need?</h3>
-          <div className="grid grid-cols-2 gap-3">
-            {treatmentTypes.map((treatment) => (
-              <TreatmentCard
+        {/* Treatment Type Selection with Enhanced Grid */}
+        <div className="space-y-6">
+          <h3 className="text-lg font-semibold text-gray-900 text-center">What type of treatment do you need?</h3>
+          <div className="grid grid-cols-2 gap-4">
+            {treatmentTypes.map((treatment, index) => (
+              <div 
                 key={treatment.id}
-                treatment={treatment}
-                selected={selectedTreatment?.id === treatment.id}
-                onSelect={onTreatmentSelect}
-              />
+                className="animate-in fade-in-50 slide-in-from-bottom-8 duration-500"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <TreatmentCard
+                  treatment={treatment}
+                  selected={selectedTreatment?.id === treatment.id}
+                  onSelect={onTreatmentSelect}
+                />
+              </div>
             ))}
           </div>
         </div>

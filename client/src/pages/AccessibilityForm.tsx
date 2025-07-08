@@ -55,22 +55,30 @@ export default function AccessibilityForm({ onComplete, onBack, selectedNeeds }:
   };
 
   return (
-    <div className="onboarding-step active">
+    <div className="onboarding-step active animate-in fade-in-50 slide-in-from-right-8 duration-500">
       <div className="px-4 py-8 space-y-6">
-        <div className="text-center space-y-3">
-          <h2 className="text-2xl font-semibold text-text-primary">Any accessibility needs?</h2>
-          <p className="text-text-soft">We want to ensure you have the best possible experience</p>
+        <div className="text-center space-y-4">
+          <div className="w-20 h-20 bg-gradient-to-br from-secondary via-secondary/80 to-primary rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl">
+            <i className="fas fa-heart text-white text-3xl animate-pulse"></i>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 leading-tight">Your Care Preferences</h2>
+          <p className="text-gray-600 text-lg">We want to ensure you have the best possible experience</p>
         </div>
 
-        {/* Accessibility Options */}
+        {/* Accessibility Options with Staggered Animation */}
         <div className="space-y-3">
-          {accessibilityNeeds.map((need) => (
-            <AccessibilityOption
+          {accessibilityNeeds.map((need, index) => (
+            <div 
               key={need.id}
-              need={need}
-              selected={localSelectedNeeds.some(n => n.id === need.id)}
-              onToggle={handleToggleNeed}
-            />
+              className="animate-in fade-in-50 slide-in-from-bottom-4 duration-300"
+              style={{ animationDelay: `${index * 150}ms` }}
+            >
+              <AccessibilityOption
+                need={need}
+                selected={localSelectedNeeds.some(n => n.id === need.id)}
+                onToggle={handleToggleNeed}
+              />
+            </div>
           ))}
         </div>
 

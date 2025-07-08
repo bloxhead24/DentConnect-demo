@@ -23,11 +23,26 @@ export function SuccessModal({ isOpen, onClose }: SuccessModalProps) {
             className="w-full h-32 object-cover rounded-2xl shadow-soft"
           />
           
+          {/* Early Access CTA */}
+          <div className="bg-primary/10 rounded-xl p-4 text-left">
+            <h4 className="font-bold text-primary mb-2">Love the experience?</h4>
+            <p className="text-sm text-gray-600 mb-3">
+              Sign up for early access to be the first to use DentConnect when we launch!
+            </p>
+            <Button 
+              onClick={() => window.location.href = "/early-access"} 
+              className="w-full mb-2 bg-primary text-sm"
+              size="sm"
+            >
+              Get Early Access
+            </Button>
+          </div>
+          
           <Button 
-            className="w-full bg-primary hover:bg-primary/90" 
+            className="w-full bg-gray-100 text-gray-700 hover:bg-gray-200" 
             onClick={onClose}
           >
-            Got it!
+            Done
           </Button>
         </div>
       </DialogContent>
