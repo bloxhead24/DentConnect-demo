@@ -1,5 +1,7 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { DemoCompleteModal } from "./DemoCompleteModal";
+import { useState, useEffect } from "react";
 
 interface SuccessModalProps {
   isOpen: boolean;
@@ -7,7 +9,25 @@ interface SuccessModalProps {
 }
 
 export function SuccessModal({ isOpen, onClose }: SuccessModalProps) {
+  const [showDemoComplete, setShowDemoComplete] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      // Show demo complete modal after 3 seconds of success modal being open
+      const timer = setTimeout(() => {
+        setShowDemoComplete(true);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
+
+  const handleClose = () => {
+    setShowDemoComplete(false);
+    onClose();
+  };
+
   return (
+    <>
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="p-8 rounded-3xl max-w-sm mx-4 text-center">
         <div className="space-y-4">
@@ -40,12 +60,19 @@ export function SuccessModal({ isOpen, onClose }: SuccessModalProps) {
           
           <Button 
             className="w-full bg-gray-100 text-gray-700 hover:bg-gray-200" 
-            onClick={onClose}
+            onClick={handleClose}
           >
             Done
           </Button>
         </div>
       </DialogContent>
     </Dialog>
+
+    <DemoCompleteModal 
+      isOpen={showDemoComplete}
+      onClose={() => setShowDemoComplete(false)}
+      demoType="patient"
+    />
+    </>
   );
 }

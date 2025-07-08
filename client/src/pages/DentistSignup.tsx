@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +12,7 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import DentConnectLogo from "@/components/DentConnectLogo";
+import { DemoCompleteModal } from "@/components/DemoCompleteModal";
 import { CheckCircle, Shield, AlertCircle, FileText, UserCheck, Calendar } from "lucide-react";
 
 interface DentistSignupData {
@@ -48,6 +49,7 @@ interface DentistSignupData {
 export default function DentistSignup() {
   const [currentStep, setCurrentStep] = useState(1);
   const [verificationStatus, setVerificationStatus] = useState<"pending" | "verified" | "failed" | null>(null);
+  const [showDemoComplete, setShowDemoComplete] = useState(false);
   const { toast } = useToast();
   
   const form = useForm<DentistSignupData>({
@@ -118,6 +120,10 @@ export default function DentistSignup() {
         description: "Your dentist application is under review. We'll contact you within 2-3 business days.",
       });
       setCurrentStep(5);
+      // Show demo complete modal after 3 seconds
+      setTimeout(() => {
+        setShowDemoComplete(true);
+      }, 3000);
     },
     onError: () => {
       toast({
@@ -632,6 +638,12 @@ export default function DentistSignup() {
           </CardContent>
         </Card>
       </div>
+      
+      <DemoCompleteModal 
+        isOpen={showDemoComplete}
+        onClose={() => setShowDemoComplete(false)}
+        demoType="dentist"
+      />
     </div>
   );
 }
