@@ -40,9 +40,25 @@ export const treatments = pgTable("treatments", {
   price: real("price"),
 });
 
+export const dentists = pgTable("dentists", {
+  id: serial("id").primaryKey(),
+  practiceId: integer("practice_id").references(() => practices.id).notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  title: varchar("title", { length: 100 }).notNull(), // Dr., Prof., etc.
+  specialization: varchar("specialization", { length: 255 }),
+  experience: integer("experience"), // years of experience
+  qualifications: text("qualifications"),
+  imageUrl: varchar("image_url", { length: 500 }),
+  bio: text("bio"),
+  languages: text("languages"), // JSON array of languages spoken
+  availableDays: text("available_days"), // JSON array of days
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const appointments = pgTable("appointments", {
   id: serial("id").primaryKey(),
   practiceId: integer("practice_id").references(() => practices.id).notNull(),
+  dentistId: integer("dentist_id").references(() => dentists.id).notNull(),
   userId: integer("user_id").references(() => users.id),
   treatmentId: integer("treatment_id").references(() => treatments.id).notNull(),
   appointmentDate: timestamp("appointment_date").notNull(),
@@ -78,6 +94,11 @@ export const insertTreatmentSchema = createInsertSchema(treatments).omit({
   id: true,
 });
 
+export const insertDentistSchema = createInsertSchema(dentists).omit({
+  id: true,
+  createdAt: true,
+});
+
 export const insertAppointmentSchema = createInsertSchema(appointments).omit({
   id: true,
   createdAt: true,
@@ -94,6 +115,8 @@ export type Practice = typeof practices.$inferSelect;
 export type InsertPractice = z.infer<typeof insertPracticeSchema>;
 export type Treatment = typeof treatments.$inferSelect;
 export type InsertTreatment = z.infer<typeof insertTreatmentSchema>;
+export type Dentist = typeof dentists.$inferSelect;
+export type InsertDentist = z.infer<typeof insertDentistSchema>;
 export type Appointment = typeof appointments.$inferSelect;
 export type InsertAppointment = z.infer<typeof insertAppointmentSchema>;
 export type Booking = typeof bookings.$inferSelect;
@@ -101,6 +124,7 @@ export type InsertBooking = z.infer<typeof insertBookingSchema>;
 
 export type PracticeWithAppointments = Practice & {
   availableAppointments: Appointment[];
+  dentists?: Dentist[];
 };
 
 export type BookingWithDetails = Booking & {

@@ -34,8 +34,9 @@ DentConnect is a modern web application that connects patients with last-minute 
 ### Database Schema
 - **Users**: Patient and dentist profiles with user type differentiation
 - **Practices**: Dental practice information including location and accessibility features
+- **Dentists**: Detailed dentist profiles with specializations, experience, and photos
 - **Treatments**: Available dental treatments categorized by urgency
-- **Appointments**: Available time slots with booking status
+- **Appointments**: Available time slots with booking status and dentist assignments
 - **Bookings**: Patient appointment reservations with booking details
 
 ### Frontend Components
@@ -48,6 +49,8 @@ DentConnect is a modern web application that connects patients with last-minute 
 ### API Endpoints
 - **GET /api/practices**: Retrieve practices with available appointments
 - **GET /api/treatments**: Fetch available treatments by category
+- **GET /api/dentists**: Fetch all dentists with profiles and specializations
+- **GET /api/dentists/practice/:practiceId**: Get dentists for specific practice
 - **GET /api/appointments/:practiceId**: Get available appointments for a practice
 - **POST /api/bookings**: Create new appointment booking
 

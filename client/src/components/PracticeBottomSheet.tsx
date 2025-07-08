@@ -1,9 +1,11 @@
-import { Practice, Appointment } from "@shared/schema";
+import { Practice, Appointment, Dentist } from "@shared/schema";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
+import { MapPin, Phone, Clock, Star, Languages, GraduationCap } from "lucide-react";
 
 interface PracticeBottomSheetProps {
   practice: Practice | null;
@@ -15,6 +17,11 @@ interface PracticeBottomSheetProps {
 export function PracticeBottomSheet({ practice, isOpen, onClose, onBookAppointment }: PracticeBottomSheetProps) {
   const { data: appointments = [] } = useQuery({
     queryKey: [`/api/appointments/${practice?.id}`],
+    enabled: !!practice,
+  });
+
+  const { data: dentists = [] } = useQuery<Dentist[]>({
+    queryKey: [`/api/dentists/practice/${practice?.id}`],
     enabled: !!practice,
   });
 

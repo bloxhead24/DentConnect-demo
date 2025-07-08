@@ -1,7 +1,8 @@
 import { 
-  users, practices, treatments, appointments, bookings,
+  users, practices, treatments, dentists, appointments, bookings,
   type User, type InsertUser, type Practice, type InsertPractice,
-  type Treatment, type InsertTreatment, type Appointment, type InsertAppointment,
+  type Treatment, type InsertTreatment, type Dentist, type InsertDentist,
+  type Appointment, type InsertAppointment,
   type Booking, type InsertBooking, type PracticeWithAppointments, type BookingWithDetails
 } from "@shared/schema";
 
@@ -19,6 +20,11 @@ export interface IStorage {
   getTreatments(): Promise<Treatment[]>;
   getTreatmentsByCategory(category: string): Promise<Treatment[]>;
   
+  // Dentist operations
+  getDentists(): Promise<Dentist[]>;
+  getDentistsByPractice(practiceId: number): Promise<Dentist[]>;
+  getDentist(id: number): Promise<Dentist | undefined>;
+  
   // Appointment operations
   getAvailableAppointments(practiceId: number, date?: Date): Promise<Appointment[]>;
   bookAppointment(appointmentId: number, userId: number): Promise<Appointment>;
@@ -32,12 +38,14 @@ export class MemStorage implements IStorage {
   private users: Map<number, User> = new Map();
   private practices: Map<number, Practice> = new Map();
   private treatments: Map<number, Treatment> = new Map();
+  private dentists: Map<number, Dentist> = new Map();
   private appointments: Map<number, Appointment> = new Map();
   private bookings: Map<number, Booking> = new Map();
   
   private currentUserId = 1;
   private currentPracticeId = 1;
   private currentTreatmentId = 1;
+  private currentDentistId = 1;
   private currentAppointmentId = 1;
   private currentBookingId = 1;
 
@@ -46,11 +54,11 @@ export class MemStorage implements IStorage {
   }
 
   private initializeData() {
-    // Sample practices
+    // Sample practices with detailed information
     const samplePractices: Practice[] = [
       {
         id: 1,
-        name: "Newcastle Dental",
+        name: "Newcastle Dental Centre",
         address: "123 Grey Street, Newcastle upon Tyne, NE1 6EE",
         postcode: "NE1 6EE",
         latitude: 54.9783,
@@ -69,7 +77,7 @@ export class MemStorage implements IStorage {
       },
       {
         id: 2,
-        name: "Sunderland Smiles",
+        name: "Sunderland Family Dental",
         address: "45 High Street, Sunderland, SR1 3EX",
         postcode: "SR1 3EX",
         latitude: 54.9069,
@@ -88,7 +96,7 @@ export class MemStorage implements IStorage {
       },
       {
         id: 3,
-        name: "Middlesbrough Dentists",
+        name: "Middlesbrough Advanced Dentistry",
         address: "78 Linthorpe Road, Middlesbrough, TS1 2AT",
         postcode: "TS1 2AT",
         latitude: 54.5742,
@@ -118,17 +126,108 @@ export class MemStorage implements IStorage {
       { id: 7, name: "Dental Veneers", category: "cosmetic", description: "Cosmetic improvement of tooth appearance", duration: 120, price: 800 },
     ];
 
-    // Sample appointments for today
+    // Sample dentists
+    const sampleDentists: Dentist[] = [
+      // Newcastle Dental Centre dentists
+      {
+        id: 1,
+        practiceId: 1,
+        name: "Sarah Johnson",
+        title: "Dr.",
+        specialization: "General Dentistry & Emergency Care",
+        experience: 12,
+        qualifications: "BDS (Newcastle), MFDS RCS (Eng)",
+        imageUrl: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
+        bio: "Dr. Johnson specializes in emergency dental care and has been serving the Newcastle community for over a decade.",
+        languages: JSON.stringify(["English", "French"]),
+        availableDays: JSON.stringify(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]),
+        createdAt: new Date(),
+      },
+      {
+        id: 2,
+        practiceId: 1,
+        name: "Michael Chen",
+        title: "Dr.",
+        specialization: "Cosmetic Dentistry",
+        experience: 8,
+        qualifications: "BDS (London), MSc Aesthetic Dentistry",
+        imageUrl: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
+        bio: "Dr. Chen is passionate about creating beautiful smiles through advanced cosmetic dental procedures.",
+        languages: JSON.stringify(["English", "Mandarin"]),
+        availableDays: JSON.stringify(["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]),
+        createdAt: new Date(),
+      },
+      // Sunderland Family Dental dentists
+      {
+        id: 3,
+        practiceId: 2,
+        name: "Emma Thompson",
+        title: "Dr.",
+        specialization: "Family Dentistry & Pediatrics",
+        experience: 15,
+        qualifications: "BDS (Edinburgh), PG Cert Pediatric Dentistry",
+        imageUrl: "https://images.unsplash.com/photo-1594824475135-d4c37a8ca551?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
+        bio: "Dr. Thompson has extensive experience in family dentistry and making children feel comfortable during dental visits.",
+        languages: JSON.stringify(["English", "Spanish"]),
+        availableDays: JSON.stringify(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]),
+        createdAt: new Date(),
+      },
+      {
+        id: 4,
+        practiceId: 2,
+        name: "James Wilson",
+        title: "Dr.",
+        specialization: "Restorative Dentistry",
+        experience: 10,
+        qualifications: "BDS (Manchester), MSc Restorative Dentistry",
+        imageUrl: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
+        bio: "Dr. Wilson focuses on restoring damaged teeth and helping patients maintain optimal oral health.",
+        languages: JSON.stringify(["English"]),
+        availableDays: JSON.stringify(["Monday", "Wednesday", "Thursday", "Friday", "Saturday"]),
+        createdAt: new Date(),
+      },
+      // Middlesbrough Advanced Dentistry dentists
+      {
+        id: 5,
+        practiceId: 3,
+        name: "Priya Patel",
+        title: "Dr.",
+        specialization: "Oral Surgery & Implants",
+        experience: 18,
+        qualifications: "BDS (Birmingham), FDS RCS (Eng), MSc Oral Surgery",
+        imageUrl: "https://images.unsplash.com/photo-1614608682850-e0d6ed316d47?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
+        bio: "Dr. Patel is a leading oral surgeon specializing in dental implants and complex surgical procedures.",
+        languages: JSON.stringify(["English", "Hindi", "Gujarati"]),
+        availableDays: JSON.stringify(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]),
+        createdAt: new Date(),
+      },
+      {
+        id: 6,
+        practiceId: 3,
+        name: "Robert Anderson",
+        title: "Prof.",
+        specialization: "Orthodontics & Advanced Dentistry",
+        experience: 22,
+        qualifications: "BDS (Leeds), MSc Orthodontics, PhD Dental Sciences",
+        imageUrl: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
+        bio: "Professor Anderson is a renowned orthodontist and researcher in advanced dental technologies.",
+        languages: JSON.stringify(["English", "German"]),
+        availableDays: JSON.stringify(["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]),
+        createdAt: new Date(),
+      },
+    ];
+
+    // Sample appointments for today with dentist assignments
     const today = new Date();
     const sampleAppointments: Appointment[] = [
-      { id: 1, practiceId: 1, userId: null, treatmentId: 4, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 9, 0), status: "available", createdAt: new Date() },
-      { id: 2, practiceId: 1, userId: null, treatmentId: 4, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 11, 0), status: "available", createdAt: new Date() },
-      { id: 3, practiceId: 1, userId: null, treatmentId: 4, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 14, 0), status: "available", createdAt: new Date() },
-      { id: 4, practiceId: 1, userId: null, treatmentId: 4, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 16, 0), status: "available", createdAt: new Date() },
-      { id: 5, practiceId: 2, userId: null, treatmentId: 3, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 10, 0), status: "available", createdAt: new Date() },
-      { id: 6, practiceId: 2, userId: null, treatmentId: 3, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 15, 0), status: "available", createdAt: new Date() },
-      { id: 7, practiceId: 3, userId: null, treatmentId: 1, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 9, 30), status: "available", createdAt: new Date() },
-      { id: 8, practiceId: 3, userId: null, treatmentId: 2, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 13, 0), status: "available", createdAt: new Date() },
+      { id: 1, practiceId: 1, dentistId: 1, userId: null, treatmentId: 4, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 9, 0), status: "available", createdAt: new Date() },
+      { id: 2, practiceId: 1, dentistId: 1, userId: null, treatmentId: 4, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 11, 0), status: "available", createdAt: new Date() },
+      { id: 3, practiceId: 1, dentistId: 2, userId: null, treatmentId: 4, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 14, 0), status: "available", createdAt: new Date() },
+      { id: 4, practiceId: 1, dentistId: 2, userId: null, treatmentId: 4, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 16, 0), status: "available", createdAt: new Date() },
+      { id: 5, practiceId: 2, dentistId: 3, userId: null, treatmentId: 3, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 10, 0), status: "available", createdAt: new Date() },
+      { id: 6, practiceId: 2, dentistId: 4, userId: null, treatmentId: 3, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 15, 0), status: "available", createdAt: new Date() },
+      { id: 7, practiceId: 3, dentistId: 5, userId: null, treatmentId: 1, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 9, 30), status: "available", createdAt: new Date() },
+      { id: 8, practiceId: 3, dentistId: 6, userId: null, treatmentId: 2, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 13, 0), status: "available", createdAt: new Date() },
     ];
 
     // Initialize data
@@ -140,6 +239,11 @@ export class MemStorage implements IStorage {
     sampleTreatments.forEach(treatment => {
       this.treatments.set(treatment.id, treatment);
       this.currentTreatmentId = Math.max(this.currentTreatmentId, treatment.id + 1);
+    });
+
+    sampleDentists.forEach(dentist => {
+      this.dentists.set(dentist.id, dentist);
+      this.currentDentistId = Math.max(this.currentDentistId, dentist.id + 1);
     });
 
     sampleAppointments.forEach(appointment => {
@@ -189,6 +293,18 @@ export class MemStorage implements IStorage {
 
   async getTreatmentsByCategory(category: string): Promise<Treatment[]> {
     return Array.from(this.treatments.values()).filter(treatment => treatment.category === category);
+  }
+
+  async getDentists(): Promise<Dentist[]> {
+    return Array.from(this.dentists.values());
+  }
+
+  async getDentistsByPractice(practiceId: number): Promise<Dentist[]> {
+    return Array.from(this.dentists.values()).filter(dentist => dentist.practiceId === practiceId);
+  }
+
+  async getDentist(id: number): Promise<Dentist | undefined> {
+    return this.dentists.get(id);
   }
 
   async getAvailableAppointments(practiceId: number, date?: Date): Promise<Appointment[]> {

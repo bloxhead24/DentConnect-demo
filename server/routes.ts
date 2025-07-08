@@ -57,6 +57,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Dentist routes
+  app.get("/api/dentists", async (req, res) => {
+    try {
+      const dentists = await storage.getDentists();
+      res.json(dentists);
+    } catch (error) {
+      console.error("Error fetching dentists:", error);
+      res.status(500).json({ message: "Failed to fetch dentists" });
+    }
+  });
+
+  app.get("/api/dentists/practice/:practiceId", async (req, res) => {
+    try {
+      const practiceId = parseInt(req.params.practiceId);
+      const dentists = await storage.getDentistsByPractice(practiceId);
+      res.json(dentists);
+    } catch (error) {
+      console.error("Error fetching dentists:", error);
+      res.status(500).json({ message: "Failed to fetch dentists" });
+    }
+  });
+
+  app.get("/api/dentists/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const dentist = await storage.getDentist(id);
+      if (!dentist) {
+        return res.status(404).json({ message: "Dentist not found" });
+      }
+      res.json(dentist);
+    } catch (error) {
+      console.error("Error fetching dentist:", error);
+      res.status(500).json({ message: "Failed to fetch dentist" });
+    }
+  });
+
   // Booking routes
   app.post("/api/bookings", async (req, res) => {
     try {

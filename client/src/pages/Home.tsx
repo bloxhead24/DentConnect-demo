@@ -3,6 +3,7 @@ import TreatmentSelection from "./TreatmentSelection";
 import AccessibilityForm from "./AccessibilityForm";
 import MapView from "./MapView";
 import { TreatmentType, AccessibilityNeed } from "@/lib/types";
+import DentConnectLogo from "@/components/DentConnectLogo";
 
 export default function Home() {
   const [currentStep, setCurrentStep] = useState<"treatment" | "accessibility" | "map">("treatment");
@@ -32,11 +33,8 @@ export default function Home() {
       {/* Header */}
       <div className="bg-white shadow-soft">
         <div className="px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-              <i className="fas fa-tooth text-white text-sm"></i>
-            </div>
-            <h1 className="text-xl font-semibold text-text-primary">DentConnect</h1>
+          <div className="flex items-center">
+            <DentConnectLogo width={200} height={40} className="drop-shadow-sm" />
           </div>
           <div className="flex items-center space-x-2">
             <button className="p-2 rounded-full hover:bg-primary/10 transition-colors">
