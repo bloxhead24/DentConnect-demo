@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { TreatmentType, AccessibilityNeed } from "@/lib/types";
 import { PracticePin } from "@/components/PracticePin";
@@ -10,6 +10,8 @@ import { SearchQuestionnaire, QuestionnaireData } from "@/components/SearchQuest
 import { MapLoadingState } from "@/components/MapLoadingState";
 import { Button } from "@/components/ui/button";
 import { Practice, Appointment } from "@shared/schema";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
 interface MapViewProps {
   selectedTreatment: TreatmentType | null;
@@ -31,10 +33,94 @@ export default function MapView({ selectedTreatment, selectedAccessibility, onBa
     anxietyLevel?: string;
     accessibilityNeeds?: string[];
   }>({});
+  
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<L.Map | null>(null);
+  const markersRef = useRef<L.Marker[]>([]);
 
   const { data: practices = [], isLoading } = useQuery({
     queryKey: ["/api/practices", { location }],
   });
+
+  // Initialize map
+  useEffect(() => {
+    if (mapRef.current && !mapInstanceRef.current) {
+      // Create map centered on Newcastle upon Tyne
+      mapInstanceRef.current = L.map(mapRef.current, {
+        center: [54.9783, -1.6178], // Newcastle upon Tyne coordinates
+        zoom: 11,
+        zoomControl: false,
+        attributionControl: false,
+      });
+
+      // Add OpenStreetMap tiles
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 19,
+      }).addTo(mapInstanceRef.current);
+
+      // Add custom zoom control
+      L.control.zoom({ position: 'bottomright' }).addTo(mapInstanceRef.current);
+    }
+
+    return () => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
+    };
+  }, []);
+
+  // Update markers when practices change
+  useEffect(() => {
+    if (mapInstanceRef.current && practices.length > 0) {
+      // Clear existing markers
+      markersRef.current.forEach(marker => {
+        mapInstanceRef.current?.removeLayer(marker);
+      });
+      markersRef.current = [];
+
+      // Northeast England practice coordinates
+      const practiceCoordinates = [
+        [54.9783, -1.6178], // Newcastle upon Tyne
+        [54.9533, -1.6103], // Gateshead
+        [54.7767, -1.5711], // Durham
+        [55.0167, -1.4436], // North Shields
+        [54.8544, -1.8320], // Consett
+        [54.9742, -2.1267], // Hexham
+        [54.5253, -1.5581], // Darlington
+        [54.9200, -1.5800], // Chester-le-Street
+      ];
+
+      // Create custom marker icon
+      const customIcon = L.divIcon({
+        html: `<div class="custom-marker">
+          <div class="marker-pin">
+            <i class="fas fa-tooth text-white"></i>
+          </div>
+          <div class="marker-shadow"></div>
+        </div>`,
+        className: 'custom-marker-container',
+        iconSize: [30, 40],
+        iconAnchor: [15, 40],
+      });
+
+      // Add markers for each practice
+      practices.forEach((practice: Practice, index) => {
+        const coords = practiceCoordinates[index] || [54.9783, -1.6178];
+        
+        const marker = L.marker(coords as [number, number], { 
+          icon: customIcon 
+        }).addTo(mapInstanceRef.current!);
+        
+        marker.on('click', () => {
+          handlePracticeClick(practice);
+        });
+        
+        markersRef.current.push(marker);
+      });
+    }
+  }, [practices]);
 
   const handlePracticeClick = (practice: Practice) => {
     setSelectedPractice(practice);
@@ -71,17 +157,7 @@ export default function MapView({ selectedTreatment, selectedAccessibility, onBa
     console.log("Filter panel toggle");
   };
 
-  // Northeast England practice positions based on actual locations
-  const practicePositions = [
-    { top: "25%", left: "45%" }, // Newcastle upon Tyne
-    { top: "35%", left: "50%" }, // Gateshead
-    { top: "45%", left: "40%" }, // Durham
-    { top: "20%", left: "55%" }, // North Shields
-    { top: "40%", left: "35%" }, // Consett
-    { top: "50%", left: "45%" }, // Chester-le-Street
-    { top: "30%", left: "40%" }, // Hexham
-    { top: "60%", left: "50%" }, // Darlington
-  ];
+
 
   return (
     <div className="onboarding-step active">
@@ -93,85 +169,13 @@ export default function MapView({ selectedTreatment, selectedAccessibility, onBa
         searchFilters={searchFilters}
       />
 
-      {/* Map Container */}
+      {/* Map Container with Leaflet */}
       <div className="map-container h-screen relative overflow-hidden">
-        {/* Northeast England Map Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-green-50">
-          {/* Map Grid Pattern */}
-          <div className="absolute inset-0 opacity-20">
-            <div className="grid grid-cols-12 grid-rows-12 h-full">
-              {Array.from({ length: 144 }).map((_, i) => (
-                <div key={i} className="border border-gray-200/50"></div>
-              ))}
-            </div>
-          </div>
-          
-          {/* Geographic Features */}
-          {/* River Tyne System */}
-          <div className="absolute top-[25%] left-[30%] w-[40%] h-[3px] bg-gradient-to-r from-blue-300 to-blue-400 rounded-full transform rotate-12 shadow-sm"></div>
-          <div className="absolute top-[26%] left-[45%] w-[25%] h-[3px] bg-gradient-to-r from-blue-300 to-blue-400 rounded-full transform rotate-6 shadow-sm"></div>
-          
-          {/* River Wear */}
-          <div className="absolute top-[43%] left-[35%] w-[30%] h-[2px] bg-gradient-to-r from-blue-300 to-blue-400 rounded-full transform rotate-8 shadow-sm"></div>
-          
-          {/* River Tees */}
-          <div className="absolute top-[58%] left-[40%] w-[35%] h-[2px] bg-gradient-to-r from-blue-300 to-blue-400 rounded-full transform rotate-3 shadow-sm"></div>
-          
-          {/* North Sea Coast */}
-          <div className="absolute top-0 right-0 w-[15%] h-full bg-gradient-to-l from-blue-100 via-blue-50 to-transparent"></div>
-          <div className="absolute top-[10%] right-[2%] w-[8%] h-[20%] bg-gradient-to-br from-blue-200/30 to-transparent rounded-full"></div>
-          
-          {/* Hadrian's Wall (stylized) */}
-          <div className="absolute top-[35%] left-[10%] w-[60%] h-[2px] bg-gradient-to-r from-stone-400 to-stone-500 opacity-60 shadow-sm"></div>
-          
-          {/* Major Roads Network */}
-          {/* A1 (Great North Road) */}
-          <div className="absolute top-[20%] left-[40%] w-[2px] h-[60%] bg-gradient-to-b from-gray-400 to-gray-500 opacity-50 shadow-sm"></div>
-          {/* A69 (Newcastle to Carlisle) */}
-          <div className="absolute top-[30%] left-[15%] w-[50%] h-[2px] bg-gradient-to-r from-gray-400 to-gray-500 opacity-50 shadow-sm"></div>
-          {/* A66 (Cross-Pennine) */}
-          <div className="absolute top-[45%] left-[20%] w-[45%] h-[2px] bg-gradient-to-r from-gray-400 to-gray-500 opacity-50 shadow-sm"></div>
-          {/* A19 (Tyne to Tees) */}
-          <div className="absolute top-[25%] left-[50%] w-[2px] h-[40%] bg-gradient-to-b from-gray-400 to-gray-500 opacity-50 shadow-sm"></div>
-          
-          {/* City Areas */}
-          <div className="absolute top-[22%] left-[42%] w-[8%] h-[8%] bg-primary/10 rounded-full"></div>
-          <div className="absolute top-[33%] left-[47%] w-[6%] h-[6%] bg-primary/10 rounded-full"></div>
-          <div className="absolute top-[43%] left-[37%] w-[7%] h-[7%] bg-primary/10 rounded-full"></div>
-          
-          {/* Place Labels */}
-          <div className="absolute top-[18%] left-[38%] text-xs font-medium text-gray-600 bg-white/90 px-2 py-1 rounded-full shadow-sm border border-gray-200/50 backdrop-blur-sm">
-            Newcastle
-          </div>
-          <div className="absolute top-[30%] left-[52%] text-xs font-medium text-gray-600 bg-white/90 px-2 py-1 rounded-full shadow-sm border border-gray-200/50 backdrop-blur-sm">
-            Gateshead
-          </div>
-          <div className="absolute top-[40%] left-[32%] text-xs font-medium text-gray-600 bg-white/90 px-2 py-1 rounded-full shadow-sm border border-gray-200/50 backdrop-blur-sm">
-            Durham
-          </div>
-          <div className="absolute top-[17%] left-[52%] text-xs font-medium text-gray-600 bg-white/90 px-2 py-1 rounded-full shadow-sm border border-gray-200/50 backdrop-blur-sm">
-            North Shields
-          </div>
-          <div className="absolute top-[38%] left-[30%] text-xs font-medium text-gray-600 bg-white/90 px-2 py-1 rounded-full shadow-sm border border-gray-200/50 backdrop-blur-sm">
-            Consett
-          </div>
-          <div className="absolute top-[28%] left-[35%] text-xs font-medium text-gray-600 bg-white/90 px-2 py-1 rounded-full shadow-sm border border-gray-200/50 backdrop-blur-sm">
-            Hexham
-          </div>
-          <div className="absolute top-[57%] left-[47%] text-xs font-medium text-gray-600 bg-white/90 px-2 py-1 rounded-full shadow-sm border border-gray-200/50 backdrop-blur-sm">
-            Darlington
-          </div>
-        </div>
-        
-        {/* Practice Pins */}
-        {!isLoading && practices.map((practice: Practice, index) => (
-          <PracticePin
-            key={practice.id}
-            practice={practice}
-            position={practicePositions[index] || { top: "50%", left: "50%" }}
-            onClick={handlePracticeClick}
-          />
-        ))}
+        <div 
+          ref={mapRef} 
+          className="absolute inset-0 w-full h-full z-10"
+          style={{ background: '#f8f9fa' }}
+        />
         
         {/* Enhanced Loading State */}
         <MapLoadingState isLoading={isLoading} searchQuery={location} />
