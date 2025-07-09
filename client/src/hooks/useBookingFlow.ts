@@ -17,7 +17,7 @@ export function useBookingFlow() {
   };
 
   const nextStep = () => {
-    if (currentStep < 3) {
+    if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
     }
   };

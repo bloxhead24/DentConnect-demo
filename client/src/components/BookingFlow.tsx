@@ -42,7 +42,7 @@ export function BookingFlow({ practice, selectedAppointment, isOpen, onClose, on
   };
 
   const handleNext = () => {
-    if (currentStep < 3) {
+    if (currentStep < 4) {
       nextStep();
     } else {
       // Complete the demo booking
@@ -71,13 +71,77 @@ export function BookingFlow({ practice, selectedAppointment, isOpen, onClose, on
           <div className="space-y-2">
             <div className="flex justify-between text-sm text-text-soft">
               <span>Booking Progress</span>
-              <span>{currentStep} of 3</span>
+              <span>{currentStep} of 4</span>
             </div>
-            <Progress value={(currentStep / 3) * 100} className="h-2" />
+            <Progress value={(currentStep / 4) * 100} className="h-2" />
           </div>
           
-          {/* Step 1: Medical History */}
+          {/* Step 1: Urgency Assessment */}
           {currentStep === 1 && (
+            <div className="space-y-4">
+              <h3 className="text-xl font-semibold text-text-primary">How urgent is your appointment?</h3>
+              <p className="text-text-soft">This helps us prioritize your care and find the best available time</p>
+              
+              <div className="space-y-3">
+                <Card 
+                  className={`p-4 cursor-pointer transition-all ${formData.urgency === 'emergency' ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'}`}
+                  onClick={() => updateFormData({ urgency: 'emergency' })}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center">
+                      <i className="fas fa-bolt text-white"></i>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-red-700">Emergency - I'm in severe pain</h4>
+                      <p className="text-sm text-gray-600">Need immediate attention within 2 hours</p>
+                    </div>
+                    {formData.urgency === 'emergency' && (
+                      <i className="fas fa-check-circle text-red-600"></i>
+                    )}
+                  </div>
+                </Card>
+                
+                <Card 
+                  className={`p-4 cursor-pointer transition-all ${formData.urgency === 'urgent' ? 'border-orange-500 bg-orange-50' : 'border-gray-200 hover:border-gray-300'}`}
+                  onClick={() => updateFormData({ urgency: 'urgent' })}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-12 h-12 bg-orange-600 rounded-full flex items-center justify-center">
+                      <i className="fas fa-exclamation-triangle text-white"></i>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-orange-700">Urgent - Same day preferred</h4>
+                      <p className="text-sm text-gray-600">Would like to be seen today if possible</p>
+                    </div>
+                    {formData.urgency === 'urgent' && (
+                      <i className="fas fa-check-circle text-orange-600"></i>
+                    )}
+                  </div>
+                </Card>
+                
+                <Card 
+                  className={`p-4 cursor-pointer transition-all ${formData.urgency === 'routine' ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-gray-300'}`}
+                  onClick={() => updateFormData({ urgency: 'routine' })}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
+                      <i className="fas fa-calendar-alt text-white"></i>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-green-700">Routine - Flexible timing</h4>
+                      <p className="text-sm text-gray-600">Can wait for the next available appointment</p>
+                    </div>
+                    {formData.urgency === 'routine' && (
+                      <i className="fas fa-check-circle text-green-600"></i>
+                    )}
+                  </div>
+                </Card>
+              </div>
+            </div>
+          )}
+          
+          {/* Step 2: Medical History */}
+          {currentStep === 2 && (
             <div className="space-y-4">
               <h3 className="text-xl font-semibold text-text-primary">A few gentle questions</h3>
               <p className="text-text-soft">This helps us provide the best care for you</p>
@@ -141,8 +205,8 @@ export function BookingFlow({ practice, selectedAppointment, isOpen, onClose, on
             </div>
           )}
           
-          {/* Step 2: Anxiety Assessment */}
-          {currentStep === 2 && (
+          {/* Step 3: Anxiety Assessment */}
+          {currentStep === 3 && (
             <div className="space-y-4">
               <h3 className="text-xl font-semibold text-text-primary">How are you feeling?</h3>
               <p className="text-text-soft">We understand dental visits can be stressful. Let us know how we can help you feel comfortable.</p>

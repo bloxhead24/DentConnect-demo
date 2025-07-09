@@ -8,6 +8,8 @@ import { SuccessModal } from "@/components/SuccessModal";
 import { EnhancedMapSearch } from "@/components/EnhancedMapSearch";
 import { SearchQuestionnaire, QuestionnaireData } from "@/components/SearchQuestionnaire";
 import { MapLoadingState } from "@/components/MapLoadingState";
+import { UrgentSearchLoading } from "@/components/UrgentSearchLoading";
+import { DirectionsPage } from "@/components/DirectionsPage";
 import { Button } from "@/components/ui/button";
 import { Practice, Appointment } from "@shared/schema";
 import L from "leaflet";
@@ -33,6 +35,9 @@ export default function MapView({ selectedTreatment, selectedAccessibility, onBa
     anxietyLevel?: string;
     accessibilityNeeds?: string[];
   }>({});
+  const [showUrgentLoading, setShowUrgentLoading] = useState(false);
+  const [showDirections, setShowDirections] = useState(false);
+  const [urgentPractice, setUrgentPractice] = useState<Practice | null>(null);
   
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -80,7 +85,7 @@ export default function MapView({ selectedTreatment, selectedAccessibility, onBa
       });
       markersRef.current = [];
 
-      // Northeast England practice coordinates
+      // Northeast England practice coordinates - expanded coverage
       const practiceCoordinates = [
         [54.9783, -1.6178], // Newcastle upon Tyne
         [54.9533, -1.6103], // Gateshead
@@ -90,6 +95,13 @@ export default function MapView({ selectedTreatment, selectedAccessibility, onBa
         [54.9742, -2.1267], // Hexham
         [54.5253, -1.5581], // Darlington
         [54.9200, -1.5800], // Chester-le-Street
+        [54.9069, -1.3838], // Sunderland
+        [54.5742, -1.2349], // Middlesbrough
+        [54.6869, -1.2155], // Hartlepool
+        [54.5707, -1.3182], // Stockton-on-Tees
+        [55.7707, -2.0107], // Berwick-upon-Tweed
+        [55.0424, -1.4481], // Whitley Bay
+        [55.0178, -1.4217], // Tynemouth
       ];
 
       // Create custom marker icon
@@ -148,6 +160,33 @@ export default function MapView({ selectedTreatment, selectedAccessibility, onBa
     setShowQuestionnaire(false);
   };
 
+  const handleUrgentSearch = () => {
+    setShowUrgentLoading(true);
+    // Simulate AI-powered urgent search with realistic delay
+    setTimeout(() => {
+      setShowUrgentLoading(false);
+      // Find first available emergency appointment
+      const foundPractice = practices.find(p => p.availableAppointments?.length > 0);
+      if (foundPractice) {
+        setUrgentPractice(foundPractice);
+        setShowDirections(true);
+      }
+    }, 4000); // 4 second loading animation
+  };
+
+  const handleDirectionsClose = () => {
+    setShowDirections(false);
+    setUrgentPractice(null);
+  };
+
+  const handleArrivedAtPractice = () => {
+    setShowDirections(false);
+    if (urgentPractice) {
+      setSelectedPractice(urgentPractice);
+      setShowBookingFlow(true);
+    }
+  };
+
   const handleLocationChange = (newLocation: string) => {
     setLocation(newLocation);
   };
@@ -179,6 +218,20 @@ export default function MapView({ selectedTreatment, selectedAccessibility, onBa
         
         {/* Enhanced Loading State */}
         <MapLoadingState isLoading={isLoading} searchQuery={location} />
+        
+        {/* Urgent Search Floating Button */}
+        <div className="absolute bottom-20 right-4 z-50">
+          <Button
+            onClick={handleUrgentSearch}
+            className="urgent-search-button w-16 h-16 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-floating flex items-center justify-center animate-pulse"
+            size="icon"
+          >
+            <div className="text-center">
+              <i className="fas fa-bolt text-xl mb-1"></i>
+              <div className="text-xs font-bold">URGENT</div>
+            </div>
+          </Button>
+        </div>
       </div>
 
       {/* Filter Button */}
@@ -244,6 +297,20 @@ export default function MapView({ selectedTreatment, selectedAccessibility, onBa
       <SuccessModal
         isOpen={showSuccess}
         onClose={() => setShowSuccess(false)}
+      />
+
+      {/* Urgent Search Loading */}
+      <UrgentSearchLoading
+        isVisible={showUrgentLoading}
+        onComplete={() => setShowUrgentLoading(false)}
+      />
+
+      {/* Directions Page */}
+      <DirectionsPage
+        practice={urgentPractice}
+        isOpen={showDirections}
+        onClose={handleDirectionsClose}
+        onBookAppointment={handleArrivedAtPractice}
       />
     </div>
   );

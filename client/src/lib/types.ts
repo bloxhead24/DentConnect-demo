@@ -15,6 +15,7 @@ export interface TreatmentType {
 }
 
 export interface BookingFormData {
+  urgency?: "emergency" | "urgent" | "routine";
   treatmentCategory: string;
   accessibilityNeeds: string[];
   medications: boolean;
