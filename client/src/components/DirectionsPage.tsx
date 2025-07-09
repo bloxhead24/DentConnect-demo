@@ -3,8 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Practice, Dentist } from "@shared/schema";
 import { useQuery } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -17,9 +23,21 @@ interface DirectionsPageProps {
 
 export function DirectionsPage({ practice, isOpen, onClose, onBookAppointment }: DirectionsPageProps) {
   const [showDentistProfile, setShowDentistProfile] = useState(false);
+  const [activeTab, setActiveTab] = useState("profile");
+  const [medicalHistory, setMedicalHistory] = useState({
+    medications: "",
+    allergies: "",
+    medicalConditions: "",
+    emergencyContact: "",
+    emergencyPhone: "",
+    insuranceProvider: "",
+    insuranceNumber: "",
+    notes: ""
+  });
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const routingControlRef = useRef<any>(null);
+  const { toast } = useToast();
 
   const { data: dentists = [] } = useQuery({
     queryKey: ["/api/dentists/practice", practice?.id],
@@ -27,6 +45,7 @@ export function DirectionsPage({ practice, isOpen, onClose, onBookAppointment }:
   });
 
   const primaryDentist = dentists[0];
+  const userLocation = [54.9783, -1.6178]; // Newcastle city center for demo
 
   // Initialize directions map
   useEffect(() => {
@@ -66,8 +85,7 @@ export function DirectionsPage({ practice, isOpen, onClose, onBookAppointment }:
         icon: destinationIcon 
       }).addTo(mapInstanceRef.current);
 
-      // Simulate user location (Newcastle city center for demo)
-      const userLocation = [54.9783, -1.6178];
+      // Use the user location constant
       
       // Create user location marker
       const userIcon = L.divIcon({
@@ -108,6 +126,44 @@ export function DirectionsPage({ practice, isOpen, onClose, onBookAppointment }:
       }
     };
   }, [practice, isOpen]);
+
+  // Helper functions
+  const openInGoogleMaps = () => {
+    const origin = `${userLocation[0]},${userLocation[1]}`;
+    const destination = `${practice?.latitude},${practice?.longitude}`;
+    const url = `https://www.google.com/maps/dir/${origin}/${destination}`;
+    window.open(url, '_blank');
+  };
+
+  const callPractice = () => {
+    if (practice?.phone) {
+      window.open(`tel:${practice.phone}`, '_self');
+    }
+  };
+
+  const saveMedicalHistory = () => {
+    // In a real app, this would save to the backend
+    toast({
+      title: "Medical History Saved",
+      description: "Your information has been securely saved for your appointment.",
+    });
+  };
+
+  const shareLocation = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: 'My Emergency Dental Appointment',
+        text: `I'm heading to ${practice?.name} for an emergency appointment`,
+        url: window.location.href,
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast({
+        title: "Location Shared",
+        description: "Practice location copied to clipboard.",
+      });
+    }
+  };
 
   if (!practice || !isOpen) return null;
 
@@ -187,127 +243,340 @@ export function DirectionsPage({ practice, isOpen, onClose, onBookAppointment }:
           {/* Dentist Profile Button */}
           <Sheet open={showDentistProfile} onOpenChange={setShowDentistProfile}>
             <SheetTrigger asChild>
-              <Card className="p-4 cursor-pointer hover:shadow-md transition-shadow">
+              <Card className="p-4 cursor-pointer hover:shadow-md transition-all bg-gradient-to-r from-teal-50 to-blue-50 border-teal-200">
                 <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-r from-teal-500 to-blue-500 flex items-center justify-center overflow-hidden shadow-lg">
                     {primaryDentist?.imageUrl ? (
                       <img src={primaryDentist.imageUrl} alt={primaryDentist.name} className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-lg font-semibold text-gray-600">{primaryDentist?.name?.charAt(0)}</span>
+                      <span className="text-xl font-bold text-white">{primaryDentist?.name?.charAt(0)}</span>
                     )}
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900">{primaryDentist?.title} {primaryDentist?.name}</h3>
-                    <p className="text-sm text-gray-600">{primaryDentist?.specialization}</p>
+                    <h3 className="font-bold text-gray-900">{primaryDentist?.title} {primaryDentist?.name}</h3>
+                    <p className="text-sm text-teal-700 font-medium">{primaryDentist?.specialization}</p>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <div className="flex items-center space-x-1">
+                        <i className="fas fa-star text-yellow-400 text-xs"></i>
+                        <span className="text-xs font-medium text-gray-700">4.9</span>
+                      </div>
+                      <Badge variant="secondary" className="text-xs bg-teal-100 text-teal-800">{primaryDentist?.experience}+ years</Badge>
+                    </div>
                   </div>
-                  <i className="fas fa-chevron-up text-gray-400"></i>
+                  <div className="flex flex-col items-center">
+                    <i className="fas fa-chevron-up text-teal-500 text-lg"></i>
+                    <span className="text-xs text-teal-600 font-medium">View Profile</span>
+                  </div>
                 </div>
               </Card>
             </SheetTrigger>
             
-            <SheetContent side="bottom" className="rounded-t-3xl max-h-[80vh] overflow-y-auto">
+            <SheetContent side="bottom" className="rounded-t-3xl max-h-[85vh] overflow-y-auto bg-gradient-to-b from-white to-teal-50">
               <SheetHeader>
-                <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4"></div>
-                <SheetTitle className="text-left">Your Emergency Dentist</SheetTitle>
+                <div className="w-12 h-1 bg-teal-300 rounded-full mx-auto mb-4"></div>
+                <SheetTitle className="text-left text-2xl font-bold text-gray-900">Your Emergency Dentist</SheetTitle>
               </SheetHeader>
               
-              <div className="space-y-6">
-                {/* Dentist Profile */}
-                <div className="flex items-center space-x-4">
-                  <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                    {primaryDentist?.imageUrl ? (
-                      <img src={primaryDentist.imageUrl} alt={primaryDentist.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-3xl font-semibold text-gray-600">{primaryDentist?.name?.charAt(0)}</span>
-                    )}
-                  </div>
-                  <div className="flex-1">
-                    <h2 className="text-2xl font-bold text-gray-900">{primaryDentist?.title} {primaryDentist?.name}</h2>
-                    <p className="text-gray-600 mb-2">{primaryDentist?.specialization}</p>
-                    <div className="flex items-center space-x-2">
-                      <Badge variant="secondary">{primaryDentist?.experience} years experience</Badge>
-                      <div className="flex items-center space-x-1">
-                        <i className="fas fa-star text-yellow-400"></i>
-                        <span className="text-sm font-medium">4.9</span>
-                        <span className="text-sm text-gray-500">(127 reviews)</span>
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="grid w-full grid-cols-3 mb-6 bg-teal-100">
+                  <TabsTrigger value="profile" className="data-[state=active]:bg-teal-600 data-[state=active]:text-white">Profile</TabsTrigger>
+                  <TabsTrigger value="medical" className="data-[state=active]:bg-teal-600 data-[state=active]:text-white">Medical Form</TabsTrigger>
+                  <TabsTrigger value="contact" className="data-[state=active]:bg-teal-600 data-[state=active]:text-white">Contact</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="profile" className="space-y-6">
+                  {/* Enhanced Dentist Profile */}
+                  <Card className="p-6 bg-white border-teal-200 shadow-md">
+                    <div className="flex items-center space-x-4 mb-4">
+                      <div className="w-24 h-24 rounded-full bg-gradient-to-r from-teal-500 to-blue-500 flex items-center justify-center overflow-hidden shadow-lg">
+                        {primaryDentist?.imageUrl ? (
+                          <img src={primaryDentist.imageUrl} alt={primaryDentist.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <span className="text-4xl font-bold text-white">{primaryDentist?.name?.charAt(0)}</span>
+                        )}
                       </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Bio */}
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">About</h3>
-                  <p className="text-gray-600 leading-relaxed">{primaryDentist?.bio}</p>
-                </div>
-
-                {/* Qualifications */}
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Qualifications</h3>
-                  <div className="bg-gray-50 rounded-lg p-3">
-                    <p className="text-sm text-gray-700">{primaryDentist?.qualifications}</p>
-                  </div>
-                </div>
-
-                {/* Languages */}
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Languages</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {primaryDentist?.languages && JSON.parse(primaryDentist.languages).map((lang: string) => (
-                      <Badge key={lang} variant="outline">{lang}</Badge>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Reviews */}
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-3">Recent Reviews</h3>
-                  <div className="space-y-3">
-                    <div className="bg-gray-50 rounded-lg p-3">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <div className="flex text-yellow-400">
-                          <i className="fas fa-star"></i>
-                          <i className="fas fa-star"></i>
-                          <i className="fas fa-star"></i>
-                          <i className="fas fa-star"></i>
-                          <i className="fas fa-star"></i>
+                      <div className="flex-1">
+                        <h2 className="text-2xl font-bold text-gray-900">{primaryDentist?.title} {primaryDentist?.name}</h2>
+                        <p className="text-teal-700 font-semibold mb-2">{primaryDentist?.specialization}</p>
+                        <div className="flex items-center space-x-3">
+                          <Badge className="bg-teal-600 text-white">{primaryDentist?.experience}+ years experience</Badge>
+                          <div className="flex items-center space-x-1">
+                            <div className="flex text-yellow-400">
+                              {[...Array(5)].map((_, i) => (
+                                <i key={i} className="fas fa-star text-sm"></i>
+                              ))}
+                            </div>
+                            <span className="text-sm font-medium text-gray-700">4.9 (127 reviews)</span>
+                          </div>
                         </div>
-                        <span className="text-sm text-gray-500">2 days ago</span>
                       </div>
-                      <p className="text-sm text-gray-700">"Excellent emergency care! Dr. {primaryDentist?.name} was very gentle and professional during my urgent visit."</p>
                     </div>
-                    <div className="bg-gray-50 rounded-lg p-3">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <div className="flex text-yellow-400">
-                          <i className="fas fa-star"></i>
-                          <i className="fas fa-star"></i>
-                          <i className="fas fa-star"></i>
-                          <i className="fas fa-star"></i>
-                          <i className="fas fa-star"></i>
+                    
+                    <div className="space-y-4">
+                      <div className="bg-teal-50 rounded-lg p-4">
+                        <h3 className="font-semibold text-teal-800 mb-2 flex items-center">
+                          <i className="fas fa-user-md mr-2"></i>
+                          About Dr. {primaryDentist?.name}
+                        </h3>
+                        <p className="text-gray-700 leading-relaxed">{primaryDentist?.bio}</p>
+                      </div>
+                      
+                      <div className="bg-blue-50 rounded-lg p-4">
+                        <h3 className="font-semibold text-blue-800 mb-2 flex items-center">
+                          <i className="fas fa-graduation-cap mr-2"></i>
+                          Qualifications
+                        </h3>
+                        <p className="text-gray-700">{primaryDentist?.qualifications}</p>
+                      </div>
+                      
+                      <div className="bg-green-50 rounded-lg p-4">
+                        <h3 className="font-semibold text-green-800 mb-2 flex items-center">
+                          <i className="fas fa-language mr-2"></i>
+                          Languages
+                        </h3>
+                        <div className="flex flex-wrap gap-2">
+                          {primaryDentist?.languages && JSON.parse(primaryDentist.languages).map((lang: string) => (
+                            <Badge key={lang} variant="outline" className="border-green-300 text-green-700">{lang}</Badge>
+                          ))}
                         </div>
-                        <span className="text-sm text-gray-500">1 week ago</span>
                       </div>
-                      <p className="text-sm text-gray-700">"Great experience! The practice was very accommodating for my emergency appointment."</p>
                     </div>
-                  </div>
-                </div>
-              </div>
+                  </Card>
+                  
+                  {/* Recent Reviews */}
+                  <Card className="p-6 bg-white border-teal-200 shadow-md">
+                    <h3 className="font-bold text-gray-900 mb-4 flex items-center">
+                      <i className="fas fa-star text-yellow-400 mr-2"></i>
+                      Recent Patient Reviews
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg p-4 border-l-4 border-yellow-400">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <div className="flex text-yellow-400">
+                            {[...Array(5)].map((_, i) => (
+                              <i key={i} className="fas fa-star text-sm"></i>
+                            ))}
+                          </div>
+                          <span className="text-sm text-gray-600 font-medium">Sarah M. • 2 days ago</span>
+                        </div>
+                        <p className="text-gray-700 font-medium">"Dr. {primaryDentist?.name} was incredible during my emergency visit. Professional, gentle, and really put me at ease during a stressful situation."</p>
+                      </div>
+                      <div className="bg-gradient-to-r from-blue-50 to-teal-50 rounded-lg p-4 border-l-4 border-blue-400">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <div className="flex text-yellow-400">
+                            {[...Array(5)].map((_, i) => (
+                              <i key={i} className="fas fa-star text-sm"></i>
+                            ))}
+                          </div>
+                          <span className="text-sm text-gray-600 font-medium">James T. • 1 week ago</span>
+                        </div>
+                        <p className="text-gray-700 font-medium">"Outstanding emergency care! The whole team was efficient and caring. Highly recommend for urgent dental needs."</p>
+                      </div>
+                    </div>
+                  </Card>
+                </TabsContent>
+                
+                <TabsContent value="medical" className="space-y-4">
+                  <Card className="p-6 bg-white border-teal-200 shadow-md">
+                    <h3 className="font-bold text-gray-900 mb-4 flex items-center">
+                      <i className="fas fa-clipboard-list text-teal-600 mr-2"></i>
+                      Medical History Form
+                    </h3>
+                    <p className="text-gray-600 mb-6">Please fill out this information to help us provide the best care for your emergency appointment.</p>
+                    
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="emergencyContact">Emergency Contact</Label>
+                          <Input
+                            id="emergencyContact"
+                            placeholder="Full name"
+                            value={medicalHistory.emergencyContact}
+                            onChange={(e) => setMedicalHistory({...medicalHistory, emergencyContact: e.target.value})}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="emergencyPhone">Emergency Phone</Label>
+                          <Input
+                            id="emergencyPhone"
+                            placeholder="Phone number"
+                            value={medicalHistory.emergencyPhone}
+                            onChange={(e) => setMedicalHistory({...medicalHistory, emergencyPhone: e.target.value})}
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="medications">Current Medications</Label>
+                        <Textarea
+                          id="medications"
+                          placeholder="List all medications you're currently taking, including dosage..."
+                          value={medicalHistory.medications}
+                          onChange={(e) => setMedicalHistory({...medicalHistory, medications: e.target.value})}
+                          rows={3}
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="allergies">Allergies</Label>
+                        <Textarea
+                          id="allergies"
+                          placeholder="List any known allergies to medications, materials, or foods..."
+                          value={medicalHistory.allergies}
+                          onChange={(e) => setMedicalHistory({...medicalHistory, allergies: e.target.value})}
+                          rows={3}
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="conditions">Medical Conditions</Label>
+                        <Textarea
+                          id="conditions"
+                          placeholder="List any chronic conditions, heart problems, diabetes, etc..."
+                          value={medicalHistory.medicalConditions}
+                          onChange={(e) => setMedicalHistory({...medicalHistory, medicalConditions: e.target.value})}
+                          rows={3}
+                        />
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="insurance">Insurance Provider</Label>
+                          <Input
+                            id="insurance"
+                            placeholder="Insurance company name"
+                            value={medicalHistory.insuranceProvider}
+                            onChange={(e) => setMedicalHistory({...medicalHistory, insuranceProvider: e.target.value})}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="insuranceNumber">Insurance Number</Label>
+                          <Input
+                            id="insuranceNumber"
+                            placeholder="Policy number"
+                            value={medicalHistory.insuranceNumber}
+                            onChange={(e) => setMedicalHistory({...medicalHistory, insuranceNumber: e.target.value})}
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="notes">Additional Notes</Label>
+                        <Textarea
+                          id="notes"
+                          placeholder="Any other information you'd like the dentist to know..."
+                          value={medicalHistory.notes}
+                          onChange={(e) => setMedicalHistory({...medicalHistory, notes: e.target.value})}
+                          rows={3}
+                        />
+                      </div>
+                      
+                      <Button 
+                        onClick={saveMedicalHistory}
+                        className="w-full bg-teal-600 hover:bg-teal-700 text-white"
+                      >
+                        <i className="fas fa-save mr-2"></i>
+                        Save Medical History
+                      </Button>
+                    </div>
+                  </Card>
+                </TabsContent>
+                
+                <TabsContent value="contact" className="space-y-4">
+                  <Card className="p-6 bg-white border-teal-200 shadow-md">
+                    <h3 className="font-bold text-gray-900 mb-4 flex items-center">
+                      <i className="fas fa-phone text-teal-600 mr-2"></i>
+                      Contact & Navigation
+                    </h3>
+                    
+                    <div className="space-y-4">
+                      <div className="bg-teal-50 rounded-lg p-4">
+                        <h4 className="font-semibold text-teal-800 mb-2">Practice Information</h4>
+                        <p className="text-gray-700 mb-2"><strong>{practice.name}</strong></p>
+                        <p className="text-gray-600 mb-2">{practice.address}</p>
+                        <p className="text-gray-600">Phone: {practice.phone}</p>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-3">
+                        <Button 
+                          onClick={callPractice}
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                        >
+                          <i className="fas fa-phone mr-2"></i>
+                          Call Practice
+                        </Button>
+                        <Button 
+                          onClick={openInGoogleMaps}
+                          className="bg-blue-600 hover:bg-blue-700 text-white"
+                        >
+                          <i className="fas fa-map-marked-alt mr-2"></i>
+                          Google Maps
+                        </Button>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-3">
+                        <Button 
+                          onClick={shareLocation}
+                          variant="outline"
+                          className="border-teal-300 text-teal-700 hover:bg-teal-50"
+                        >
+                          <i className="fas fa-share-alt mr-2"></i>
+                          Share Location
+                        </Button>
+                        <Button 
+                          onClick={() => {
+                            navigator.clipboard.writeText(practice.address);
+                            toast({
+                              title: "Address Copied",
+                              description: "Practice address copied to clipboard.",
+                            });
+                          }}
+                          variant="outline"
+                          className="border-teal-300 text-teal-700 hover:bg-teal-50"
+                        >
+                          <i className="fas fa-copy mr-2"></i>
+                          Copy Address
+                        </Button>
+                      </div>
+                      
+                      <div className="bg-orange-50 rounded-lg p-4 border-l-4 border-orange-400">
+                        <h4 className="font-semibold text-orange-800 mb-2 flex items-center">
+                          <i className="fas fa-exclamation-triangle mr-2"></i>
+                          Emergency Instructions
+                        </h4>
+                        <ul className="text-gray-700 space-y-1 text-sm">
+                          <li>• Arrive 15 minutes early for urgent appointments</li>
+                          <li>• Bring a valid ID and insurance card</li>
+                          <li>• If pain worsens, call immediately</li>
+                          <li>• Follow any pre-appointment instructions given</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </Card>
+                </TabsContent>
+              </Tabs>
             </SheetContent>
           </Sheet>
 
-          {/* Action Buttons */}
-          <div className="flex space-x-3">
+          {/* Enhanced Action Buttons */}
+          <div className="grid grid-cols-3 gap-3">
             <Button 
-              variant="outline" 
-              className="flex-1"
-              onClick={() => window.open(`tel:${practice.phone}`, '_self')}
+              onClick={callPractice}
+              className="bg-green-600 hover:bg-green-700 text-white shadow-lg"
             >
               <i className="fas fa-phone mr-2"></i>
-              Call Practice
+              Call
             </Button>
             <Button 
-              className="flex-1 bg-red-600 hover:bg-red-700"
+              onClick={openInGoogleMaps}
+              className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
+            >
+              <i className="fas fa-directions mr-2"></i>
+              Navigate
+            </Button>
+            <Button 
               onClick={onBookAppointment}
+              className="bg-red-600 hover:bg-red-700 text-white shadow-lg"
             >
               <i className="fas fa-calendar-check mr-2"></i>
               I'm Here
