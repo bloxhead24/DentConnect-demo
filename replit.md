@@ -118,6 +118,14 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+✓ **Search Mode Selection Page** (July 10, 2025)
+→ Created dedicated search mode selection page before map opens
+→ Three search options: Open Search (fastest), My Practice Search (familiar environment), My Dentist Search (personal continuity)
+→ Professional card-based interface with feature comparisons and recommendations
+→ Integrated into 4-step onboarding flow: Treatment → Preferences → Search Mode → Map
+→ Smart recommendations based on treatment urgency (emergency = Open Search, routine = My Dentist)
+→ Search mode indicator displayed on map page to show active selection
+
 ✓ **Professional Directions Page with Enhanced Dentist Profiles** (July 09, 2025)
 → Created comprehensive directions page with real OpenStreetMap routing
 → Added animated destination markers with bouncing effects and user location pulsing

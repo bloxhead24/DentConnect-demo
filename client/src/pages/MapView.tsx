@@ -18,10 +18,11 @@ import "leaflet/dist/leaflet.css";
 interface MapViewProps {
   selectedTreatment: TreatmentType | null;
   selectedAccessibility: AccessibilityNeed[];
+  selectedSearchMode?: "open" | "practice" | "mydentist";
   onBack: () => void;
 }
 
-export default function MapView({ selectedTreatment, selectedAccessibility, onBack }: MapViewProps) {
+export default function MapView({ selectedTreatment, selectedAccessibility, selectedSearchMode = "open", onBack }: MapViewProps) {
   const [selectedPractice, setSelectedPractice] = useState<Practice | null>(null);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const [showPracticeSheet, setShowPracticeSheet] = useState(false);
@@ -35,6 +36,7 @@ export default function MapView({ selectedTreatment, selectedAccessibility, onBa
     anxietyLevel?: string;
     accessibilityNeeds?: string[];
   }>({});
+
   const [showUrgentLoading, setShowUrgentLoading] = useState(false);
   const [showDirections, setShowDirections] = useState(false);
   const [urgentPractice, setUrgentPractice] = useState<Practice | null>(null);
@@ -198,6 +200,8 @@ export default function MapView({ selectedTreatment, selectedAccessibility, onBa
 
 
 
+
+
   return (
     <div className="onboarding-step active">
       {/* Enhanced Search Bar */}
@@ -205,6 +209,7 @@ export default function MapView({ selectedTreatment, selectedAccessibility, onBa
         onLocationChange={handleLocationChange}
         onFilterToggle={handleFilterToggle}
         onQuestionnaireOpen={() => setShowQuestionnaire(true)}
+        searchMode={selectedSearchMode}
         searchFilters={searchFilters}
       />
 

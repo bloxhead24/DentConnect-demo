@@ -5,14 +5,16 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import TreatmentSelection from "./TreatmentSelection";
 import AccessibilityForm from "./AccessibilityForm";
+import SearchModeSelection from "./SearchModeSelection";
 import MapView from "./MapView";
 import DentConnectLogo from "@/components/DentConnectLogo";
 import { Stethoscope, Users, MapPin, Clock, Shield, Star } from "lucide-react";
 
 export default function Home() {
-  const [currentStep, setCurrentStep] = useState<"treatment" | "accessibility" | "map">("treatment");
+  const [currentStep, setCurrentStep] = useState<"treatment" | "accessibility" | "searchmode" | "map">("treatment");
   const [selectedTreatment, setSelectedTreatment] = useState<TreatmentType | null>(null);
   const [selectedAccessibility, setSelectedAccessibility] = useState<AccessibilityNeed[]>([]);
+  const [selectedSearchMode, setSelectedSearchMode] = useState<"open" | "practice" | "mydentist" | null>(null);
 
   const handleTreatmentSelect = (treatment: TreatmentType) => {
     setSelectedTreatment(treatment);
@@ -21,6 +23,11 @@ export default function Home() {
 
   const handleAccessibilityComplete = (needs: AccessibilityNeed[]) => {
     setSelectedAccessibility(needs);
+    setCurrentStep("searchmode");
+  };
+
+  const handleSearchModeSelect = (mode: "open" | "practice" | "mydentist") => {
+    setSelectedSearchMode(mode);
     setCurrentStep("map");
   };
 
@@ -28,8 +35,10 @@ export default function Home() {
     if (currentStep === "accessibility") {
       setCurrentStep("treatment");
       setSelectedTreatment(null);
-    } else if (currentStep === "map") {
+    } else if (currentStep === "searchmode") {
       setCurrentStep("accessibility");
+    } else if (currentStep === "map") {
+      setCurrentStep("searchmode");
     }
   };
 
@@ -109,6 +118,10 @@ export default function Home() {
               <div className={`w-2 h-2 rounded-full ${currentStep === "accessibility" ? "bg-primary" : "bg-gray-300"}`}></div>
               <span>Preferences</span>
             </div>
+            <div className={`flex items-center space-x-1 ${currentStep === "searchmode" ? "text-primary font-medium" : ""}`}>
+              <div className={`w-2 h-2 rounded-full ${currentStep === "searchmode" ? "bg-primary" : "bg-gray-300"}`}></div>
+              <span>Search Mode</span>
+            </div>
             <div className={`flex items-center space-x-1 ${currentStep === "map" ? "text-primary font-medium" : ""}`}>
               <div className={`w-2 h-2 rounded-full ${currentStep === "map" ? "bg-primary" : "bg-gray-300"}`}></div>
               <span>Book</span>
@@ -134,10 +147,20 @@ export default function Home() {
           />
         )}
         
+        {currentStep === "searchmode" && (
+          <SearchModeSelection 
+            selectedTreatment={selectedTreatment}
+            selectedAccessibility={selectedAccessibility}
+            onSearchModeSelect={handleSearchModeSelect}
+            onBack={handleBack}
+          />
+        )}
+        
         {currentStep === "map" && (
           <MapView 
             selectedTreatment={selectedTreatment}
             selectedAccessibility={selectedAccessibility}
+            selectedSearchMode={selectedSearchMode}
             onBack={handleBack}
           />
         )}

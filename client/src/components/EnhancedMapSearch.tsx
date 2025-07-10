@@ -5,10 +5,13 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
+type SearchMode = "open" | "practice" | "mydentist";
+
 interface EnhancedMapSearchProps {
   onLocationChange: (location: string) => void;
   onFilterToggle: () => void;
   onQuestionnaireOpen: () => void;
+  searchMode?: "open" | "practice" | "mydentist";
   searchFilters?: {
     urgency?: string;
     anxietyLevel?: string;
@@ -20,6 +23,7 @@ export function EnhancedMapSearch({
   onLocationChange, 
   onFilterToggle, 
   onQuestionnaireOpen,
+  searchMode = "open",
   searchFilters 
 }: EnhancedMapSearchProps) {
   const [location, setLocation] = useState("Newcastle upon Tyne");
@@ -58,8 +62,48 @@ export function EnhancedMapSearch({
     }, 1000);
   };
 
+  const searchModeConfig = {
+    open: {
+      title: "Open Search",
+      description: "Any dentist, quickest time",
+      icon: "fas fa-bolt",
+      color: "text-orange-600 bg-orange-50 border-orange-200"
+    },
+    practice: {
+      title: "My Practice Search", 
+      description: "Any dentist within your practice",
+      icon: "fas fa-building",
+      color: "text-blue-600 bg-blue-50 border-blue-200"
+    },
+    mydentist: {
+      title: "My Dentist Search",
+      description: "Your own dentist only", 
+      icon: "fas fa-user-md",
+      color: "text-teal-600 bg-teal-50 border-teal-200"
+    }
+  };
+
   return (
     <div className="absolute top-4 left-4 right-4 z-40 space-y-3">
+      {/* Search Mode Indicator */}
+      <Card className="bg-white/95 backdrop-blur-sm shadow-gentle">
+        <div className="p-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <i className={cn(searchModeConfig[searchMode].icon, "text-teal-600")}></i>
+              <div>
+                <p className="text-sm font-medium text-gray-900">{searchModeConfig[searchMode].title}</p>
+                <p className="text-xs text-gray-600">{searchModeConfig[searchMode].description}</p>
+              </div>
+            </div>
+            <Badge className={cn("text-xs", searchModeConfig[searchMode].color)}>
+              <i className={cn(searchModeConfig[searchMode].icon, "mr-1")}></i>
+              Active
+            </Badge>
+          </div>
+        </div>
+      </Card>
+
       {/* Main Search Bar */}
       <Card className="bg-white/95 backdrop-blur-sm shadow-gentle">
         <div className="p-4">
