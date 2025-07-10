@@ -116,16 +116,12 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
                 
                 <div className="space-y-2 border-t pt-3">
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold">Appointment Cost:</span>
-                    <span className="text-2xl font-bold text-primary">£{appointment.price}</span>
+                    <span className="font-semibold">Appointment Booking Fee:</span>
+                    <span className="text-2xl font-bold text-primary">£5</span>
                   </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Service Fee (after appointment):</span>
-                    <span className="font-medium">£5</span>
-                  </div>
-                  <div className="flex items-center justify-between border-t pt-2 font-bold">
-                    <span>Total (excl. service fee):</span>
-                    <span className="text-xl text-primary">£{appointment.price}</span>
+                  <div className="text-sm text-gray-600 mt-2">
+                    <p><strong>Treatment costs:</strong> Assessed and quoted during your appointment</p>
+                    <p>Final pricing depends on your specific needs and chosen treatments</p>
                   </div>
                 </div>
               </CardContent>

@@ -71,16 +71,17 @@ export default function Home() {
     if (currentStep === "accessibility") {
       setCurrentStep("treatment");
       setSelectedTreatment(null);
-    } else if (currentStep === "budget") {
-      setCurrentStep("accessibility");
     } else if (currentStep === "searchmode") {
-      setCurrentStep("budget");
+      setCurrentStep("accessibility");
+    } else if (currentStep === "budget") {
+      // Budget only appears after selecting "open" search mode
+      setCurrentStep("searchmode");
     } else if (currentStep === "practiceConnect") {
       setCurrentStep("searchmode");
     } else if (currentStep === "authenticatedDiary") {
       setCurrentStep("practiceConnect");
     } else if (currentStep === "openSearch") {
-      setCurrentStep("searchmode");
+      setCurrentStep("budget");
     } else if (currentStep === "map") {
       // If coming from practice connect, go back to it, otherwise to search mode
       if (selectedSearchMode === "practice" || selectedSearchMode === "mydentist") {
@@ -167,22 +168,26 @@ export default function Home() {
               <div className={`w-2 h-2 rounded-full ${currentStep === "accessibility" ? "bg-primary" : "bg-gray-300"}`}></div>
               <span>Preferences</span>
             </div>
-            <div className={`flex items-center space-x-1 ${currentStep === "budget" ? "text-primary font-medium" : ""}`}>
-              <div className={`w-2 h-2 rounded-full ${currentStep === "budget" ? "bg-primary" : "bg-gray-300"}`}></div>
-              <span>Budget</span>
-            </div>
             <div className={`flex items-center space-x-1 ${currentStep === "searchmode" ? "text-primary font-medium" : ""}`}>
               <div className={`w-2 h-2 rounded-full ${currentStep === "searchmode" ? "bg-primary" : "bg-gray-300"}`}></div>
               <span>Search</span>
             </div>
+            {/* Only show budget step if open search mode is selected */}
+            {selectedSearchMode === "open" && (
+              <div className={`flex items-center space-x-1 ${currentStep === "budget" ? "text-primary font-medium" : ""}`}>
+                <div className={`w-2 h-2 rounded-full ${currentStep === "budget" ? "bg-primary" : "bg-gray-300"}`}></div>
+                <span>Budget</span>
+              </div>
+            )}
+            {/* Show connect step for practice/mydentist modes */}
             {(selectedSearchMode === "practice" || selectedSearchMode === "mydentist") && (
               <div className={`flex items-center space-x-1 ${currentStep === "practiceConnect" ? "text-primary font-medium" : ""}`}>
                 <div className={`w-2 h-2 rounded-full ${currentStep === "practiceConnect" ? "bg-primary" : "bg-gray-300"}`}></div>
                 <span>Connect</span>
               </div>
             )}
-            <div className={`flex items-center space-x-1 ${currentStep === "map" ? "text-primary font-medium" : ""}`}>
-              <div className={`w-2 h-2 rounded-full ${currentStep === "map" ? "bg-primary" : "bg-gray-300"}`}></div>
+            <div className={`flex items-center space-x-1 ${(currentStep === "map" || currentStep === "openSearch" || currentStep === "authenticatedDiary") ? "text-primary font-medium" : ""}`}>
+              <div className={`w-2 h-2 rounded-full ${(currentStep === "map" || currentStep === "openSearch" || currentStep === "authenticatedDiary") ? "bg-primary" : "bg-gray-300"}`}></div>
               <span>Book</span>
             </div>
           </div>

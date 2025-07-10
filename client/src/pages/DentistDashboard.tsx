@@ -20,6 +20,7 @@ import {
   Activity,
   Bell
 } from "lucide-react";
+import PricingManagement from "@/components/PricingManagement";
 
 interface DashboardStats {
   totalPatients: number;
@@ -268,6 +269,7 @@ export default function DentistDashboard() {
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="appointments">Appointments</TabsTrigger>
             <TabsTrigger value="patients">Patients</TabsTrigger>
+            <TabsTrigger value="pricing">Pricing</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="schedule">Schedule</TabsTrigger>
           </TabsList>
@@ -399,6 +401,10 @@ export default function DentistDashboard() {
                 <p className="text-gray-600">Appointment management interface would go here...</p>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="pricing">
+            <PricingManagement />
           </TabsContent>
 
           <TabsContent value="patients">

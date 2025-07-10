@@ -118,6 +118,14 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+✓ **Simplified Pricing Model with Practice Dashboard** (July 10, 2025)
+→ Removed all specific treatment pricing and replaced with simple £5 appointment booking fee
+→ Treatment costs now assessed by dentist during appointment based on individual needs
+→ Added comprehensive practice pricing management dashboard with treatment price range guidance
+→ Updated budget selection to focus on practice filtering rather than specific cost estimates
+→ Created PricingManagement component allowing practices to submit price ranges for patient guidance
+→ Enhanced booking flow to clearly show £5 booking fee with treatment costs determined during visit
+
 ✓ **Enhanced Open Search with AI and Interactive Map Options** (July 10, 2025)
 → Replaced open search popup with dedicated OpenSearchView page following consistent design patterns
 → Added AI-powered smart search with animated loading screens and step-by-step progress tracking

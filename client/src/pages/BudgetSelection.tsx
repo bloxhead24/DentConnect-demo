@@ -97,9 +97,9 @@ export default function BudgetSelection({
           </div>
           
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">What's Your Budget?</h2>
+            <h2 className="text-2xl font-bold text-gray-900">What's Your Budget Range?</h2>
             <p className="text-gray-600 mt-2">
-              Choose your preferred price range for {selectedTreatment?.name || "dental treatment"}
+              Help us show practices that match your budget preferences
             </p>
           </div>
 
@@ -212,17 +212,17 @@ export default function BudgetSelection({
           ))}
         </div>
 
-        {/* Pricing Disclaimer */}
-        <Card className="bg-amber-50 border-amber-200">
+        {/* Appointment Fee Information */}
+        <Card className="bg-green-50 border-green-200">
           <CardContent className="p-4">
             <div className="flex items-start space-x-3">
-              <i className="fas fa-exclamation-triangle text-amber-600 mt-0.5"></i>
+              <i className="fas fa-calendar-check text-green-600 mt-0.5"></i>
               <div className="space-y-2">
-                <h4 className="font-semibold text-amber-900">Important Pricing Notice</h4>
-                <div className="space-y-1 text-sm text-amber-800">
-                  <p><strong>Prices shown are estimates only</strong> and will be confirmed at your practice after proper diagnosis.</p>
-                  <p>Your dental issue may be more complex than it appears and require additional treatments.</p>
-                  <p>Final costs depend on the exact nature of your condition, which can only be determined during examination.</p>
+                <h4 className="font-semibold text-green-900">Simple Appointment Booking</h4>
+                <div className="space-y-1 text-sm text-green-800">
+                  <p><strong>Appointment Booking Fee: £5</strong></p>
+                  <p>Treatment costs are assessed by your dentist during the appointment.</p>
+                  <p>Each practice provides guidance on typical treatment ranges for planning.</p>
                 </div>
               </div>
             </div>
@@ -235,12 +235,12 @@ export default function BudgetSelection({
             <div className="flex items-start space-x-3">
               <i className="fas fa-info-circle text-blue-600 mt-0.5"></i>
               <div className="space-y-2">
-                <h4 className="font-semibold text-blue-900">Budget Guidance</h4>
+                <h4 className="font-semibold text-blue-900">Budget Filtering</h4>
                 <div className="space-y-1 text-sm text-blue-800">
-                  <p>• This helps us show practices within your preferred range</p>
-                  <p>• Many practices offer payment plans and financing</p>
-                  <p>• You can compare options before making decisions</p>
-                  <p>• Budget selection can be adjusted at any time</p>
+                  <p>• Matches you with practices in your preferred price range</p>
+                  <p>• All practices provide their own transparent pricing</p>
+                  <p>• Many offer payment plans and financing options</p>
+                  <p>• You can adjust your budget selection anytime</p>
                 </div>
               </div>
             </div>
