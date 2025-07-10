@@ -29,7 +29,13 @@ export function DiaryView({ practice, dentist, searchMode, isOpen, onClose, onBo
 
   // Filter appointments based on search mode and selected date
   const filteredAppointments = appointments.filter(appointment => {
-    const appointmentDate = new Date(appointment.dateTime);
+    // Handle both dateTime and appointmentDate properties
+    const appointmentDateStr = appointment.dateTime || appointment.appointmentDate;
+    if (!appointmentDateStr) return false;
+    
+    const appointmentDate = new Date(appointmentDateStr);
+    if (isNaN(appointmentDate.getTime())) return false;
+    
     const isSameDate = appointmentDate.toDateString() === selectedDate.toDateString();
     
     if (searchMode === "mydentist" && dentist) {
@@ -53,7 +59,12 @@ export function DiaryView({ practice, dentist, searchMode, isOpen, onClose, onBo
 
   const getAppointmentForSlot = (date: Date, timeSlot: string) => {
     return appointments.find(apt => {
-      const aptDate = new Date(apt.dateTime);
+      const appointmentDateStr = apt.dateTime || apt.appointmentDate;
+      if (!appointmentDateStr) return false;
+      
+      const aptDate = new Date(appointmentDateStr);
+      if (isNaN(aptDate.getTime())) return false;
+      
       const aptTime = format(aptDate, 'HH:mm');
       return aptDate.toDateString() === date.toDateString() && aptTime === timeSlot;
     });

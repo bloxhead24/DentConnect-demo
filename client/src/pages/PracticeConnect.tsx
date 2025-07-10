@@ -230,9 +230,10 @@ export default function PracticeConnect({
                   <li>• Your practice tag was provided during registration</li>
                   <li>• Contact reception if you've lost your tag</li>
                   <li>• This ensures secure access to your appointments</li>
-                  {searchMode === "mydentist" && (
-                    <li>• Links you directly to your personal dentist</li>
-                  )}
+                  <li>• {searchMode === "mydentist" 
+                    ? "Same tag shows only your personal dentist's appointments"
+                    : "Same tag shows all dentists available at the practice"
+                  }</li>
                 </ul>
                 <p className={cn(
                   "mt-2 text-xs",

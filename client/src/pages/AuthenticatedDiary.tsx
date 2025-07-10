@@ -31,21 +31,30 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment }: Authen
 
   useEffect(() => {
     if (practices.length > 0 && practiceTag) {
-      // Map practice tags to actual practices (in real app this would be based on the tag)
+      // Map practice tags to actual practices - same tag works for both modes
       const practice = practices.find(p => 
         practiceTag === "DEMO" ? p.id === 1 : 
         practiceTag === "NDC2024" ? p.id === 1 :
         practiceTag === "SMILE123" ? p.id === 2 :
         practiceTag === "DENTAL456" ? p.id === 3 :
+        practiceTag === "TEST" ? p.id === 1 :
         p.id === 1
       );
       
       if (practice) {
         setSelectedPractice(practice);
         
-        // For mydentist mode, select a specific dentist
+        // For mydentist mode, the same tag identifies a specific dentist at that practice
         if (searchMode === "mydentist" && dentists.length > 0) {
-          const personalDentist = dentists.find(d => d.practiceId === practice.id);
+          // Map practice tag to specific dentist (in real app, tag would encode both practice and dentist)
+          const personalDentist = dentists.find(d => 
+            d.practiceId === practice.id && 
+            (practiceTag === "DEMO" || practiceTag === "NDC2024" ? d.id === 1 :
+             practiceTag === "SMILE123" ? d.id === 2 :
+             practiceTag === "DENTAL456" ? d.id === 3 :
+             practiceTag === "TEST" ? d.id === 1 :
+             d.id === 1)
+          );
           setSelectedDentist(personalDentist || null);
         }
       }
@@ -53,18 +62,34 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment }: Authen
   }, [practices, dentists, practiceTag, searchMode]);
 
   const getQuickestAppointment = () => {
-    // This would return the earliest available appointment
-    return {
-      id: 1,
-      practiceId: selectedPractice?.id || 1,
-      dentistId: selectedDentist?.id || 1,
-      appointmentDate: new Date().toISOString(),
-      appointmentTime: "09:00",
-      duration: 30,
-      treatmentType: "check-up",
-      isAvailable: true,
-      price: 85
-    } as Appointment;
+    // Return earliest available appointment based on search mode
+    if (searchMode === "mydentist" && selectedDentist) {
+      // For mydentist mode, return earliest appointment with the specific dentist
+      return {
+        id: 1,
+        practiceId: selectedPractice?.id || 1,
+        dentistId: selectedDentist.id,
+        appointmentDate: new Date().toISOString(),
+        appointmentTime: "09:00",
+        duration: 30,
+        treatmentType: "check-up",
+        isAvailable: true,
+        price: 85
+      } as Appointment;
+    } else {
+      // For practice mode, return earliest appointment with any dentist at the practice
+      return {
+        id: 1,
+        practiceId: selectedPractice?.id || 1,
+        dentistId: 1, // Any available dentist
+        appointmentDate: new Date().toISOString(),
+        appointmentTime: "09:00",
+        duration: 30,
+        treatmentType: "check-up",
+        isAvailable: true,
+        price: 85
+      } as Appointment;
+    }
   };
 
   const quickestAppointment = getQuickestAppointment();
@@ -132,9 +157,9 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment }: Authen
           
           <h2 className="text-2xl font-bold text-gray-900 mb-2">{selectedPractice.name}</h2>
           <p className="text-gray-600">
-            {searchMode === "mydentist" 
-              ? `Dr. ${selectedDentist?.firstName} ${selectedDentist?.lastName}` 
-              : "Practice appointments available"
+            {searchMode === "mydentist" && selectedDentist
+              ? `Connected to Dr. ${selectedDentist.firstName} ${selectedDentist.lastName}` 
+              : "All practice dentists available"
             }
           </p>
         </div>
@@ -155,7 +180,10 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment }: Authen
               <div>
                 <h3 className="text-lg font-bold">Quick Book - Next Available</h3>
                 <p className="text-sm font-normal text-gray-600">
-                  {searchMode === "mydentist" ? "With your personal dentist" : "Any dentist at this practice"}
+                  {searchMode === "mydentist" && selectedDentist
+                    ? `With Dr. ${selectedDentist.firstName} ${selectedDentist.lastName}` 
+                    : "Any available dentist at this practice"
+                  }
                 </p>
               </div>
             </CardTitle>
@@ -228,7 +256,10 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment }: Authen
           )}
         >
           <i className="fas fa-calendar-alt mr-3"></i>
-          View {searchMode === "mydentist" ? "My Dentist's" : "Practice"} Full Diary
+          {searchMode === "mydentist" && selectedDentist
+            ? `View Dr. ${selectedDentist.firstName} ${selectedDentist.lastName}'s Diary`
+            : "View All Practice Dentists' Diaries"
+          }
         </Button>
 
         {/* Practice Information */}
