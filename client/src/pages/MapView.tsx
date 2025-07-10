@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Practice, Appointment } from "@shared/schema";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { PracticePinModal } from "@/components/PracticePinModal";
 
 interface MapViewProps {
   selectedTreatment: TreatmentType | null;
@@ -40,6 +41,9 @@ export default function MapView({ selectedTreatment, selectedAccessibility, sele
   const [showUrgentLoading, setShowUrgentLoading] = useState(false);
   const [showDirections, setShowDirections] = useState(false);
   const [urgentPractice, setUrgentPractice] = useState<Practice | null>(null);
+  const [showPinModal, setShowPinModal] = useState(false);
+  const [pinPractice, setPinPractice] = useState<Practice | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -138,6 +142,19 @@ export default function MapView({ selectedTreatment, selectedAccessibility, sele
 
   const handlePracticeClick = (practice: Practice) => {
     setSelectedPractice(practice);
+    
+    // Check if authentication is needed for practice/mydentist modes
+    if ((selectedSearchMode === "practice" || selectedSearchMode === "mydentist") && !isAuthenticated) {
+      setPinPractice(practice);
+      setShowPinModal(true);
+    } else {
+      setShowPracticeSheet(true);
+    }
+  };
+
+  const handlePinSuccess = () => {
+    setIsAuthenticated(true);
+    setShowPinModal(false);
     setShowPracticeSheet(true);
   };
 
@@ -273,6 +290,18 @@ export default function MapView({ selectedTreatment, selectedAccessibility, sele
           Back
         </Button>
       </div>
+
+      {/* Practice PIN Authentication Modal */}
+      <PracticePinModal
+        practice={pinPractice}
+        isOpen={showPinModal}
+        onClose={() => {
+          setShowPinModal(false);
+          setPinPractice(null);
+        }}
+        onSuccess={handlePinSuccess}
+        searchMode={selectedSearchMode === "practice" || selectedSearchMode === "mydentist" ? selectedSearchMode : "practice"}
+      />
 
       {/* Practice Bottom Sheet */}
       <PracticeBottomSheet

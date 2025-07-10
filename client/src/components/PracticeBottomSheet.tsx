@@ -42,7 +42,11 @@ export function PracticeBottomSheet({ practice, isOpen, onClose, onBookAppointme
   // Auto-select earliest appointment for "My Practice" and "My Dentist" modes
   const shouldAutoSelect = searchMode === "practice" || searchMode === "mydentist";
   const earliestAppointment = shouldAutoSelect && filteredAppointments.length > 0 
-    ? filteredAppointments.sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime())[0]
+    ? filteredAppointments.sort((a, b) => {
+        const dateA = a.appointmentDate ? new Date(a.appointmentDate).getTime() : 0;
+        const dateB = b.appointmentDate ? new Date(b.appointmentDate).getTime() : 0;
+        return dateA - dateB;
+      })[0]
     : null;
 
   const handleQuickBook = () => {
@@ -123,7 +127,7 @@ export function PracticeBottomSheet({ practice, isOpen, onClose, onBookAppointme
           )}
           
           {/* Search Mode Specific Content */}
-          {searchMode === "practice" && earliestAppointment && (
+          {searchMode === "practice" && (
             <div className="space-y-3">
               <div className="bg-gradient-to-r from-blue-50 to-teal-50 p-4 rounded-xl border border-blue-200">
                 <div className="flex items-center justify-between mb-3">
@@ -133,47 +137,55 @@ export function PracticeBottomSheet({ practice, isOpen, onClose, onBookAppointme
                     Familiar Practice
                   </Badge>
                 </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="flex items-center space-x-2">
-                      <i className="fas fa-calendar text-blue-600"></i>
-                      <div>
-                        <div className="font-medium text-sm text-blue-900">
-                          {format(new Date(earliestAppointment.dateTime), 'MMM d, yyyy')}
-                        </div>
-                        <div className="text-xs text-blue-700">
-                          {format(new Date(earliestAppointment.dateTime), 'h:mm a')}
+                {earliestAppointment ? (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="flex items-center space-x-2">
+                        <i className="fas fa-calendar text-blue-600"></i>
+                        <div>
+                          <div className="font-medium text-sm text-blue-900">
+                            {earliestAppointment?.appointmentDate ? format(new Date(earliestAppointment.appointmentDate), 'MMM d, yyyy') : 'Date TBD'}
+                          </div>
+                          <div className="text-xs text-blue-700">
+                            {earliestAppointment?.appointmentDate ? format(new Date(earliestAppointment.appointmentDate), 'h:mm a') : 'Time TBD'}
+                          </div>
                         </div>
                       </div>
+                      {earliestAppointment?.dentistId && (
+                        <div className="flex items-center space-x-2 text-xs text-blue-700">
+                          <i className="fas fa-user-md"></i>
+                          <span>Dr. {dentists.find(d => d.id === earliestAppointment.dentistId)?.firstName} {dentists.find(d => d.id === earliestAppointment.dentistId)?.lastName}</span>
+                        </div>
+                      )}
                     </div>
-                    {earliestAppointment.dentistId && (
-                      <div className="flex items-center space-x-2 text-xs text-blue-700">
-                        <i className="fas fa-user-md"></i>
-                        <span>Dr. {dentists.find(d => d.id === earliestAppointment.dentistId)?.firstName} {dentists.find(d => d.id === earliestAppointment.dentistId)?.lastName}</span>
-                      </div>
-                    )}
+                    <Button
+                      onClick={handleQuickBook}
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      <i className="fas fa-bolt mr-2"></i>
+                      Quick Book
+                    </Button>
                   </div>
-                  <Button
-                    onClick={handleQuickBook}
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
-                  >
-                    <i className="fas fa-bolt mr-2"></i>
-                    Quick Book
-                  </Button>
-                </div>
+                ) : (
+                  <div className="text-center py-4">
+                    <i className="fas fa-calendar-times text-3xl text-blue-400 mb-2"></i>
+                    <p className="text-blue-700 font-medium">No immediate appointments available</p>
+                    <p className="text-xs text-blue-600">Browse the full practice diary below</p>
+                  </div>
+                )}
               </div>
               
-              <div className="text-center">
-                <p className="text-sm text-gray-600 mb-2">Or browse other available appointments</p>
-                <Button variant="outline" size="sm" onClick={() => setShowDiary(true)}>
+              <div className="text-center mt-4">
+                <p className="text-sm text-gray-600 mb-2">Browse all practice appointments</p>
+                <Button variant="outline" size="sm" onClick={() => setShowDiary(true)} className="border-blue-300 text-blue-700 hover:bg-blue-50">
                   <i className="fas fa-calendar-alt mr-2"></i>
-                  View All Appointments
+                  View Practice Diary
                 </Button>
               </div>
             </div>
           )}
 
-          {searchMode === "mydentist" && earliestAppointment && (
+          {searchMode === "mydentist" && (
             <div className="space-y-3">
               <div className="bg-gradient-to-r from-teal-50 to-green-50 p-4 rounded-xl border border-teal-200">
                 <div className="flex items-center justify-between mb-3">
@@ -183,41 +195,49 @@ export function PracticeBottomSheet({ practice, isOpen, onClose, onBookAppointme
                     Personal Dentist
                   </Badge>
                 </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="flex items-center space-x-2">
-                      <i className="fas fa-calendar text-teal-600"></i>
-                      <div>
-                        <div className="font-medium text-sm text-teal-900">
-                          {format(new Date(earliestAppointment.dateTime), 'MMM d, yyyy')}
-                        </div>
-                        <div className="text-xs text-teal-700">
-                          {format(new Date(earliestAppointment.dateTime), 'h:mm a')}
+                {earliestAppointment ? (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="flex items-center space-x-2">
+                        <i className="fas fa-calendar text-teal-600"></i>
+                        <div>
+                          <div className="font-medium text-sm text-teal-900">
+                            {earliestAppointment?.appointmentDate ? format(new Date(earliestAppointment.appointmentDate), 'MMM d, yyyy') : 'Date TBD'}
+                          </div>
+                          <div className="text-xs text-teal-700">
+                            {earliestAppointment?.appointmentDate ? format(new Date(earliestAppointment.appointmentDate), 'h:mm a') : 'Time TBD'}
+                          </div>
                         </div>
                       </div>
+                      {earliestAppointment?.dentistId && (
+                        <div className="flex items-center space-x-2 text-xs text-teal-700">
+                          <i className="fas fa-user-md"></i>
+                          <span>Dr. {dentists.find(d => d.id === earliestAppointment.dentistId)?.firstName} {dentists.find(d => d.id === earliestAppointment.dentistId)?.lastName}</span>
+                        </div>
+                      )}
                     </div>
-                    {earliestAppointment.dentistId && (
-                      <div className="flex items-center space-x-2 text-xs text-teal-700">
-                        <i className="fas fa-user-md"></i>
-                        <span>Dr. {dentists.find(d => d.id === earliestAppointment.dentistId)?.firstName} {dentists.find(d => d.id === earliestAppointment.dentistId)?.lastName}</span>
-                      </div>
-                    )}
+                    <Button
+                      onClick={handleQuickBook}
+                      className="bg-teal-600 hover:bg-teal-700 text-white"
+                    >
+                      <i className="fas fa-heart mr-2"></i>
+                      Book with My Dentist
+                    </Button>
                   </div>
-                  <Button
-                    onClick={handleQuickBook}
-                    className="bg-teal-600 hover:bg-teal-700 text-white"
-                  >
-                    <i className="fas fa-heart mr-2"></i>
-                    Book with My Dentist
-                  </Button>
-                </div>
+                ) : (
+                  <div className="text-center py-4">
+                    <i className="fas fa-user-md text-3xl text-teal-400 mb-2"></i>
+                    <p className="text-teal-700 font-medium">Your dentist has no immediate availability</p>
+                    <p className="text-xs text-teal-600">Check their full diary for upcoming slots</p>
+                  </div>
+                )}
               </div>
               
-              <div className="text-center">
-                <p className="text-sm text-gray-600 mb-2">Or view your dentist's full diary</p>
-                <Button variant="outline" size="sm" onClick={() => setShowDiary(true)}>
+              <div className="text-center mt-4">
+                <p className="text-sm text-gray-600 mb-2">View your dentist's complete schedule</p>
+                <Button variant="outline" size="sm" onClick={() => setShowDiary(true)} className="border-teal-300 text-teal-700 hover:bg-teal-50">
                   <i className="fas fa-calendar-week mr-2"></i>
-                  View My Dentist's Diary
+                  Open My Dentist's Diary
                 </Button>
               </div>
             </div>
