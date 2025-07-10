@@ -41,6 +41,13 @@ export function UrgentMatchingFlow({ selectedTreatment, isVisible, onMatchFound,
     return () => clearInterval(searchInterval);
   }, [isVisible]);
 
+  const getBudgetSymbols = (price: number) => {
+    if (price < 80) return "£";
+    if (price < 120) return "££";
+    if (price < 180) return "£££";
+    return "££££";
+  };
+
   const simulateMatchResult = () => {
     // Simulate finding an urgent appointment (80% success rate for demo)
     const hasMatch = Math.random() > 0.2;
@@ -191,8 +198,11 @@ export function UrgentMatchingFlow({ selectedTreatment, isVisible, onMatchFound,
                   </div>
                   
                   <div className="flex items-center justify-between border-t pt-2">
-                    <span className="font-semibold">Cost:</span>
-                    <span className="font-bold text-lg">£{matchedAppointment.price}</span>
+                    <span className="font-semibold">Cost Level:</span>
+                    <span className="font-bold text-lg text-primary">{getBudgetSymbols(matchedAppointment.price)}</span>
+                  </div>
+                  <div className="text-xs text-gray-600 text-center">
+                    £5 booking fee + treatment costs assessed during appointment
                   </div>
                 </div>
                 
