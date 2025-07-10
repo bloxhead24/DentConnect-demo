@@ -768,8 +768,8 @@ function EmergencyAISearch({
                         <div className="text-xs text-gray-600">Next Available</div>
                       </div>
                       <div className="bg-white p-3 rounded border">
-                        <div className="font-bold text-lg">£{foundMatch.appointment.price}</div>
-                        <div className="text-xs text-gray-600">Emergency Fee</div>
+                        <div className="font-bold text-lg text-primary">{getBudgetSymbols(foundMatch.appointment.price)}</div>
+                        <div className="text-xs text-gray-600">Cost Level</div>
                       </div>
                     </div>
 
@@ -936,8 +936,8 @@ function AppointmentDiaryView({
                       
                       <div className="flex items-center justify-between">
                         <div>
-                          <div className="font-bold text-lg">£{appointment.price}</div>
-                          <div className="text-xs text-gray-600">{getBudgetSymbols(appointment.price)}</div>
+                          <div className="font-bold text-lg text-primary">{getBudgetSymbols(appointment.price)}</div>
+                          <div className="text-xs text-gray-600">Cost Level</div>
                         </div>
                         <Button size="sm" className="bg-orange-600 hover:bg-orange-700">
                           Book
