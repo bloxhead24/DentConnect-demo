@@ -10,12 +10,13 @@ import MapView from "./MapView";
 import PracticeConnect from "./PracticeConnect";
 import AuthenticatedDiary from "./AuthenticatedDiary";
 import BudgetSelection from "./BudgetSelection";
+import OpenSearchView from "./OpenSearchView";
 import DentConnectLogo from "@/components/DentConnectLogo";
 import { DemoCompleteModal } from "@/components/DemoCompleteModal";
 import { Stethoscope, Users, MapPin, Clock, Shield, Star } from "lucide-react";
 
 export default function Home() {
-  const [currentStep, setCurrentStep] = useState<"treatment" | "accessibility" | "budget" | "searchmode" | "practiceConnect" | "authenticatedDiary" | "map">("treatment");
+  const [currentStep, setCurrentStep] = useState<"treatment" | "accessibility" | "budget" | "searchmode" | "practiceConnect" | "authenticatedDiary" | "map" | "openSearch">("treatment");
   const [selectedTreatment, setSelectedTreatment] = useState<TreatmentType | null>(null);
   const [selectedAccessibility, setSelectedAccessibility] = useState<AccessibilityNeed[]>([]);
   const [selectedBudget, setSelectedBudget] = useState<any>(null);
@@ -43,6 +44,8 @@ export default function Home() {
     // For practice and mydentist modes, go to practice connect first
     if (mode === "practice" || mode === "mydentist") {
       setCurrentStep("practiceConnect");
+    } else if (mode === "open") {
+      setCurrentStep("openSearch");
     } else {
       setCurrentStep("map");
     }
@@ -75,6 +78,8 @@ export default function Home() {
       setCurrentStep("searchmode");
     } else if (currentStep === "authenticatedDiary") {
       setCurrentStep("practiceConnect");
+    } else if (currentStep === "openSearch") {
+      setCurrentStep("searchmode");
     } else if (currentStep === "map") {
       // If coming from practice connect, go back to it, otherwise to search mode
       if (selectedSearchMode === "practice" || selectedSearchMode === "mydentist") {
@@ -237,6 +242,16 @@ export default function Home() {
           />
         )}
         
+        {currentStep === "openSearch" && (
+          <OpenSearchView
+            selectedTreatment={selectedTreatment}
+            selectedAccessibility={selectedAccessibility}
+            selectedBudget={selectedBudget}
+            onBack={handleBack}
+            onBookingComplete={() => setShowDemoComplete(true)}
+          />
+        )}
+
         {currentStep === "map" && (
           <MapView 
             selectedTreatment={selectedTreatment}
