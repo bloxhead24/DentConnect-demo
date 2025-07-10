@@ -3,6 +3,8 @@ import { TreatmentCard } from "@/components/TreatmentCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Video } from "lucide-react";
+import { EarlyAccessPopup } from "@/components/EarlyAccessPopup";
+import { useState } from "react";
 
 interface TreatmentSelectionProps {
   onTreatmentSelect: (treatment: TreatmentType) => void;
@@ -46,6 +48,13 @@ const treatmentTypes: TreatmentType[] = [
 ];
 
 export default function TreatmentSelection({ onTreatmentSelect, selectedTreatment, onVirtualConsultation }: TreatmentSelectionProps) {
+  const [showEarlyAccess, setShowEarlyAccess] = useState(false);
+  
+  const handleTreatmentSelect = (treatment: TreatmentType) => {
+    onTreatmentSelect(treatment);
+    // Show early access popup after treatment selection
+    setTimeout(() => setShowEarlyAccess(true), 1000);
+  };
   return (
     <div className="onboarding-step active">
       <div className="px-4 py-8 space-y-6">
@@ -71,7 +80,7 @@ export default function TreatmentSelection({ onTreatmentSelect, selectedTreatmen
                 <TreatmentCard
                   treatment={treatment}
                   selected={selectedTreatment?.id === treatment.id}
-                  onSelect={onTreatmentSelect}
+                  onSelect={handleTreatmentSelect}
                 />
               </div>
             ))}
@@ -124,6 +133,15 @@ export default function TreatmentSelection({ onTreatmentSelect, selectedTreatmen
           </Button>
         </div>
       </div>
+      
+      {/* Early Access Popup */}
+      <EarlyAccessPopup 
+        isOpen={showEarlyAccess}
+        onClose={() => setShowEarlyAccess(false)}
+        trigger="questionnaire"
+        title="Treatment Selected! 🦷"
+        description="Perfect! Your treatment needs are noted. Get early access to book with matched dentists."
+      />
     </div>
   );
 }

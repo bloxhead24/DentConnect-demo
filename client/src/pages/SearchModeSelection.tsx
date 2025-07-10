@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { TreatmentType, AccessibilityNeed } from "@/lib/types";
+import { EarlyAccessPopup } from "@/components/EarlyAccessPopup";
 
 type SearchMode = "open" | "practice" | "mydentist";
 
@@ -23,6 +24,7 @@ export default function SearchModeSelection({
   onBack 
 }: SearchModeSelectionProps) {
   const [selectedMode, setSelectedMode] = useState<SearchMode | null>(null);
+  const [showEarlyAccess, setShowEarlyAccess] = useState(false);
 
   const searchModeOptions = [
     {
@@ -85,6 +87,8 @@ export default function SearchModeSelection({
   const handleContinue = () => {
     if (selectedMode) {
       onSearchModeSelect(selectedMode);
+      // Show early access popup after mode selection
+      setTimeout(() => setShowEarlyAccess(true), 1000);
     }
   };
 
@@ -234,6 +238,15 @@ export default function SearchModeSelection({
           while My Practice or My Dentist are better for routine appointments.
         </p>
       </div>
+      
+      {/* Early Access Popup */}
+      <EarlyAccessPopup 
+        isOpen={showEarlyAccess}
+        onClose={() => setShowEarlyAccess(false)}
+        trigger="mode-selected"
+        title="Mode Selected! 🎯"
+        description="You've chosen your search approach. Experience the full platform with early access."
+      />
     </div>
   );
 }

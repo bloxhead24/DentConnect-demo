@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { EarlyAccessPopup } from "@/components/EarlyAccessPopup";
 
 interface SearchQuestionnaireProps {
   isOpen: boolean;
@@ -26,6 +27,7 @@ export interface QuestionnaireData {
 
 export function SearchQuestionnaire({ isOpen, onClose, onComplete }: SearchQuestionnaireProps) {
   const [currentStep, setCurrentStep] = useState(1);
+  const [showEarlyAccess, setShowEarlyAccess] = useState(false);
   const [formData, setFormData] = useState<QuestionnaireData>({
     medicalConditions: [],
     medications: "",
@@ -111,6 +113,8 @@ export function SearchQuestionnaire({ isOpen, onClose, onComplete }: SearchQuest
     } else {
       onComplete(formData);
       onClose();
+      // Show early access popup after questionnaire completion
+      setTimeout(() => setShowEarlyAccess(true), 800);
     }
   };
 
@@ -375,6 +379,15 @@ export function SearchQuestionnaire({ isOpen, onClose, onComplete }: SearchQuest
           </div>
         </div>
       </SheetContent>
+      
+      {/* Early Access Popup */}
+      <EarlyAccessPopup 
+        isOpen={showEarlyAccess}
+        onClose={() => setShowEarlyAccess(false)}
+        trigger="questionnaire"
+        title="Great Progress! 🎯"
+        description="You've completed your preferences. See how DentConnect makes dental care accessible."
+      />
     </Sheet>
   );
 }

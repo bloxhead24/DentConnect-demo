@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { TreatmentType, AccessibilityNeed } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { EarlyAccessPopup } from "@/components/EarlyAccessPopup";
 
 interface PracticeConnectProps {
   selectedTreatment: TreatmentType | null;
@@ -25,6 +26,7 @@ export default function PracticeConnect({
   const [practiceTag, setPracticeTag] = useState("");
   const [error, setError] = useState("");
   const [isConnecting, setIsConnecting] = useState(false);
+  const [showEarlyAccess, setShowEarlyAccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,6 +42,8 @@ export default function PracticeConnect({
         sessionStorage.setItem('authenticatedPracticeTag', practiceTag.toUpperCase());
         sessionStorage.setItem('searchMode', searchMode);
         onConnect(practiceTag);
+        // Show early access popup after successful connection
+        setTimeout(() => setShowEarlyAccess(true), 1500);
       } else {
         setError("Practice tag not recognized. Please check with your practice or try 'DEMO' for the demo.");
       }
@@ -52,6 +56,8 @@ export default function PracticeConnect({
     sessionStorage.setItem('authenticatedPracticeTag', 'DEMO');
     sessionStorage.setItem('searchMode', searchMode);
     onConnect("DEMO");
+    // Show early access popup after demo connection
+    setTimeout(() => setShowEarlyAccess(true), 1500);
   };
 
   return (
@@ -246,6 +252,15 @@ export default function PracticeConnect({
           </CardContent>
         </Card>
       </div>
+      
+      {/* Early Access Popup */}
+      <EarlyAccessPopup 
+        isOpen={showEarlyAccess}
+        onClose={() => setShowEarlyAccess(false)}
+        trigger="practice-connected"
+        title="Practice Connected! 🏥"
+        description="You're connected to your practice. Get early access to book real appointments."
+      />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { AccessibilityNeed } from "@/lib/types";
 import { AccessibilityOption } from "@/components/AccessibilityOption";
 import { Button } from "@/components/ui/button";
+import { EarlyAccessPopup } from "@/components/EarlyAccessPopup";
 
 interface AccessibilityFormProps {
   onComplete: (needs: AccessibilityNeed[]) => void;
@@ -38,6 +39,7 @@ const accessibilityNeeds: AccessibilityNeed[] = [
 
 export default function AccessibilityForm({ onComplete, onBack, selectedNeeds }: AccessibilityFormProps) {
   const [localSelectedNeeds, setLocalSelectedNeeds] = useState<AccessibilityNeed[]>(selectedNeeds);
+  const [showEarlyAccess, setShowEarlyAccess] = useState(false);
 
   const handleToggleNeed = (need: AccessibilityNeed) => {
     setLocalSelectedNeeds(prev => {
@@ -52,6 +54,8 @@ export default function AccessibilityForm({ onComplete, onBack, selectedNeeds }:
 
   const handleContinue = () => {
     onComplete(localSelectedNeeds);
+    // Show early access popup after accessibility preferences completion
+    setTimeout(() => setShowEarlyAccess(true), 1000);
   };
 
   return (
@@ -98,6 +102,15 @@ export default function AccessibilityForm({ onComplete, onBack, selectedNeeds }:
           </Button>
         </div>
       </div>
+      
+      {/* Early Access Popup */}
+      <EarlyAccessPopup 
+        isOpen={showEarlyAccess}
+        onClose={() => setShowEarlyAccess(false)}
+        trigger="preferences-complete"
+        title="Preferences Saved! ❤️"
+        description="Your accessibility needs have been noted. Get early access for personalized dental care."
+      />
     </div>
   );
 }
