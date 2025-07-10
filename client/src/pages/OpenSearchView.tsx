@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ArrowLeft, MapPin, Clock, Star, Phone, Car, Brain, Map, Zap } from "lucide-react";
+import { ArrowLeft, MapPin, Clock, Star, Phone, Car, Brain, Map, Zap, Calendar } from "lucide-react";
 import { format, addDays, startOfWeek } from "date-fns";
 import { cn } from "@/lib/utils";
 import type { TreatmentType, AccessibilityNeed } from "@/lib/types";
@@ -33,6 +33,8 @@ export default function OpenSearchView({
   const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
   const [showAISearch, setShowAISearch] = useState(false);
   const [showMapView, setShowMapView] = useState(false);
+  const [showInteractiveMap, setShowInteractiveMap] = useState(false);
+  const [showAppointmentDiary, setShowAppointmentDiary] = useState<any>(null);
 
   // Mock data for practices with available appointments
   const mockPractices: (Practice & { availableAppointments: Appointment[]; dentists: Dentist[] })[] = [
@@ -473,12 +475,197 @@ export default function OpenSearchView({
           <MapLoadingAnimation 
             onComplete={() => {
               setShowMapView(false);
-              // Could redirect to actual map view here
+              setShowInteractiveMap(true);
             }}
             onCancel={() => setShowMapView(false)}
           />
         </DialogContent>
       </Dialog>
+
+      {/* Interactive Map Modal */}
+      <Dialog open={showInteractiveMap} onOpenChange={setShowInteractiveMap}>
+        <DialogContent className="max-w-6xl h-[80vh]">
+          <DialogHeader>
+            <DialogTitle className="text-center">Interactive Practice Map</DialogTitle>
+          </DialogHeader>
+          <InteractiveMapView 
+            selectedTreatment={selectedTreatment}
+            selectedBudget={selectedBudget}
+            selectedAccessibility={selectedAccessibility}
+            onAppointmentSelect={(practice, appointment, dentist) => {
+              setShowInteractiveMap(false);
+              handleAppointmentSelect(practice, appointment, dentist);
+            }}
+            onClose={() => setShowInteractiveMap(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Appointment Diary Modal */}
+      <Dialog open={!!showAppointmentDiary} onOpenChange={() => setShowAppointmentDiary(null)}>
+        <DialogContent className="max-w-4xl h-[80vh]">
+          <DialogHeader>
+            <DialogTitle className="text-center">
+              {showAppointmentDiary?.name} - Available Appointments
+            </DialogTitle>
+          </DialogHeader>
+          {showAppointmentDiary && (
+            <AppointmentDiaryView
+              practice={showAppointmentDiary}
+              selectedTreatment={selectedTreatment}
+              selectedBudget={selectedBudget}
+              onAppointmentSelect={(appointment, dentist) => {
+                setShowAppointmentDiary(null);
+                onAppointmentSelect(showAppointmentDiary, appointment, dentist);
+              }}
+              onClose={() => setShowAppointmentDiary(null)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+// Appointment Diary View Component
+function AppointmentDiaryView({
+  practice,
+  selectedTreatment,
+  selectedBudget,
+  onAppointmentSelect,
+  onClose
+}: {
+  practice: any;
+  selectedTreatment: TreatmentType | null;
+  selectedBudget?: any;
+  onAppointmentSelect: (appointment: Appointment, dentist: Dentist) => void;
+  onClose: () => void;
+}) {
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  // Generate appointments for the next 14 days
+  const generateAppointments = () => {
+    const appointments = [];
+    for (let i = 0; i < 14; i++) {
+      const date = addDays(new Date(), i);
+      const dayAppointments = [];
+      
+      // Generate 6-8 appointments per day
+      const timeSlots = ['09:00', '10:30', '12:00', '13:30', '15:00', '16:30', '17:30'];
+      const availableSlots = timeSlots.slice(0, Math.floor(Math.random() * 3) + 6);
+      
+      availableSlots.forEach((time, index) => {
+        if (Math.random() > 0.3) { // 70% chance slot is available
+          dayAppointments.push({
+            id: i * 10 + index,
+            practiceId: practice.id,
+            dentistId: practice.dentist.id,
+            appointmentDate: date.toISOString(),
+            appointmentTime: time,
+            duration: [30, 45, 60][Math.floor(Math.random() * 3)],
+            treatmentType: selectedTreatment?.name || "Treatment",
+            isAvailable: true,
+            price: selectedBudget?.id === "basic" ? 
+              75 + Math.floor(Math.random() * 25) : 
+              selectedBudget?.id === "standard" ? 
+              125 + Math.floor(Math.random() * 35) : 
+              selectedBudget?.id === "premium" ? 
+              185 + Math.floor(Math.random() * 45) : 
+              245 + Math.floor(Math.random() * 55),
+            dateTime: date.toISOString(),
+            userId: null
+          });
+        }
+      });
+      
+      if (dayAppointments.length > 0) {
+        appointments.push({
+          date,
+          appointments: dayAppointments
+        });
+      }
+    }
+    return appointments;
+  };
+
+  const appointmentDays = generateAppointments();
+
+  const getBudgetSymbols = (price: number) => {
+    if (price < 80) return "£";
+    if (price < 120) return "££";
+    if (price < 180) return "£££";
+    return "££££";
+  };
+
+  return (
+    <div className="h-full flex flex-col">
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 border-b">
+        <div>
+          <h3 className="font-bold">{practice.name}</h3>
+          <p className="text-sm text-gray-600">Select an appointment time</p>
+        </div>
+        <Button variant="outline" size="sm" onClick={onClose}>
+          Close
+        </Button>
+      </div>
+
+      {/* Appointments Grid */}
+      <div className="flex-1 overflow-y-auto p-4">
+        <div className="space-y-6">
+          {appointmentDays.map((day, dayIndex) => (
+            <div key={dayIndex} className="space-y-3">
+              <h4 className="font-semibold text-lg sticky top-0 bg-white py-2">
+                {format(day.date, 'EEEE, MMMM d, yyyy')}
+              </h4>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {day.appointments.map((appointment) => (
+                  <Card 
+                    key={appointment.id}
+                    className="cursor-pointer hover:shadow-md transition-shadow border-2 hover:border-orange-300"
+                    onClick={() => onAppointmentSelect(appointment as Appointment, practice.dentist as Dentist)}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="font-bold text-lg">{appointment.appointmentTime}</div>
+                        <Badge variant="outline">{appointment.duration} min</Badge>
+                      </div>
+                      
+                      <div className="space-y-1 text-sm text-gray-600 mb-3">
+                        <div>Dr. {practice.dentist.firstName} {practice.dentist.lastName}</div>
+                        <div>{appointment.treatmentType}</div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="font-bold text-lg">£{appointment.price}</div>
+                          <div className="text-xs text-gray-600">{getBudgetSymbols(appointment.price)}</div>
+                        </div>
+                        <Button size="sm" className="bg-orange-600 hover:bg-orange-700">
+                          Book
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Service Fee Notice */}
+      <div className="p-4 border-t bg-blue-50">
+        <div className="flex items-center space-x-2">
+          <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+            <span className="text-white text-xs font-bold">£</span>
+          </div>
+          <p className="text-xs text-blue-700">
+            <strong>Service Fee:</strong> A £5 booking fee will be charged after your appointment for using DentConnect's last-minute booking service.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
@@ -703,6 +890,349 @@ function MapLoadingAnimation({ onComplete, onCancel }: { onComplete: () => void;
       <Button variant="outline" onClick={onCancel}>
         Cancel
       </Button>
+    </div>
+  );
+}
+
+// Interactive Map Component
+function InteractiveMapView({
+  selectedTreatment,
+  selectedBudget,
+  selectedAccessibility,
+  onAppointmentSelect,
+  onClose
+}: {
+  selectedTreatment: TreatmentType | null;
+  selectedBudget?: any;
+  selectedAccessibility: AccessibilityNeed[];
+  onAppointmentSelect: (practice: Practice, appointment: Appointment, dentist: Dentist) => void;
+  onClose: () => void;
+}) {
+  const [selectedPractice, setSelectedPractice] = useState<Practice | null>(null);
+
+  // Northeast England practices with real coordinates
+  const northeastPractices = [
+    {
+      id: 1,
+      name: "Newcastle Emergency Dental",
+      address: "15 Emergency Lane, Newcastle upon Tyne NE1 5XX",
+      phone: "+44 191 234 5678",
+      openingHours: "24/7 Emergency Services",
+      rating: 4.9,
+      image: "",
+      latitude: 54.9783,
+      longitude: -1.6174,
+      accessibilityFeatures: ["wheelchair-access", "hearing-loop"],
+      position: { top: "25%", left: "45%" },
+      dentist: {
+        id: 1,
+        name: "Dr. Sarah Emergency",
+        firstName: "Sarah",
+        lastName: "Emergency",
+        specialization: "Emergency Dentistry",
+        experience: 15,
+        rating: 4.9
+      },
+      appointment: {
+        id: 1,
+        practiceId: 1,
+        dentistId: 1,
+        appointmentDate: new Date().toISOString(),
+        appointmentTime: "14:30",
+        duration: 45,
+        treatmentType: selectedTreatment?.name || "Emergency Care",
+        isAvailable: true,
+        price: selectedBudget?.id === "basic" ? 75 : selectedBudget?.id === "standard" ? 125 : selectedBudget?.id === "premium" ? 185 : 245,
+        dateTime: new Date().toISOString(),
+        userId: null
+      }
+    },
+    {
+      id: 2,
+      name: "Gateshead Family Dental",
+      address: "42 High Street, Gateshead NE8 1LN",
+      phone: "+44 191 345 6789",
+      openingHours: "Mon-Fri 8:00-18:00, Sat 9:00-15:00",
+      rating: 4.7,
+      image: "",
+      latitude: 54.9526,
+      longitude: -1.6033,
+      accessibilityFeatures: ["wheelchair-access"],
+      position: { top: "35%", left: "48%" },
+      dentist: {
+        id: 2,
+        name: "Dr. James Wilson",
+        firstName: "James",
+        lastName: "Wilson",
+        specialization: "General Dentistry",
+        experience: 12,
+        rating: 4.7
+      },
+      appointment: {
+        id: 2,
+        practiceId: 2,
+        dentistId: 2,
+        appointmentDate: addDays(new Date(), 1).toISOString(),
+        appointmentTime: "11:00",
+        duration: 60,
+        treatmentType: selectedTreatment?.name || "Treatment",
+        isAvailable: true,
+        price: selectedBudget?.id === "basic" ? 85 : selectedBudget?.id === "standard" ? 135 : selectedBudget?.id === "premium" ? 195 : 275,
+        dateTime: addDays(new Date(), 1).toISOString(),
+        userId: null
+      }
+    },
+    {
+      id: 3,
+      name: "Durham Smile Centre",
+      address: "28 Market Place, Durham DH1 3NJ",
+      phone: "+44 191 456 7890",
+      openingHours: "Mon-Fri 9:00-17:00",
+      rating: 4.8,
+      image: "",
+      latitude: 54.7761,
+      longitude: -1.5733,
+      accessibilityFeatures: ["wheelchair-access", "parking"],
+      position: { top: "55%", left: "42%" },
+      dentist: {
+        id: 3,
+        name: "Dr. Emma Thompson",
+        firstName: "Emma",
+        lastName: "Thompson",
+        specialization: "Cosmetic Dentistry",
+        experience: 18,
+        rating: 4.8
+      },
+      appointment: {
+        id: 3,
+        practiceId: 3,
+        dentistId: 3,
+        appointmentDate: addDays(new Date(), 2).toISOString(),
+        appointmentTime: "15:00",
+        duration: 90,
+        treatmentType: selectedTreatment?.name || "Treatment",
+        isAvailable: true,
+        price: selectedBudget?.id === "basic" ? 120 : selectedBudget?.id === "standard" ? 180 : selectedBudget?.id === "premium" ? 250 : 350,
+        dateTime: addDays(new Date(), 2).toISOString(),
+        userId: null
+      }
+    },
+    {
+      id: 4,
+      name: "North Shields Dental Care",
+      address: "67 Front Street, North Shields NE30 4DX",
+      phone: "+44 191 567 8901",
+      openingHours: "Mon-Fri 8:30-17:30",
+      rating: 4.6,
+      image: "",
+      latitude: 55.0178,
+      longitude: -1.4398,
+      accessibilityFeatures: ["wheelchair-access"],
+      position: { top: "15%", left: "55%" },
+      dentist: {
+        id: 4,
+        name: "Dr. Michael Brown",
+        firstName: "Michael",
+        lastName: "Brown",
+        specialization: "Orthodontics",
+        experience: 20,
+        rating: 4.6
+      },
+      appointment: {
+        id: 4,
+        practiceId: 4,
+        dentistId: 4,
+        appointmentDate: addDays(new Date(), 3).toISOString(),
+        appointmentTime: "10:30",
+        duration: 45,
+        treatmentType: selectedTreatment?.name || "Treatment",
+        isAvailable: true,
+        price: selectedBudget?.id === "basic" ? 95 : selectedBudget?.id === "standard" ? 145 : selectedBudget?.id === "premium" ? 215 : 295,
+        dateTime: addDays(new Date(), 3).toISOString(),
+        userId: null
+      }
+    }
+  ];
+
+  const getBudgetSymbols = (price: number) => {
+    if (price < 80) return "£";
+    if (price < 120) return "££";
+    if (price < 180) return "£££";
+    return "££££";
+  };
+
+  return (
+    <div className="h-full flex flex-col">
+      {/* Map Header */}
+      <div className="flex items-center justify-between p-4 border-b">
+        <div>
+          <h3 className="font-bold">Northeast England Practices</h3>
+          <p className="text-sm text-gray-600">Click on a practice to view available appointments</p>
+        </div>
+        <Button variant="outline" size="sm" onClick={onClose}>
+          Close Map
+        </Button>
+      </div>
+
+      <div className="flex-1 flex">
+        {/* Interactive OpenStreetMap Area */}
+        <div className="flex-1 relative overflow-hidden">
+          <iframe
+            src={`https://www.openstreetmap.org/export/embed.html?bbox=-2.2,54.6,-1.0,55.3&layer=mapnik&marker=54.9783,-1.6174`}
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            className="absolute inset-0"
+            title="Northeast England Map"
+          />
+          
+          {/* Custom Practice Markers Overlay */}
+          <div className="absolute inset-0 pointer-events-none">
+            {northeastPractices.map((practice) => {
+              // Convert lat/lng to approximate pixel positions for overlay
+              const leftPercent = ((practice.longitude + 2.2) / 1.2) * 100;
+              const topPercent = ((55.3 - practice.latitude) / 0.7) * 100;
+              
+              return (
+                <div
+                  key={practice.id}
+                  className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer pointer-events-auto z-10"
+                  style={{ 
+                    left: `${leftPercent}%`, 
+                    top: `${topPercent}%` 
+                  }}
+                  onClick={() => setSelectedPractice(practice)}
+                >
+                  <div className="relative">
+                    <div className="w-8 h-8 bg-orange-600 rounded-full border-2 border-white shadow-lg hover:scale-110 transition-transform flex items-center justify-center">
+                      <div className="w-3 h-3 bg-white rounded-full"></div>
+                    </div>
+                    <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap bg-white px-2 py-1 rounded shadow-md text-xs font-medium opacity-0 hover:opacity-100 transition-opacity z-20">
+                      {practice.name}
+                    </div>
+                    
+                    {/* Pulsing animation for available practices */}
+                    <div className="absolute inset-0 w-8 h-8 bg-orange-600 rounded-full animate-ping opacity-30"></div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Practice Details Panel */}
+        <div className="w-80 bg-white border-l p-4 overflow-y-auto">
+          {selectedPractice ? (
+            <div className="space-y-4">
+              <div>
+                <h3 className="font-bold text-lg">{selectedPractice.name}</h3>
+                <div className="flex items-center space-x-2 text-sm text-gray-600 mt-1">
+                  <Star className="w-4 h-4 text-yellow-500" />
+                  <span>{selectedPractice.rating}</span>
+                </div>
+              </div>
+
+              <div className="space-y-2 text-sm">
+                <div className="flex items-start space-x-2">
+                  <MapPin className="w-4 h-4 text-gray-500 mt-1 flex-shrink-0" />
+                  <span>{selectedPractice.address}</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Phone className="w-4 h-4 text-gray-500" />
+                  <span>{selectedPractice.phone}</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Clock className="w-4 h-4 text-gray-500" />
+                  <span>{selectedPractice.openingHours}</span>
+                </div>
+              </div>
+
+              {/* Next Available Appointment */}
+              <Card className="bg-orange-50 border-orange-200">
+                <CardContent className="p-4">
+                  <h4 className="font-semibold mb-3">Next Available Appointment</h4>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-medium">
+                          {format(new Date(selectedPractice.appointment.appointmentDate), 'EEEE, MMM d')}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          {selectedPractice.appointment.appointmentTime} • {selectedPractice.appointment.duration} minutes
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-bold text-lg">£{selectedPractice.appointment.price}</div>
+                        <div className="text-xs text-gray-600">
+                          {getBudgetSymbols(selectedPractice.appointment.price)}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="border-t pt-3">
+                      <div className="text-sm text-gray-700 mb-2">
+                        <strong>Dentist:</strong> {selectedPractice.dentist.name}
+                      </div>
+                      <div className="text-sm text-gray-700 mb-3">
+                        <strong>Specialization:</strong> {selectedPractice.dentist.specialization}
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Button 
+                          className="w-full bg-orange-600 hover:bg-orange-700"
+                          onClick={() => onAppointmentSelect(
+                            selectedPractice as Practice,
+                            selectedPractice.appointment as Appointment,
+                            selectedPractice.dentist as Dentist
+                          )}
+                        >
+                          Book This Appointment
+                        </Button>
+                        
+                        <Button 
+                          variant="outline" 
+                          className="w-full"
+                          onClick={() => setShowAppointmentDiary(selectedPractice)}
+                        >
+                          <Calendar className="w-4 h-4 mr-2" />
+                          View Full Diary
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Service Fee Notice */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <div className="flex items-start space-x-2">
+                  <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-white text-xs font-bold">£</span>
+                  </div>
+                  <div>
+                    <p className="text-xs text-blue-700">
+                      <strong>Service Fee:</strong> A £5 booking fee will be charged after your appointment for using DentConnect's last-minute booking service.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Demo Notice */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <p className="text-xs text-blue-700">
+                  <strong>Demo Notice:</strong> This is a demonstration. Booking forms do not submit real data and no information is stored.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center text-gray-500 mt-8">
+              <MapPin className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+              <p>Click on a practice pin to view available appointments</p>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

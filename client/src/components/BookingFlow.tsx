@@ -72,6 +72,13 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
               <p className="text-sm text-gray-600">Complete your booking details</p>
             </div>
           </DialogTitle>
+          {/* Demo Notice */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
+            <p className="text-xs text-blue-700 text-center">
+              <strong>Demo Notice:</strong> This booking form is for demonstration purposes only. 
+              No appointments will be created and no personal information is stored.
+            </p>
+          </div>
         </DialogHeader>
 
         {currentStep === "details" && (
@@ -107,9 +114,19 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
                   </div>
                 )}
                 
-                <div className="flex items-center justify-between border-t pt-3">
-                  <span className="font-semibold">Total Cost:</span>
-                  <span className="text-2xl font-bold text-primary">£{appointment.price}</span>
+                <div className="space-y-2 border-t pt-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold">Appointment Cost:</span>
+                    <span className="text-2xl font-bold text-primary">£{appointment.price}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600">Service Fee (after appointment):</span>
+                    <span className="font-medium">£5</span>
+                  </div>
+                  <div className="flex items-center justify-between border-t pt-2 font-bold">
+                    <span>Total (excl. service fee):</span>
+                    <span className="text-xl text-primary">£{appointment.price}</span>
+                  </div>
                 </div>
               </CardContent>
             </Card>

@@ -118,6 +118,16 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+✓ **Enhanced Open Search with AI and Interactive Map Options** (July 10, 2025)
+→ Replaced open search popup with dedicated OpenSearchView page following consistent design patterns
+→ Added AI-powered smart search with animated loading screens and step-by-step progress tracking
+→ Integrated interactive map view with pulsing animations and multi-stage loading process
+→ Enhanced search options with budget-aware pricing and accessibility integration
+→ Created comprehensive Northeast England map showing Newcastle, Gateshead, Durham, and North Shields practices
+→ AI search analyzes preferences, budget, accessibility needs, and availability with real-time progress indicators
+→ Map view displays practices with real coordinates and connects to modern booking flow
+→ Added demo disclaimers throughout booking forms noting no data storage or real appointments
+
 ✓ **Complete Appointment Booking Flow with Demo Completion Modal** (July 10, 2025)
 → Added budget selection step after preferences using £ symbols (£, ££, £££, ££££, flexible)
 → Enhanced 6-step onboarding: Treatment → Preferences → Budget → Search Mode → Practice Connect → Authenticated Diary  
