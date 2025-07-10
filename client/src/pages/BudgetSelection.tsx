@@ -26,39 +26,39 @@ interface BudgetSelectionProps {
 const budgetOptions: BudgetOption[] = [
   {
     id: "basic",
-    name: "Basic Care",
-    range: "Essential treatments",
+    name: "Essential Care",
+    range: "Budget-conscious",
     symbols: "£",
-    description: "Standard NHS and essential private treatments"
+    description: "NHS and cost-effective private options"
   },
   {
     id: "standard",
-    name: "Standard Care",
-    range: "Quality treatments",
+    name: "Standard Care", 
+    range: "Mid-range budget",
     symbols: "££",
-    description: "Private treatments with good quality materials",
+    description: "Private care with quality materials",
     popular: true
   },
   {
     id: "premium",
     name: "Premium Care",
-    range: "Advanced treatments",
+    range: "Higher budget",
     symbols: "£££",
-    description: "High-end treatments with premium materials"
+    description: "Advanced treatments and premium materials"
   },
   {
     id: "luxury",
-    name: "Luxury Care",
-    range: "Exclusive treatments",
+    name: "Specialist Care",
+    range: "No budget limits",
     symbols: "££££",
-    description: "Specialist procedures with top-tier materials"
+    description: "Top-tier specialists and exclusive treatments"
   },
   {
     id: "flexible",
     name: "Show All Options",
-    range: "Any budget",
+    range: "Any budget range",
     symbols: "£-££££",
-    description: "See all available treatments regardless of cost"
+    description: "View all available practices regardless of pricing"
   }
 ];
 
@@ -212,18 +212,35 @@ export default function BudgetSelection({
           ))}
         </div>
 
+        {/* Pricing Disclaimer */}
+        <Card className="bg-amber-50 border-amber-200">
+          <CardContent className="p-4">
+            <div className="flex items-start space-x-3">
+              <i className="fas fa-exclamation-triangle text-amber-600 mt-0.5"></i>
+              <div className="space-y-2">
+                <h4 className="font-semibold text-amber-900">Important Pricing Notice</h4>
+                <div className="space-y-1 text-sm text-amber-800">
+                  <p><strong>Prices shown are estimates only</strong> and will be confirmed at your practice after proper diagnosis.</p>
+                  <p>Your dental issue may be more complex than it appears and require additional treatments.</p>
+                  <p>Final costs depend on the exact nature of your condition, which can only be determined during examination.</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Information Box */}
         <Card className="bg-blue-50 border-blue-200">
           <CardContent className="p-4">
             <div className="flex items-start space-x-3">
               <i className="fas fa-info-circle text-blue-600 mt-0.5"></i>
               <div className="space-y-2">
-                <h4 className="font-semibold text-blue-900">Budget Information</h4>
+                <h4 className="font-semibold text-blue-900">Budget Guidance</h4>
                 <div className="space-y-1 text-sm text-blue-800">
-                  <p>• Prices vary by location and practice</p>
-                  <p>• Many practices offer payment plans</p>
-                  <p>• Budget selection helps filter suitable options</p>
-                  <p>• You can always adjust your selection later</p>
+                  <p>• This helps us show practices within your preferred range</p>
+                  <p>• Many practices offer payment plans and financing</p>
+                  <p>• You can compare options before making decisions</p>
+                  <p>• Budget selection can be adjusted at any time</p>
                 </div>
               </div>
             </div>

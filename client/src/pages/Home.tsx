@@ -16,7 +16,7 @@ import { DemoCompleteModal } from "@/components/DemoCompleteModal";
 import { Stethoscope, Users, MapPin, Clock, Shield, Star } from "lucide-react";
 
 export default function Home() {
-  const [currentStep, setCurrentStep] = useState<"treatment" | "accessibility" | "budget" | "searchmode" | "practiceConnect" | "authenticatedDiary" | "map" | "openSearch">("treatment");
+  const [currentStep, setCurrentStep] = useState<"treatment" | "accessibility" | "searchmode" | "budget" | "practiceConnect" | "authenticatedDiary" | "map" | "openSearch">("treatment");
   const [selectedTreatment, setSelectedTreatment] = useState<TreatmentType | null>(null);
   const [selectedAccessibility, setSelectedAccessibility] = useState<AccessibilityNeed[]>([]);
   const [selectedBudget, setSelectedBudget] = useState<any>(null);
@@ -31,21 +31,22 @@ export default function Home() {
 
   const handleAccessibilityComplete = (needs: AccessibilityNeed[]) => {
     setSelectedAccessibility(needs);
-    setCurrentStep("budget");
+    setCurrentStep("searchmode");
   };
 
   const handleBudgetSelect = (budget: any) => {
     setSelectedBudget(budget);
-    setCurrentStep("searchmode");
+    setCurrentStep("openSearch");
   };
 
   const handleSearchModeSelect = (mode: "open" | "practice" | "mydentist") => {
     setSelectedSearchMode(mode);
-    // For practice and mydentist modes, go to practice connect first
-    if (mode === "practice" || mode === "mydentist") {
+    // For open search, go to budget selection first
+    if (mode === "open") {
+      setCurrentStep("budget");
+    } else if (mode === "practice" || mode === "mydentist") {
+      // For practice and mydentist modes, skip budget and go to practice connect
       setCurrentStep("practiceConnect");
-    } else if (mode === "open") {
-      setCurrentStep("openSearch");
     } else {
       setCurrentStep("map");
     }
