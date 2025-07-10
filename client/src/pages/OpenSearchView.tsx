@@ -35,6 +35,7 @@ export default function OpenSearchView({
   const [showMapView, setShowMapView] = useState(false);
   const [showInteractiveMap, setShowInteractiveMap] = useState(false);
   const [showAppointmentDiary, setShowAppointmentDiary] = useState<any>(null);
+  const [showEmergencySearch, setShowEmergencySearch] = useState(false);
 
   // Mock data for practices with available appointments
   const mockPractices: (Practice & { availableAppointments: Appointment[]; dentists: Dentist[] })[] = [
@@ -416,21 +417,24 @@ export default function OpenSearchView({
           </Card>
         )}
 
-        {/* Emergency Options */}
+        {/* Urgent Care Options */}
         <Card className="mt-6 bg-red-50 border-red-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center">
-                  <i className="fas fa-exclamation-triangle text-white"></i>
+                  <Zap className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-red-900">Need immediate care?</h4>
+                  <h4 className="font-semibold text-red-900">Need urgent care?</h4>
                   <p className="text-sm text-red-700">Emergency appointments available within 2 hours</p>
                 </div>
               </div>
-              <Button className="bg-red-600 hover:bg-red-700">
-                Find Emergency Slot
+              <Button 
+                className="bg-red-600 hover:bg-red-700"
+                onClick={() => setShowEmergencySearch(true)}
+              >
+                Find Urgent Slot
               </Button>
             </div>
           </CardContent>
@@ -523,6 +527,299 @@ export default function OpenSearchView({
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Emergency AI Search Modal */}
+      <Dialog open={showEmergencySearch} onOpenChange={setShowEmergencySearch}>
+        <DialogContent className="max-w-2xl h-[70vh]">
+          <DialogHeader>
+            <DialogTitle className="text-center text-red-600">
+              Emergency Dental Search
+            </DialogTitle>
+          </DialogHeader>
+          <EmergencyAISearch
+            selectedTreatment={selectedTreatment}
+            selectedAccessibility={selectedAccessibility}
+            onMatchFound={(practice, appointment, dentist) => {
+              setShowEmergencySearch(false);
+              handleAppointmentSelect(practice, appointment, dentist);
+            }}
+            onClose={() => setShowEmergencySearch(false)}
+          />
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+// Emergency AI Search Component with Extended Radius
+function EmergencyAISearch({
+  selectedTreatment,
+  selectedAccessibility,
+  onMatchFound,
+  onClose
+}: {
+  selectedTreatment: TreatmentType | null;
+  selectedAccessibility: AccessibilityNeed[];
+  onMatchFound: (practice: Practice, appointment: Appointment, dentist: Dentist) => void;
+  onClose: () => void;
+}) {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [searchRadius, setSearchRadius] = useState(5);
+  const [foundMatch, setFoundMatch] = useState<any>(null);
+
+  const emergencySteps = [
+    {
+      title: "Expanding Search Radius",
+      subtitle: "Searching within 50 miles for emergency availability",
+      detail: "Looking beyond local area to find immediate pain relief options"
+    },
+    {
+      title: "Prioritizing Emergency Dentists",
+      subtitle: "Filtering for practices with emergency appointment slots",
+      detail: "Finding dentists who specialize in urgent pain management"
+    },
+    {
+      title: "Checking Same-Day Availability",
+      subtitle: "Scanning for appointments within the next 2 hours",
+      detail: "Focusing on dentists with flexible emergency scheduling"
+    },
+    {
+      title: "Evaluating Pain Relief Options",
+      subtitle: "Matching with dentists experienced in emergency procedures",
+      detail: "Prioritizing practices with on-site X-ray and pain management"
+    },
+    {
+      title: "Emergency Match Found!",
+      subtitle: "Found the quickest option to get you out of pain",
+      detail: "Ready to book your emergency appointment"
+    }
+  ];
+
+  useEffect(() => {
+    if (currentStep < emergencySteps.length - 1) {
+      const timer = setTimeout(() => {
+        setCurrentStep(prev => prev + 1);
+        setSearchRadius(prev => prev + 10); // Increase radius each step
+      }, 2500);
+      return () => clearTimeout(timer);
+    } else {
+      // Generate emergency match
+      const timer = setTimeout(() => {
+        const emergencyPractice: Practice = {
+          id: 99,
+          name: "North East Emergency Dental",
+          address: "15 Emergency Lane, Durham, DH1 3QR",
+          phone: "0191-555-0999",
+          email: "emergency@nedental.co.uk",
+          latitude: 54.7761,
+          longitude: -1.5733,
+          rating: 4.9,
+          distance: 18.2,
+          openingHours: "24/7 Emergency Service",
+          website: "www.nedental.co.uk",
+          description: "Specialist emergency dental clinic with 24/7 pain relief service",
+          services: ["Emergency Care", "Pain Management", "Same-Day Treatment"],
+          specializations: ["Emergency Dentistry", "Pain Relief", "Trauma Care"],
+          accessibility: selectedAccessibility.map(a => a.name),
+          images: [],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+
+        const emergencyDentist: Dentist = {
+          id: 99,
+          practiceId: 99,
+          firstName: "Michael",
+          lastName: "Richardson",
+          title: "Dr.",
+          specialization: "Emergency Dentistry & Pain Management",
+          experience: 15,
+          qualifications: ["BDS", "MFDS", "Emergency Dental Care Certified"],
+          bio: "Specialist in emergency dental care with 15 years experience in urgent pain relief and trauma dentistry.",
+          profileImage: "",
+          languages: ["English"],
+          availableHours: "24/7 Emergency",
+          consultationFee: 45,
+          rating: 4.9,
+          reviewCount: 287,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+
+        const emergencyAppointment: Appointment = {
+          id: 999,
+          practiceId: 99,
+          dentistId: 99,
+          userId: null,
+          treatmentId: 1,
+          appointmentDate: new Date(Date.now() + 45 * 60 * 1000).toISOString(), // 45 minutes from now
+          appointmentTime: new Date(Date.now() + 45 * 60 * 1000).toLocaleTimeString('en-GB', { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: false 
+          }),
+          duration: 45,
+          treatmentType: selectedTreatment?.name || "Emergency Pain Relief",
+          isAvailable: true,
+          price: 85,
+          status: "available",
+          notes: "Emergency appointment - immediate pain relief",
+          dateTime: new Date(Date.now() + 45 * 60 * 1000).toISOString(),
+          createdAt: new Date().toISOString()
+        };
+
+        setFoundMatch({ practice: emergencyPractice, dentist: emergencyDentist, appointment: emergencyAppointment });
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [currentStep, selectedTreatment, selectedAccessibility]);
+
+  const handleBookEmergency = () => {
+    if (foundMatch) {
+      onMatchFound(foundMatch.practice, foundMatch.appointment, foundMatch.dentist);
+    }
+  };
+
+  return (
+    <div className="h-full flex flex-col">
+      {/* Progress Header */}
+      <div className="p-6 border-b bg-red-50">
+        <div className="flex items-center space-x-4 mb-4">
+          <div className="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center">
+            <Zap className="w-6 h-6 text-white animate-pulse" />
+          </div>
+          <div>
+            <h3 className="font-bold text-red-900">Emergency Dental Search</h3>
+            <p className="text-sm text-red-700">Finding immediate pain relief options</p>
+          </div>
+        </div>
+        
+        {/* Progress Bar */}
+        <div className="w-full bg-red-200 rounded-full h-2 mb-2">
+          <div 
+            className="bg-red-600 h-2 rounded-full transition-all duration-500 ease-out"
+            style={{ width: `${((currentStep + 1) / emergencySteps.length) * 100}%` }}
+          ></div>
+        </div>
+        <div className="text-xs text-red-700 text-center">
+          Step {currentStep + 1} of {emergencySteps.length} • Search Radius: {searchRadius} miles
+        </div>
+      </div>
+
+      {/* Current Step Display */}
+      <div className="flex-1 p-6">
+        <div className="text-center space-y-6">
+          <div className="space-y-2">
+            <h4 className="text-xl font-bold text-gray-900">
+              {emergencySteps[currentStep]?.title}
+            </h4>
+            <p className="text-gray-600">
+              {emergencySteps[currentStep]?.subtitle}
+            </p>
+            <p className="text-sm text-gray-500">
+              {emergencySteps[currentStep]?.detail}
+            </p>
+          </div>
+
+          {currentStep < emergencySteps.length - 1 ? (
+            // Loading Animation
+            <div className="space-y-4">
+              <div className="flex justify-center">
+                <div className="w-16 h-16 border-4 border-red-200 border-t-red-600 rounded-full animate-spin"></div>
+              </div>
+              
+              {/* Search Details */}
+              <div className="bg-gray-50 rounded-lg p-4 text-left space-y-2">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
+                  <span className="text-sm">Scanning emergency dental practices...</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+                  <span className="text-sm">Checking availability for urgent appointments...</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
+                  <span className="text-sm">Prioritizing pain management specialists...</span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            // Emergency Match Found
+            foundMatch && (
+              <div className="space-y-6">
+                <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+                  <div className="text-center space-y-4">
+                    <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto">
+                      <i className="fas fa-check text-white text-2xl"></i>
+                    </div>
+                    
+                    <div>
+                      <h3 className="font-bold text-green-900 text-lg">{foundMatch.practice.name}</h3>
+                      <p className="text-green-700 text-sm">{foundMatch.practice.address}</p>
+                      <p className="text-green-600 text-sm font-medium mt-1">
+                        18.2 miles away • Open now for emergencies
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 text-center">
+                      <div className="bg-white p-3 rounded border">
+                        <div className="font-bold text-lg text-red-600">{foundMatch.appointment.appointmentTime}</div>
+                        <div className="text-xs text-gray-600">Next Available</div>
+                      </div>
+                      <div className="bg-white p-3 rounded border">
+                        <div className="font-bold text-lg">£{foundMatch.appointment.price}</div>
+                        <div className="text-xs text-gray-600">Emergency Fee</div>
+                      </div>
+                    </div>
+
+                    <div className="bg-white p-4 rounded border text-left">
+                      <h4 className="font-semibold mb-2">Dr. {foundMatch.dentist.firstName} {foundMatch.dentist.lastName}</h4>
+                      <p className="text-sm text-gray-600 mb-2">{foundMatch.dentist.specialization}</p>
+                      <div className="flex items-center text-sm">
+                        <Star className="w-4 h-4 text-yellow-500 mr-1" />
+                        <span>{foundMatch.dentist.rating} ({foundMatch.dentist.reviewCount} reviews)</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <Button 
+                    className="w-full bg-red-600 hover:bg-red-700 text-white text-lg py-3"
+                    onClick={handleBookEmergency}
+                  >
+                    Book Emergency Appointment Now
+                  </Button>
+                  
+                  <div className="flex space-x-2">
+                    <Button variant="outline" size="sm" className="flex-1">
+                      <Phone className="w-4 h-4 mr-2" />
+                      Call Practice
+                    </Button>
+                    <Button variant="outline" size="sm" className="flex-1">
+                      <Car className="w-4 h-4 mr-2" />
+                      Get Directions
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )
+          )}
+        </div>
+      </div>
+
+      {/* Service Fee Notice */}
+      <div className="p-4 border-t bg-red-50">
+        <div className="flex items-center space-x-2">
+          <div className="w-5 h-5 bg-red-600 rounded-full flex items-center justify-center flex-shrink-0">
+            <span className="text-white text-xs font-bold">£</span>
+          </div>
+          <p className="text-xs text-red-700">
+            <strong>Emergency Service:</strong> £5 DentConnect booking fee applies. Emergency appointments prioritize immediate pain relief.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
@@ -702,51 +999,10 @@ function AISearchLoading({
         const newProgress = prev + Math.random() * 15 + 5;
         if (newProgress >= 100) {
           clearInterval(interval);
-          // Simulate finding a match
+          // Generate AI-optimized match
           setTimeout(() => {
-            const mockPractice: Practice = {
-              id: 1,
-              name: "AI-Matched Dental Excellence",
-              address: "Smart Plaza, Newcastle upon Tyne NE1 1AA",
-              phone: "+44 191 555 0123",
-              openingHours: "Mon-Fri 8:00-18:00",
-              rating: 4.9,
-              image: "",
-              latitude: 54.9783,
-              longitude: -1.6174,
-              accessibilityFeatures: selectedAccessibility.map(need => need.id),
-              availableAppointments: []
-            };
-
-            const mockDentist: Dentist = {
-              id: 1,
-              practiceId: 1,
-              name: "Dr. Perfect Match",
-              firstName: "Perfect",
-              lastName: "Match",
-              specialization: selectedTreatment?.name || "General Dentistry",
-              experience: 12,
-              rating: 4.9,
-              image: "",
-              availableHours: "Mon-Fri 8:00-18:00",
-              bio: "AI-selected dentist optimized for your specific needs."
-            };
-
-            const mockAppointment: Appointment = {
-              id: 1,
-              practiceId: 1,
-              dentistId: 1,
-              appointmentDate: new Date().toISOString(),
-              appointmentTime: "14:30",
-              duration: 45,
-              treatmentType: selectedTreatment?.name || "Treatment",
-              isAvailable: true,
-              price: selectedBudget?.id === "basic" ? 85 : selectedBudget?.id === "standard" ? 125 : selectedBudget?.id === "premium" ? 185 : 225,
-              dateTime: new Date().toISOString(),
-              userId: null
-            };
-
-            onComplete(mockPractice, mockAppointment, mockDentist);
+            const aiMatch = generateOptimalMatch();
+            onComplete(aiMatch.practice, aiMatch.appointment, aiMatch.dentist);
           }, 1000);
           return 100;
         }
@@ -769,6 +1025,130 @@ function AISearchLoading({
       clearInterval(stepInterval);
     };
   }, []);
+
+  // Generate AI-optimized appointment based on user preferences
+  const generateOptimalMatch = () => {
+    // Determine optimal price based on budget
+    let optimalPrice = 125; // default
+    if (selectedBudget?.id === "basic") optimalPrice = 85;
+    else if (selectedBudget?.id === "standard") optimalPrice = 135;
+    else if (selectedBudget?.id === "premium") optimalPrice = 195;
+    else if (selectedBudget?.id === "luxury") optimalPrice = 275;
+
+    // Determine optimal appointment time based on treatment urgency
+    let appointmentTime = "14:30";
+    let appointmentDate = new Date();
+    
+    if (selectedTreatment?.category === "emergency") {
+      appointmentTime = "11:00";
+      appointmentDate = new Date(); // Today
+    } else if (selectedTreatment?.category === "urgent") {
+      appointmentTime = "09:30";
+      appointmentDate = new Date(Date.now() + 24 * 60 * 60 * 1000); // Tomorrow
+    } else {
+      appointmentTime = "15:00";
+      appointmentDate = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000); // Day after tomorrow
+    }
+
+    // Select practice based on treatment type and accessibility
+    const practiceOptions = [
+      {
+        name: "Advanced Dental Care Newcastle",
+        specialty: "Cosmetic & Restorative",
+        rating: 4.9,
+        address: "25 Collingwood Street, Newcastle upon Tyne NE1 1JE"
+      },
+      {
+        name: "Emergency Dental Solutions",
+        specialty: "Emergency & Pain Management", 
+        rating: 4.8,
+        address: "78 Grey Street, Newcastle upon Tyne NE1 6AF"
+      },
+      {
+        name: "Family Dental Excellence",
+        specialty: "General & Preventive",
+        rating: 4.7,
+        address: "12 Northumberland Street, Newcastle upon Tyne NE1 7DG"
+      },
+      {
+        name: "Specialist Oral Health Centre",
+        specialty: "Orthodontics & Surgery",
+        rating: 4.9,
+        address: "5 Clayton Street, Newcastle upon Tyne NE1 5PN"
+      }
+    ];
+
+    // AI selection logic based on treatment
+    let selectedPractice = practiceOptions[0];
+    if (selectedTreatment?.category === "emergency") {
+      selectedPractice = practiceOptions[1];
+    } else if (selectedTreatment?.name?.toLowerCase().includes("clean") || selectedTreatment?.name?.toLowerCase().includes("check")) {
+      selectedPractice = practiceOptions[2];
+    } else if (selectedTreatment?.name?.toLowerCase().includes("brace") || selectedTreatment?.name?.toLowerCase().includes("extract")) {
+      selectedPractice = practiceOptions[3];
+    }
+
+    const aiPractice: Practice = {
+      id: 88,
+      name: selectedPractice.name,
+      address: selectedPractice.address,
+      phone: "0191-555-0888",
+      email: "appointments@aidental.co.uk",
+      latitude: 54.9783,
+      longitude: -1.6174,
+      rating: selectedPractice.rating,
+      distance: 1.2,
+      openingHours: "Mon-Fri 8:00-18:00, Sat 9:00-15:00",
+      website: "www.aidental.co.uk",
+      description: `AI-selected practice specializing in ${selectedPractice.specialty}`,
+      services: [selectedTreatment?.name || "General Care", "AI-Optimized Scheduling"],
+      specializations: [selectedPractice.specialty],
+      accessibility: selectedAccessibility.map(a => a.name),
+      images: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    const aiDentist: Dentist = {
+      id: 88,
+      practiceId: 88,
+      firstName: selectedTreatment?.category === "emergency" ? "Emma" : "David",
+      lastName: selectedTreatment?.category === "emergency" ? "Crisis" : "Perfect",
+      title: "Dr.",
+      specialization: selectedPractice.specialty,
+      experience: 12,
+      qualifications: ["BDS", "MFDS", "MSc Dental Sciences"],
+      bio: `AI-matched dentist with expertise in ${selectedTreatment?.name || "general dentistry"} and ${selectedAccessibility.length > 0 ? "accessibility-focused care" : "patient-centered treatment"}.`,
+      profileImage: "",
+      languages: ["English"],
+      availableHours: "Mon-Fri 8:00-18:00",
+      consultationFee: 45,
+      rating: selectedPractice.rating,
+      reviewCount: 156,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    const aiAppointment: Appointment = {
+      id: 888,
+      practiceId: 88,
+      dentistId: 88,
+      userId: null,
+      treatmentId: 1,
+      appointmentDate: appointmentDate.toISOString(),
+      appointmentTime: appointmentTime,
+      duration: selectedTreatment?.category === "emergency" ? 60 : 45,
+      treatmentType: selectedTreatment?.name || "AI-Optimized Treatment",
+      isAvailable: true,
+      price: optimalPrice,
+      status: "available",
+      notes: "AI-optimized appointment matching your preferences",
+      dateTime: appointmentDate.toISOString(),
+      createdAt: new Date().toISOString()
+    };
+
+    return { practice: aiPractice, dentist: aiDentist, appointment: aiAppointment };
+  };
 
   return (
     <div className="text-center space-y-6 py-8">
