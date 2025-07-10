@@ -24,7 +24,7 @@ export const bookingRateLimiter = createRateLimiter(60 * 60 * 1000, 10); // 10 b
 
 // Security headers middleware
 export const securityHeaders = helmet({
-  contentSecurityPolicy: {
+  contentSecurityPolicy: process.env.NODE_ENV === 'production' ? {
     directives: {
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
@@ -40,13 +40,13 @@ export const securityHeaders = helmet({
       formAction: ["'self'"],
       upgradeInsecureRequests: [],
     },
-  },
+  } : false, // Disable CSP in development to allow Vite HMR
   crossOriginEmbedderPolicy: false,
-  hsts: {
+  hsts: process.env.NODE_ENV === 'production' ? {
     maxAge: 31536000,
     includeSubDomains: true,
     preload: true
-  },
+  } : false,
   noSniff: true,
   frameguard: { action: 'deny' },
   xssFilter: true,
