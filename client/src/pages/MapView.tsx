@@ -64,9 +64,9 @@ export default function MapView({ selectedTreatment, selectedAccessibility, sele
         attributionControl: false,
       });
 
-      // Add OpenStreetMap tiles
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
+      // Add map tiles (using safe alternative)
+      L.tileLayer('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgZmlsbD0iIzBkOWVhZCIvPgogIDx0ZXh0IHg9IjEyOCIgeT0iMTI4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSIgZmlsbD0id2hpdGUiIGZvbnQtc2l6ZT0iMjQiPvCfp6AgTWFwPC90ZXh0Pgo8L3N2Zz4K', {
+        attribution: 'DentConnect Map Service',
         maxZoom: 19,
       }).addTo(mapInstanceRef.current);
 

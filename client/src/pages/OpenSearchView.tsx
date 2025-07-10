@@ -1458,7 +1458,7 @@ function InteractiveMapView({
         {/* Interactive OpenStreetMap Area */}
         <div className="flex-1 relative overflow-hidden">
           <iframe
-            src={`https://www.openstreetmap.org/export/embed.html?bbox=-2.2,54.6,-1.0,55.3&layer=mapnik&marker=54.9783,-1.6174`}
+src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25' viewBox='0 0 400 200'%3E%3Crect width='400' height='200' fill='%2322C55E'/%3E%3Ctext x='200' y='100' text-anchor='middle' dy='.3em' fill='white' font-size='24' font-family='Arial'%3E🗺️ Map View%3C/text%3E%3C/svg%3E"
             width="100%"
             height="100%"
             style={{ border: 0 }}

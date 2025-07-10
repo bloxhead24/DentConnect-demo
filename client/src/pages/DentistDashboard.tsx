@@ -159,7 +159,7 @@ export default function DentistDashboard() {
                   Settings
                 </Button>
                 <Avatar>
-                  <AvatarImage src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300" />
+                  <AvatarImage src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 300 300'%3E%3Ccircle cx='150' cy='150' r='150' fill='%234F46E5'/%3E%3Ctext x='150' y='160' text-anchor='middle' dy='.3em' fill='white' font-size='48' font-family='Arial'%3E👨‍⚕️%3C/text%3E%3C/svg%3E" />
                   <AvatarFallback>DA</AvatarFallback>
                 </Avatar>
               </div>

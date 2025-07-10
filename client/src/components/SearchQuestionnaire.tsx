@@ -246,7 +246,7 @@ export function SearchQuestionnaire({ isOpen, onClose, onComplete }: SearchQuest
               </div>
               
               <img 
-                src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=200" 
+src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='200' viewBox='0 0 800 200'%3E%3Crect width='800' height='200' fill='%2306B6D4'/%3E%3Ctext x='400' y='100' text-anchor='middle' dy='.3em' fill='white' font-size='32' font-family='Arial'%3E🏥 Medical Assessment%3C/text%3E%3C/svg%3E" 
                 alt="Calm dental environment" 
                 className="w-full h-32 object-cover rounded-2xl shadow-soft"
               />

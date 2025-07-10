@@ -24,27 +24,50 @@ export const bookingRateLimiter = createRateLimiter(60 * 60 * 1000, 10); // 10 b
 
 // Security headers middleware
 export const securityHeaders = helmet({
-  contentSecurityPolicy: process.env.NODE_ENV === 'production' ? {
+  contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      imgSrc: ["'self'", "data:", "https://images.unsplash.com"],
-      scriptSrc: ["'self'", "'unsafe-eval'"],
-      connectSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
+      imgSrc: ["'self'", "data:", "https:", "blob:"],
+      scriptSrc: ["'self'"],
+      connectSrc: ["'self'", "https:", "wss:", "ws:"],
       frameSrc: ["'none'"],
       objectSrc: ["'none'"],
       mediaSrc: ["'self'"],
-      workerSrc: ["'self'"],
+      workerSrc: ["'self'", "blob:"],
+      childSrc: ["'self'"],
+      formAction: ["'self'"],
+      upgradeInsecureRequests: [],
     },
-  } : false, // Disable CSP entirely in development
-  crossOriginEmbedderPolicy: false, // Disable for development
+  },
+  crossOriginEmbedderPolicy: false,
+  hsts: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true
+  },
+  noSniff: true,
+  frameguard: { action: 'deny' },
+  xssFilter: true,
+  referrerPolicy: { policy: "strict-origin-when-cross-origin" }
 });
 
 // CORS configuration
 export const corsOptions: cors.CorsOptions = {
   origin: process.env.NODE_ENV === 'production' 
-    ? ['https://your-domain.com'] // Replace with actual domain
+    ? (origin, callback) => {
+        // Allow requests with no origin (mobile apps, etc.)
+        if (!origin) return callback(null, true);
+        
+        // Check if origin is a replit.app domain
+        if (origin.includes('.replit.app') || origin.includes('.replit.dev')) {
+          return callback(null, true);
+        }
+        
+        // Reject other origins
+        return callback(new Error('Not allowed by CORS'));
+      }
     : ['http://localhost:5000', 'http://localhost:3000'],
   credentials: true,
   optionsSuccessStatus: 200,
@@ -54,17 +77,41 @@ export const corsOptions: cors.CorsOptions = {
 
 // Input validation middleware
 export const validateInput = (req: Request, res: Response, next: NextFunction) => {
-  // Remove any script tags or potentially dangerous content
+  // Enhanced input sanitization
   const sanitizeString = (str: string) => {
-    return str.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+    return str
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove script tags
+      .replace(/javascript:/gi, '') // Remove javascript: protocols
+      .replace(/on\w+\s*=/gi, '') // Remove event handlers
+      .replace(/data:/gi, '') // Remove data URIs for security
+      .trim();
   };
 
-  if (req.body && typeof req.body === 'object') {
-    Object.keys(req.body).forEach(key => {
-      if (typeof req.body[key] === 'string') {
-        req.body[key] = sanitizeString(req.body[key]);
-      }
-    });
+  // Recursively sanitize all string values in request body
+  const sanitizeObject = (obj: any): any => {
+    if (typeof obj === 'string') {
+      return sanitizeString(obj);
+    }
+    if (Array.isArray(obj)) {
+      return obj.map(sanitizeObject);
+    }
+    if (obj && typeof obj === 'object') {
+      const sanitized: any = {};
+      Object.keys(obj).forEach(key => {
+        sanitized[key] = sanitizeObject(obj[key]);
+      });
+      return sanitized;
+    }
+    return obj;
+  };
+
+  if (req.body) {
+    req.body = sanitizeObject(req.body);
+  }
+
+  // Sanitize query parameters
+  if (req.query) {
+    req.query = sanitizeObject(req.query);
   }
 
   next();

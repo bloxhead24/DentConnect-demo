@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Block potentially suspicious paths
+Disallow: /admin
+Disallow: /.env
+Disallow: /config
+Disallow: /api/internal
+
+Sitemap: /sitemap.xml

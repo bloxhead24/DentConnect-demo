@@ -38,7 +38,7 @@ export function SuccessModal({ isOpen, onClose }: SuccessModalProps) {
           <p className="text-text-soft">Your appointment has been successfully booked. We'll send you a reminder.</p>
           
           <img 
-            src="https://images.unsplash.com/photo-1609840114035-3c981b782dfe?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=200" 
+src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200' viewBox='0 0 400 200'%3E%3Crect width='400' height='200' fill='%2338BDF8'/%3E%3Ctext x='200' y='100' text-anchor='middle' dy='.3em' fill='white' font-size='24' font-family='Arial'%3E🦷 Success%3C/text%3E%3C/svg%3E" 
             alt="Dentist with patient" 
             className="w-full h-32 object-cover rounded-2xl shadow-soft"
           />
