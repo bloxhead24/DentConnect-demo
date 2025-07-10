@@ -1,10 +1,13 @@
 import { TreatmentType } from "@/lib/types";
 import { TreatmentCard } from "@/components/TreatmentCard";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Video } from "lucide-react";
 
 interface TreatmentSelectionProps {
   onTreatmentSelect: (treatment: TreatmentType) => void;
   selectedTreatment: TreatmentType | null;
+  onVirtualConsultation?: () => void;
 }
 
 const treatmentTypes: TreatmentType[] = [
@@ -42,7 +45,7 @@ const treatmentTypes: TreatmentType[] = [
   },
 ];
 
-export default function TreatmentSelection({ onTreatmentSelect, selectedTreatment }: TreatmentSelectionProps) {
+export default function TreatmentSelection({ onTreatmentSelect, selectedTreatment, onVirtualConsultation }: TreatmentSelectionProps) {
   return (
     <div className="onboarding-step active">
       <div className="px-4 py-8 space-y-6">
@@ -75,14 +78,49 @@ export default function TreatmentSelection({ onTreatmentSelect, selectedTreatmen
           </div>
         </div>
 
+        {/* Virtual Consultation Option */}
+        {onVirtualConsultation && (
+          <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200 shadow-sm">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                    <Video className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Virtual Consultation</h4>
+                    <p className="text-sm text-gray-600">Get expert advice instantly</p>
+                    <p className="text-sm font-medium text-blue-600">£24.99 (30 min)</p>
+                  </div>
+                </div>
+                <Button 
+                  onClick={onVirtualConsultation}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  size="sm"
+                >
+                  <Video className="w-4 h-4 mr-2" />
+                  Start Now
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Divider */}
+        <div className="flex items-center space-x-4">
+          <div className="flex-1 h-px bg-gray-200"></div>
+          <span className="text-sm text-gray-500">or</span>
+          <div className="flex-1 h-px bg-gray-200"></div>
+        </div>
+
         {/* Continue Button */}
-        <div className="pt-4">
+        <div className="pt-2">
           <Button 
             className="floating-button w-full bg-primary hover:bg-primary/90 text-white py-4 rounded-2xl font-medium shadow-gentle"
             onClick={() => selectedTreatment && onTreatmentSelect(selectedTreatment)}
             disabled={!selectedTreatment}
           >
-            Continue
+            Book In-Person Appointment
           </Button>
         </div>
       </div>

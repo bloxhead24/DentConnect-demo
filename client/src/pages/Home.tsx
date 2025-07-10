@@ -13,7 +13,8 @@ import BudgetSelection from "./BudgetSelection";
 import OpenSearchView from "./OpenSearchView";
 import DentConnectLogo from "@/components/DentConnectLogo";
 import { DemoCompleteModal } from "@/components/DemoCompleteModal";
-import { Stethoscope, Users, MapPin, Clock, Shield, Star } from "lucide-react";
+import { VirtualConsultation } from "@/components/VirtualConsultation";
+import { Stethoscope, Users, MapPin, Clock, Shield, Star, Video } from "lucide-react";
 
 export default function Home() {
   const [currentStep, setCurrentStep] = useState<"treatment" | "accessibility" | "searchmode" | "budget" | "practiceConnect" | "authenticatedDiary" | "map" | "openSearch">("treatment");
@@ -23,6 +24,7 @@ export default function Home() {
   const [selectedSearchMode, setSelectedSearchMode] = useState<"open" | "practice" | "mydentist" | null>(null);
   const [practiceTag, setPracticeTag] = useState<string>("");
   const [showDemoComplete, setShowDemoComplete] = useState(false);
+  const [showVirtualConsultation, setShowVirtualConsultation] = useState(false);
 
   const handleTreatmentSelect = (treatment: TreatmentType) => {
     setSelectedTreatment(treatment);
@@ -200,6 +202,7 @@ export default function Home() {
           <TreatmentSelection 
             onTreatmentSelect={handleTreatmentSelect}
             selectedTreatment={selectedTreatment}
+            onVirtualConsultation={() => setShowVirtualConsultation(true)}
           />
         )}
         
@@ -267,6 +270,14 @@ export default function Home() {
           />
         )}
       </div>
+
+      {/* Virtual Consultation Modal */}
+      <VirtualConsultation
+        isOpen={showVirtualConsultation}
+        onClose={() => setShowVirtualConsultation(false)}
+        userType="patient"
+        onSuccess={() => setShowDemoComplete(true)}
+      />
 
       {/* Demo Complete Modal */}
       <DemoCompleteModal

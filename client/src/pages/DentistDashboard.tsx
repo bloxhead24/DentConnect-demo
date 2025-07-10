@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery } from "@tanstack/react-query";
 import DentConnectLogo from "@/components/DentConnectLogo";
+import { VirtualConsultation } from "@/components/VirtualConsultation";
 import { 
   Calendar, 
   Users, 
@@ -18,7 +19,8 @@ import {
   BarChart3,
   DollarSign,
   Activity,
-  Bell
+  Bell,
+  Video
 } from "lucide-react";
 import PricingManagement from "@/components/PricingManagement";
 
@@ -44,6 +46,7 @@ interface RecentAppointment {
 
 export default function DentistDashboard() {
   const [selectedPeriod, setSelectedPeriod] = useState<"week" | "month" | "year">("month");
+  const [showVirtualConsultation, setShowVirtualConsultation] = useState(false);
 
   // Mock data - in real app, these would come from API
   const { data: stats } = useQuery<DashboardStats>({
@@ -318,6 +321,13 @@ export default function DentistDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 gap-4">
+                    <Button 
+                      onClick={() => setShowVirtualConsultation(true)}
+                      className="h-20 flex flex-col items-center space-y-2 bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+                    >
+                      <Video className="h-6 w-6" />
+                      <span className="text-sm font-medium">Virtual Consult</span>
+                    </Button>
                     <Button variant="outline" className="h-20 flex flex-col items-center space-y-2">
                       <Calendar className="h-6 w-6" />
                       <span className="text-sm">Add Slot</span>
@@ -329,10 +339,6 @@ export default function DentistDashboard() {
                     <Button variant="outline" className="h-20 flex flex-col items-center space-y-2">
                       <BarChart3 className="h-6 w-6" />
                       <span className="text-sm">Reports</span>
-                    </Button>
-                    <Button variant="outline" className="h-20 flex flex-col items-center space-y-2">
-                      <PhoneCall className="h-6 w-6" />
-                      <span className="text-sm">Emergency</span>
                     </Button>
                   </div>
                 </CardContent>
@@ -444,6 +450,14 @@ export default function DentistDashboard() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Virtual Consultation Modal */}
+      <VirtualConsultation
+        isOpen={showVirtualConsultation}
+        onClose={() => setShowVirtualConsultation(false)}
+        userType="dentist"
+        onSuccess={() => setShowVirtualConsultation(false)}
+      />
     </div>
   );
 }
