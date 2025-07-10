@@ -118,6 +118,18 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+✓ **Professional Practice Tag Authentication System** (July 10, 2025)
+→ Replaced PIN terminology with "dental practice unique tag" for professional approach
+→ Added dedicated PracticeConnect page that authenticates BEFORE map access
+→ Practice tags required for My Practice and My Dentist search modes only
+→ Open Search bypasses authentication for immediate access
+→ Enhanced onboarding flow: Treatment → Preferences → Search Mode → Practice Connect → Map
+→ Professional visual design with practice-specific color themes (blue for practice, teal for dentist)
+→ Demo-friendly with test tags ("DEMO", "NDC2024", "SMILE123", "DENTAL456", "TEST")
+→ Clear error handling and user guidance for invalid tags
+→ Progress indicator shows Connect step only when needed
+→ Simplified map interaction - authenticated users go directly to practice sheets
+
 ✓ **Enhanced Search Mode System with Smart Appointment Booking** (July 10, 2025)
 → Created dedicated search mode selection page before map opens
 → Three search options with distinct appointment flows:

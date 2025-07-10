@@ -7,14 +7,16 @@ import TreatmentSelection from "./TreatmentSelection";
 import AccessibilityForm from "./AccessibilityForm";
 import SearchModeSelection from "./SearchModeSelection";
 import MapView from "./MapView";
+import PracticeConnect from "./PracticeConnect";
 import DentConnectLogo from "@/components/DentConnectLogo";
 import { Stethoscope, Users, MapPin, Clock, Shield, Star } from "lucide-react";
 
 export default function Home() {
-  const [currentStep, setCurrentStep] = useState<"treatment" | "accessibility" | "searchmode" | "map">("treatment");
+  const [currentStep, setCurrentStep] = useState<"treatment" | "accessibility" | "searchmode" | "practiceConnect" | "map">("treatment");
   const [selectedTreatment, setSelectedTreatment] = useState<TreatmentType | null>(null);
   const [selectedAccessibility, setSelectedAccessibility] = useState<AccessibilityNeed[]>([]);
   const [selectedSearchMode, setSelectedSearchMode] = useState<"open" | "practice" | "mydentist" | null>(null);
+  const [practiceTag, setPracticeTag] = useState<string>("");
 
   const handleTreatmentSelect = (treatment: TreatmentType) => {
     setSelectedTreatment(treatment);
@@ -28,6 +30,16 @@ export default function Home() {
 
   const handleSearchModeSelect = (mode: "open" | "practice" | "mydentist") => {
     setSelectedSearchMode(mode);
+    // For practice and mydentist modes, go to practice connect first
+    if (mode === "practice" || mode === "mydentist") {
+      setCurrentStep("practiceConnect");
+    } else {
+      setCurrentStep("map");
+    }
+  };
+
+  const handlePracticeConnect = (tag: string) => {
+    setPracticeTag(tag);
     setCurrentStep("map");
   };
 
@@ -37,8 +49,15 @@ export default function Home() {
       setSelectedTreatment(null);
     } else if (currentStep === "searchmode") {
       setCurrentStep("accessibility");
-    } else if (currentStep === "map") {
+    } else if (currentStep === "practiceConnect") {
       setCurrentStep("searchmode");
+    } else if (currentStep === "map") {
+      // If coming from practice connect, go back to it, otherwise to search mode
+      if (selectedSearchMode === "practice" || selectedSearchMode === "mydentist") {
+        setCurrentStep("practiceConnect");
+      } else {
+        setCurrentStep("searchmode");
+      }
     }
   };
 
@@ -122,6 +141,12 @@ export default function Home() {
               <div className={`w-2 h-2 rounded-full ${currentStep === "searchmode" ? "bg-primary" : "bg-gray-300"}`}></div>
               <span>Search Mode</span>
             </div>
+            {(selectedSearchMode === "practice" || selectedSearchMode === "mydentist") && (
+              <div className={`flex items-center space-x-1 ${currentStep === "practiceConnect" ? "text-primary font-medium" : ""}`}>
+                <div className={`w-2 h-2 rounded-full ${currentStep === "practiceConnect" ? "bg-primary" : "bg-gray-300"}`}></div>
+                <span>Connect</span>
+              </div>
+            )}
             <div className={`flex items-center space-x-1 ${currentStep === "map" ? "text-primary font-medium" : ""}`}>
               <div className={`w-2 h-2 rounded-full ${currentStep === "map" ? "bg-primary" : "bg-gray-300"}`}></div>
               <span>Book</span>
@@ -153,6 +178,16 @@ export default function Home() {
             selectedAccessibility={selectedAccessibility}
             onSearchModeSelect={handleSearchModeSelect}
             onBack={handleBack}
+          />
+        )}
+
+        {currentStep === "practiceConnect" && selectedSearchMode && (
+          <PracticeConnect
+            selectedTreatment={selectedTreatment}
+            selectedAccessibility={selectedAccessibility}
+            searchMode={selectedSearchMode}
+            onBack={handleBack}
+            onConnect={handlePracticeConnect}
           />
         )}
         

@@ -43,7 +43,7 @@ export default function MapView({ selectedTreatment, selectedAccessibility, sele
   const [urgentPractice, setUrgentPractice] = useState<Practice | null>(null);
   const [showPinModal, setShowPinModal] = useState(false);
   const [pinPractice, setPinPractice] = useState<Practice | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(selectedSearchMode === "open");
   
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -142,14 +142,8 @@ export default function MapView({ selectedTreatment, selectedAccessibility, sele
 
   const handlePracticeClick = (practice: Practice) => {
     setSelectedPractice(practice);
-    
-    // Check if authentication is needed for practice/mydentist modes
-    if ((selectedSearchMode === "practice" || selectedSearchMode === "mydentist") && !isAuthenticated) {
-      setPinPractice(practice);
-      setShowPinModal(true);
-    } else {
-      setShowPracticeSheet(true);
-    }
+    // For authenticated search modes, go directly to practice sheet
+    setShowPracticeSheet(true);
   };
 
   const handlePinSuccess = () => {
