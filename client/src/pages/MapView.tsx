@@ -280,6 +280,7 @@ export default function MapView({ selectedTreatment, selectedAccessibility, sele
         isOpen={showPracticeSheet}
         onClose={() => setShowPracticeSheet(false)}
         onBookAppointment={handleBookAppointment}
+        searchMode={selectedSearchMode}
       />
 
       {/* Booking Flow */}

@@ -118,13 +118,18 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-✓ **Search Mode Selection Page** (July 10, 2025)
+✓ **Enhanced Search Mode System with Smart Appointment Booking** (July 10, 2025)
 → Created dedicated search mode selection page before map opens
-→ Three search options: Open Search (fastest), My Practice Search (familiar environment), My Dentist Search (personal continuity)
-→ Professional card-based interface with feature comparisons and recommendations
+→ Three search options with distinct appointment flows:
+  • **Open Search**: Shows all available appointments with standard grid selection
+  • **My Practice Search**: Auto-highlights next available appointment + option to browse all practice appointments
+  • **My Dentist Search**: Auto-highlights next available appointment with personal dentist + full diary access
+→ Professional card-based interface with feature comparisons and smart recommendations
 → Integrated into 4-step onboarding flow: Treatment → Preferences → Search Mode → Map
 → Smart recommendations based on treatment urgency (emergency = Open Search, routine = My Dentist)
 → Search mode indicator displayed on map page to show active selection
+→ Enhanced appointment booking with Quick Book buttons for practice/dentist modes
+→ Full diary view component with weekly/monthly calendar interfaces for detailed appointment browsing
 
 ✓ **Professional Directions Page with Enhanced Dentist Profiles** (July 09, 2025)
 → Created comprehensive directions page with real OpenStreetMap routing
