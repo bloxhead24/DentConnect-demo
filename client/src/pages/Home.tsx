@@ -9,15 +9,19 @@ import SearchModeSelection from "./SearchModeSelection";
 import MapView from "./MapView";
 import PracticeConnect from "./PracticeConnect";
 import AuthenticatedDiary from "./AuthenticatedDiary";
+import BudgetSelection from "./BudgetSelection";
 import DentConnectLogo from "@/components/DentConnectLogo";
+import { DemoCompleteModal } from "@/components/DemoCompleteModal";
 import { Stethoscope, Users, MapPin, Clock, Shield, Star } from "lucide-react";
 
 export default function Home() {
-  const [currentStep, setCurrentStep] = useState<"treatment" | "accessibility" | "searchmode" | "practiceConnect" | "authenticatedDiary" | "map">("treatment");
+  const [currentStep, setCurrentStep] = useState<"treatment" | "accessibility" | "budget" | "searchmode" | "practiceConnect" | "authenticatedDiary" | "map">("treatment");
   const [selectedTreatment, setSelectedTreatment] = useState<TreatmentType | null>(null);
   const [selectedAccessibility, setSelectedAccessibility] = useState<AccessibilityNeed[]>([]);
+  const [selectedBudget, setSelectedBudget] = useState<any>(null);
   const [selectedSearchMode, setSelectedSearchMode] = useState<"open" | "practice" | "mydentist" | null>(null);
   const [practiceTag, setPracticeTag] = useState<string>("");
+  const [showDemoComplete, setShowDemoComplete] = useState(false);
 
   const handleTreatmentSelect = (treatment: TreatmentType) => {
     setSelectedTreatment(treatment);
@@ -26,6 +30,11 @@ export default function Home() {
 
   const handleAccessibilityComplete = (needs: AccessibilityNeed[]) => {
     setSelectedAccessibility(needs);
+    setCurrentStep("budget");
+  };
+
+  const handleBudgetSelect = (budget: any) => {
+    setSelectedBudget(budget);
     setCurrentStep("searchmode");
   };
 
@@ -48,15 +57,20 @@ export default function Home() {
   const handleDiaryBooking = (appointment: any) => {
     // Handle booking from authenticated diary
     console.log("Booking appointment:", appointment);
-    // Could redirect to booking flow or show success
+    // Show demo completion modal after booking
+    setTimeout(() => {
+      setShowDemoComplete(true);
+    }, 2000);
   };
 
   const handleBack = () => {
     if (currentStep === "accessibility") {
       setCurrentStep("treatment");
       setSelectedTreatment(null);
-    } else if (currentStep === "searchmode") {
+    } else if (currentStep === "budget") {
       setCurrentStep("accessibility");
+    } else if (currentStep === "searchmode") {
+      setCurrentStep("budget");
     } else if (currentStep === "practiceConnect") {
       setCurrentStep("searchmode");
     } else if (currentStep === "authenticatedDiary") {
@@ -147,9 +161,13 @@ export default function Home() {
               <div className={`w-2 h-2 rounded-full ${currentStep === "accessibility" ? "bg-primary" : "bg-gray-300"}`}></div>
               <span>Preferences</span>
             </div>
+            <div className={`flex items-center space-x-1 ${currentStep === "budget" ? "text-primary font-medium" : ""}`}>
+              <div className={`w-2 h-2 rounded-full ${currentStep === "budget" ? "bg-primary" : "bg-gray-300"}`}></div>
+              <span>Budget</span>
+            </div>
             <div className={`flex items-center space-x-1 ${currentStep === "searchmode" ? "text-primary font-medium" : ""}`}>
               <div className={`w-2 h-2 rounded-full ${currentStep === "searchmode" ? "bg-primary" : "bg-gray-300"}`}></div>
-              <span>Search Mode</span>
+              <span>Search</span>
             </div>
             {(selectedSearchMode === "practice" || selectedSearchMode === "mydentist") && (
               <div className={`flex items-center space-x-1 ${currentStep === "practiceConnect" ? "text-primary font-medium" : ""}`}>
@@ -181,11 +199,22 @@ export default function Home() {
             selectedNeeds={selectedAccessibility}
           />
         )}
+
+        {currentStep === "budget" && (
+          <BudgetSelection
+            selectedTreatment={selectedTreatment}
+            selectedAccessibility={selectedAccessibility}
+            onBudgetSelect={handleBudgetSelect}
+            onBack={handleBack}
+            selectedBudget={selectedBudget}
+          />
+        )}
         
         {currentStep === "searchmode" && (
           <SearchModeSelection 
             selectedTreatment={selectedTreatment}
             selectedAccessibility={selectedAccessibility}
+            selectedBudget={selectedBudget}
             onSearchModeSelect={handleSearchModeSelect}
             onBack={handleBack}
           />
@@ -217,6 +246,13 @@ export default function Home() {
           />
         )}
       </div>
+
+      {/* Demo Complete Modal */}
+      <DemoCompleteModal
+        isOpen={showDemoComplete}
+        onClose={() => setShowDemoComplete(false)}
+        demoType="patient"
+      />
     </div>
   );
 }

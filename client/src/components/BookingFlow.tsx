@@ -1,342 +1,315 @@
 import { useState } from "react";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Practice, Appointment } from "@shared/schema";
-import { useBookingFlow } from "@/hooks/useBookingFlow";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
-import { useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
-import { DemoCompleteModal } from "./DemoCompleteModal";
+import { cn } from "@/lib/utils";
+import type { Practice, Appointment, Dentist } from "@shared/schema";
 
 interface BookingFlowProps {
   practice: Practice | null;
-  selectedAppointment: Appointment | null;
+  appointment: Appointment | null;
+  dentist?: Dentist | null;
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
 }
 
-export function BookingFlow({ practice, selectedAppointment, isOpen, onClose, onSuccess }: BookingFlowProps) {
-  const { currentStep, formData, updateFormData, nextStep, prevStep, resetFlow } = useBookingFlow();
-  const { toast } = useToast();
-  const [showDemoComplete, setShowDemoComplete] = useState(false);
-  
-  const handleDemoBooking = () => {
-    // Instead of submitting the form, redirect to early access signup
-    onSuccess();
-    resetFlow();
-    onClose();
-    toast({
-      title: "Demo Complete!",
-      description: "Ready to book real appointments? Sign up for early access.",
-    });
-    // Show demo complete modal after 2 seconds
+export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, onSuccess }: BookingFlowProps) {
+  const [currentStep, setCurrentStep] = useState<"details" | "confirmation" | "success">("details");
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    dateOfBirth: "",
+    emergencyContact: "",
+    medicalConditions: "",
+    medications: "",
+    allergies: "",
+    specialRequests: ""
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  if (!practice || !appointment) return null;
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    // Simulate booking submission
     setTimeout(() => {
-      setShowDemoComplete(true);
+      setCurrentStep("success");
+      setIsSubmitting(false);
     }, 2000);
   };
 
-  const handleNext = () => {
-    if (currentStep < 4) {
-      nextStep();
-    } else {
-      // Complete the demo booking
-      handleDemoBooking();
-    }
-  };
-
-  const handleClose = () => {
-    resetFlow();
+  const handleSuccess = () => {
+    onSuccess();
     onClose();
   };
 
-  if (!practice || !selectedAppointment) return null;
+  const isFormValid = formData.firstName && formData.lastName && formData.email && formData.phone;
 
   return (
-    <>
-    <Sheet open={isOpen} onOpenChange={handleClose}>
-      <SheetContent side="bottom" className="rounded-t-3xl max-h-[90vh] overflow-y-auto">
-        <SheetHeader>
-          <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4"></div>
-          <SheetTitle className="text-left">Book Your Appointment</SheetTitle>
-        </SheetHeader>
-        
-        <div className="space-y-6">
-          {/* Progress Bar */}
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm text-text-soft">
-              <span>Booking Progress</span>
-              <span>{currentStep} of 4</span>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+              <i className="fas fa-calendar-check text-white"></i>
             </div>
-            <Progress value={(currentStep / 4) * 100} className="h-2" />
-          </div>
-          
-          {/* Step 1: Urgency Assessment */}
-          {currentStep === 1 && (
-            <div className="space-y-4">
-              <h3 className="text-xl font-semibold text-text-primary">How urgent is your appointment?</h3>
-              <p className="text-text-soft">This helps us prioritize your care and find the best available time</p>
-              
-              <div className="space-y-3">
-                <Card 
-                  className={`p-4 cursor-pointer transition-all ${formData.urgency === 'emergency' ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'}`}
-                  onClick={() => updateFormData({ urgency: 'emergency' })}
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center">
-                      <i className="fas fa-bolt text-white"></i>
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-red-700">Emergency - I'm in severe pain</h4>
-                      <p className="text-sm text-gray-600">Need immediate attention within 2 hours</p>
-                    </div>
-                    {formData.urgency === 'emergency' && (
-                      <i className="fas fa-check-circle text-red-600"></i>
-                    )}
-                  </div>
-                </Card>
-                
-                <Card 
-                  className={`p-4 cursor-pointer transition-all ${formData.urgency === 'urgent' ? 'border-orange-500 bg-orange-50' : 'border-gray-200 hover:border-gray-300'}`}
-                  onClick={() => updateFormData({ urgency: 'urgent' })}
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-orange-600 rounded-full flex items-center justify-center">
-                      <i className="fas fa-exclamation-triangle text-white"></i>
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-orange-700">Urgent - Same day preferred</h4>
-                      <p className="text-sm text-gray-600">Would like to be seen today if possible</p>
-                    </div>
-                    {formData.urgency === 'urgent' && (
-                      <i className="fas fa-check-circle text-orange-600"></i>
-                    )}
-                  </div>
-                </Card>
-                
-                <Card 
-                  className={`p-4 cursor-pointer transition-all ${formData.urgency === 'routine' ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-gray-300'}`}
-                  onClick={() => updateFormData({ urgency: 'routine' })}
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
-                      <i className="fas fa-calendar-alt text-white"></i>
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-green-700">Routine - Flexible timing</h4>
-                      <p className="text-sm text-gray-600">Can wait for the next available appointment</p>
-                    </div>
-                    {formData.urgency === 'routine' && (
-                      <i className="fas fa-check-circle text-green-600"></i>
-                    )}
-                  </div>
-                </Card>
-              </div>
+            <div>
+              <h3 className="text-xl font-bold">Book Appointment</h3>
+              <p className="text-sm text-gray-600">Complete your booking details</p>
             </div>
-          )}
-          
-          {/* Step 2: Medical History */}
-          {currentStep === 2 && (
-            <div className="space-y-4">
-              <h3 className="text-xl font-semibold text-text-primary">A few gentle questions</h3>
-              <p className="text-text-soft">This helps us provide the best care for you</p>
-              
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-text-primary">Are you currently taking any medications?</label>
-                  <div className="flex space-x-3">
-                    <Button
-                      variant={formData.medications ? "default" : "outline"}
-                      className="flex-1"
-                      onClick={() => updateFormData({ medications: true })}
-                    >
-                      Yes
-                    </Button>
-                    <Button
-                      variant={!formData.medications ? "default" : "outline"}
-                      className="flex-1"
-                      onClick={() => updateFormData({ medications: false })}
-                    >
-                      No
-                    </Button>
+          </DialogTitle>
+        </DialogHeader>
+
+        {currentStep === "details" && (
+          <div className="space-y-6">
+            {/* Appointment Summary */}
+            <Card className="bg-gradient-to-r from-primary/10 to-secondary/10">
+              <CardHeader>
+                <CardTitle className="text-lg">Appointment Details</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <i className="fas fa-building text-primary"></i>
+                    <span className="font-medium">{practice.name}</span>
                   </div>
+                  <Badge variant="outline">{appointment.treatmentType}</Badge>
                 </div>
                 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-text-primary">Do you have any allergies we should know about?</label>
-                  <div className="flex space-x-3">
-                    <Button
-                      variant={formData.allergies ? "default" : "outline"}
-                      className="flex-1"
-                      onClick={() => updateFormData({ allergies: true })}
-                    >
-                      Yes
-                    </Button>
-                    <Button
-                      variant={!formData.allergies ? "default" : "outline"}
-                      className="flex-1"
-                      onClick={() => updateFormData({ allergies: false })}
-                    >
-                      No
-                    </Button>
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-text-primary">When was your last dental visit?</label>
-                  <Select value={formData.lastDentalVisit} onValueChange={(value) => updateFormData({ lastDentalVisit: value })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select timeframe" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="less-than-6-months">Less than 6 months ago</SelectItem>
-                      <SelectItem value="6-12-months">6-12 months ago</SelectItem>
-                      <SelectItem value="1-2-years">1-2 years ago</SelectItem>
-                      <SelectItem value="more-than-2-years">More than 2 years ago</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-          )}
-          
-          {/* Step 3: Anxiety Assessment */}
-          {currentStep === 3 && (
-            <div className="space-y-4">
-              <h3 className="text-xl font-semibold text-text-primary">How are you feeling?</h3>
-              <p className="text-text-soft">We understand dental visits can be stressful. Let us know how we can help you feel comfortable.</p>
-              
-              <img 
-                src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=300" 
-                alt="Calm healthcare environment" 
-                className="w-full h-32 object-cover rounded-2xl shadow-soft"
-              />
-              
-              <div className="space-y-3">
-                <Card
-                  className={`p-4 cursor-pointer transition-all ${formData.anxietyLevel === 'comfortable' ? 'bg-green-50 border-green-200' : 'hover:bg-green-50'}`}
-                  onClick={() => updateFormData({ anxietyLevel: 'comfortable' })}
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                      <i className="fas fa-smile text-white"></i>
-                    </div>
-                    <div>
-                      <h4 className="font-medium">I feel comfortable</h4>
-                      <p className="text-xs text-text-soft">Ready for my appointment</p>
-                    </div>
-                  </div>
-                </Card>
-                
-                <Card
-                  className={`p-4 cursor-pointer transition-all ${formData.anxietyLevel === 'nervous' ? 'bg-orange-50 border-orange-200' : 'hover:bg-orange-50'}`}
-                  onClick={() => updateFormData({ anxietyLevel: 'nervous' })}
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
-                      <i className="fas fa-meh text-white"></i>
-                    </div>
-                    <div>
-                      <h4 className="font-medium">I'm a bit nervous</h4>
-                      <p className="text-xs text-text-soft">Could use some extra reassurance</p>
-                    </div>
-                  </div>
-                </Card>
-                
-                <Card
-                  className={`p-4 cursor-pointer transition-all ${formData.anxietyLevel === 'anxious' ? 'bg-red-50 border-red-200' : 'hover:bg-red-50'}`}
-                  onClick={() => updateFormData({ anxietyLevel: 'anxious' })}
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
-                      <i className="fas fa-frown text-white"></i>
-                    </div>
-                    <div>
-                      <h4 className="font-medium">I'm quite anxious</h4>
-                      <p className="text-xs text-text-soft">Please take extra care with me</p>
-                    </div>
-                  </div>
-                </Card>
-              </div>
-            </div>
-          )}
-          
-          {/* Step 3: Confirmation */}
-          {currentStep === 3 && (
-            <div className="space-y-4">
-              <h3 className="text-xl font-semibold text-text-primary">Confirm your appointment</h3>
-              
-              <img 
-                src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=200" 
-                alt="Dental clinic waiting room" 
-                className="w-full h-32 object-cover rounded-2xl shadow-soft"
-              />
-              
-              <Card className="p-4 bg-primary/5">
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-sm text-text-soft">Practice</span>
-                    <span className="text-sm font-medium text-text-primary">{practice.name}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-text-soft">Date</span>
-                    <span className="text-sm font-medium text-text-primary">{format(new Date(selectedAppointment.appointmentDate), 'PPP')}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-text-soft">Time</span>
-                    <span className="text-sm font-medium text-text-primary">{format(new Date(selectedAppointment.appointmentDate), 'h:mm a')}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-text-soft">Treatment</span>
-                    <span className="text-sm font-medium text-text-primary">{formData.treatmentCategory}</span>
-                  </div>
-                </div>
-              </Card>
-              
-              <Card className="p-4 bg-green-50">
                 <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                    <i className="fas fa-shield-alt text-white text-sm"></i>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-text-primary">GDPR Compliant</h4>
-                    <p className="text-xs text-text-soft">Your data is secure and protected</p>
-                  </div>
+                  <i className="fas fa-calendar text-primary"></i>
+                  <span>{format(new Date(appointment.appointmentDate), 'EEEE, MMMM d, yyyy')}</span>
                 </div>
+                
+                <div className="flex items-center space-x-3">
+                  <i className="fas fa-clock text-primary"></i>
+                  <span>{appointment.appointmentTime} ({appointment.duration} minutes)</span>
+                </div>
+                
+                {dentist && (
+                  <div className="flex items-center space-x-3">
+                    <i className="fas fa-user-md text-primary"></i>
+                    <span>Dr. {dentist.firstName} {dentist.lastName}</span>
+                  </div>
+                )}
+                
+                <div className="flex items-center justify-between border-t pt-3">
+                  <span className="font-semibold">Total Cost:</span>
+                  <span className="text-2xl font-bold text-primary">£{appointment.price}</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Patient Details Form */}
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Personal Information</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="firstName">First Name *</Label>
+                      <Input
+                        id="firstName"
+                        value={formData.firstName}
+                        onChange={(e) => handleInputChange("firstName", e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="lastName">Last Name *</Label>
+                      <Input
+                        id="lastName"
+                        value={formData.lastName}
+                        onChange={(e) => handleInputChange("lastName", e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="email">Email Address *</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange("email", e.target.value)}
+                      required
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="phone">Phone Number *</Label>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        value={formData.phone}
+                        onChange={(e) => handleInputChange("phone", e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="dateOfBirth">Date of Birth</Label>
+                      <Input
+                        id="dateOfBirth"
+                        type="date"
+                        value={formData.dateOfBirth}
+                        onChange={(e) => handleInputChange("dateOfBirth", e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="emergencyContact">Emergency Contact</Label>
+                    <Input
+                      id="emergencyContact"
+                      placeholder="Name and phone number"
+                      value={formData.emergencyContact}
+                      onChange={(e) => handleInputChange("emergencyContact", e.target.value)}
+                    />
+                  </div>
+                </CardContent>
               </Card>
-            </div>
-          )}
-          
-          {/* Navigation Buttons */}
-          <div className="flex space-x-3">
-            <Button 
-              variant="outline" 
-              className="flex-1" 
-              onClick={currentStep === 1 ? handleClose : prevStep}
-            >
-              {currentStep === 1 ? 'Cancel' : 'Back'}
-            </Button>
-            <Button 
-              className="flex-1 bg-primary hover:bg-primary/90" 
-              onClick={handleNext}
-            >
-              {currentStep === 3 ? 'Complete Demo' : 'Next'}
-            </Button>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Medical Information</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label htmlFor="medicalConditions">Medical Conditions</Label>
+                    <Textarea
+                      id="medicalConditions"
+                      placeholder="List any medical conditions, heart problems, diabetes, etc."
+                      value={formData.medicalConditions}
+                      onChange={(e) => handleInputChange("medicalConditions", e.target.value)}
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="medications">Current Medications</Label>
+                    <Textarea
+                      id="medications"
+                      placeholder="List all medications you're currently taking"
+                      value={formData.medications}
+                      onChange={(e) => handleInputChange("medications", e.target.value)}
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="allergies">Allergies</Label>
+                    <Textarea
+                      id="allergies"
+                      placeholder="Drug allergies, latex, etc."
+                      value={formData.allergies}
+                      onChange={(e) => handleInputChange("allergies", e.target.value)}
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="specialRequests">Special Requests</Label>
+                    <Textarea
+                      id="specialRequests"
+                      placeholder="Any special needs or requests for your appointment"
+                      value={formData.specialRequests}
+                      onChange={(e) => handleInputChange("specialRequests", e.target.value)}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <div className="flex space-x-4">
+                <Button type="button" variant="outline" onClick={onClose} className="flex-1">
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  disabled={!isFormValid || isSubmitting}
+                  className="flex-1"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <i className="fas fa-spinner fa-spin mr-2"></i>
+                      Booking...
+                    </>
+                  ) : (
+                    <>
+                      <i className="fas fa-check mr-2"></i>
+                      Confirm Booking
+                    </>
+                  )}
+                </Button>
+              </div>
+            </form>
           </div>
-        </div>
-      </SheetContent>
-    </Sheet>
-    
-    <DemoCompleteModal 
-      isOpen={showDemoComplete}
-      onClose={() => setShowDemoComplete(false)}
-      demoType="patient"
-    />
-  </>
+        )}
+
+        {currentStep === "success" && (
+          <div className="text-center space-y-6 py-8">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+              <i className="fas fa-check text-3xl text-green-600"></i>
+            </div>
+            
+            <div>
+              <h3 className="text-2xl font-bold text-green-600 mb-2">Booking Confirmed!</h3>
+              <p className="text-gray-600">Your appointment has been successfully booked.</p>
+            </div>
+            
+            <Card className="bg-green-50 border-green-200">
+              <CardContent className="p-6">
+                <h4 className="font-semibold mb-3">Appointment Confirmation</h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span>Practice:</span>
+                    <span className="font-medium">{practice.name}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Date:</span>
+                    <span className="font-medium">{format(new Date(appointment.appointmentDate), 'EEEE, MMMM d, yyyy')}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Time:</span>
+                    <span className="font-medium">{appointment.appointmentTime}</span>
+                  </div>
+                  {dentist && (
+                    <div className="flex justify-between">
+                      <span>Dentist:</span>
+                      <span className="font-medium">Dr. {dentist.firstName} {dentist.lastName}</span>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+            
+            <div className="space-y-3">
+              <p className="text-sm text-gray-600">
+                A confirmation email has been sent to {formData.email}
+              </p>
+              
+              <Button onClick={handleSuccess} className="w-full">
+                <i className="fas fa-home mr-2"></i>
+                Return to Home
+              </Button>
+            </div>
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }

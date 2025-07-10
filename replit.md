@@ -118,6 +118,16 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+✓ **Complete Appointment Booking Flow with Demo Completion Modal** (July 10, 2025)
+→ Added budget selection step after preferences using £ symbols (£, ££, £££, ££££, flexible)
+→ Enhanced 6-step onboarding: Treatment → Preferences → Budget → Search Mode → Practice Connect → Authenticated Diary  
+→ Comprehensive booking flow with personal details, medical information, and appointment confirmation
+→ Urgent appointment matching system with AI-powered practice finder and time-sensitive booking
+→ Demo completion modal appears after booking with early access redirect to https://dentconnect.replit.app/
+→ Professional budget selection with treatment cost ranges and payment plan information
+→ Full medical form integration including emergency contacts, medications, allergies, and special requests
+→ Enhanced user journey tracking with budget preferences influencing practice recommendations
+
 ✓ **Unified Practice Tag Authentication with Smart Diary Filtering** (July 10, 2025)
 → Single practice tag works for both My Practice and My Dentist modes
 → Same tag but different appointment filtering: Practice mode shows all dentists, Dentist mode shows specific dentist only

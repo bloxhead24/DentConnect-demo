@@ -10,13 +10,15 @@ type SearchMode = "open" | "practice" | "mydentist";
 interface SearchModeSelectionProps {
   selectedTreatment: TreatmentType | null;
   selectedAccessibility: AccessibilityNeed[];
+  selectedBudget?: any;
   onSearchModeSelect: (mode: SearchMode) => void;
   onBack: () => void;
 }
 
 export default function SearchModeSelection({ 
   selectedTreatment, 
-  selectedAccessibility, 
+  selectedAccessibility,
+  selectedBudget,
   onSearchModeSelect, 
   onBack 
 }: SearchModeSelectionProps) {
