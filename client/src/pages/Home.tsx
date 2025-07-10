@@ -8,11 +8,12 @@ import AccessibilityForm from "./AccessibilityForm";
 import SearchModeSelection from "./SearchModeSelection";
 import MapView from "./MapView";
 import PracticeConnect from "./PracticeConnect";
+import AuthenticatedDiary from "./AuthenticatedDiary";
 import DentConnectLogo from "@/components/DentConnectLogo";
 import { Stethoscope, Users, MapPin, Clock, Shield, Star } from "lucide-react";
 
 export default function Home() {
-  const [currentStep, setCurrentStep] = useState<"treatment" | "accessibility" | "searchmode" | "practiceConnect" | "map">("treatment");
+  const [currentStep, setCurrentStep] = useState<"treatment" | "accessibility" | "searchmode" | "practiceConnect" | "authenticatedDiary" | "map">("treatment");
   const [selectedTreatment, setSelectedTreatment] = useState<TreatmentType | null>(null);
   const [selectedAccessibility, setSelectedAccessibility] = useState<AccessibilityNeed[]>([]);
   const [selectedSearchMode, setSelectedSearchMode] = useState<"open" | "practice" | "mydentist" | null>(null);
@@ -40,7 +41,14 @@ export default function Home() {
 
   const handlePracticeConnect = (tag: string) => {
     setPracticeTag(tag);
-    setCurrentStep("map");
+    // Go directly to authenticated diary instead of map
+    setCurrentStep("authenticatedDiary");
+  };
+
+  const handleDiaryBooking = (appointment: any) => {
+    // Handle booking from authenticated diary
+    console.log("Booking appointment:", appointment);
+    // Could redirect to booking flow or show success
   };
 
   const handleBack = () => {
@@ -51,6 +59,8 @@ export default function Home() {
       setCurrentStep("accessibility");
     } else if (currentStep === "practiceConnect") {
       setCurrentStep("searchmode");
+    } else if (currentStep === "authenticatedDiary") {
+      setCurrentStep("practiceConnect");
     } else if (currentStep === "map") {
       // If coming from practice connect, go back to it, otherwise to search mode
       if (selectedSearchMode === "practice" || selectedSearchMode === "mydentist") {
@@ -188,6 +198,13 @@ export default function Home() {
             searchMode={selectedSearchMode}
             onBack={handleBack}
             onConnect={handlePracticeConnect}
+          />
+        )}
+
+        {currentStep === "authenticatedDiary" && (
+          <AuthenticatedDiary
+            onBack={handleBack}
+            onBookAppointment={handleDiaryBooking}
           />
         )}
         

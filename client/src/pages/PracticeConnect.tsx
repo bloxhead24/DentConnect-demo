@@ -31,11 +31,14 @@ export default function PracticeConnect({
     setIsConnecting(true);
     setError("");
 
-    // Simulate practice tag verification
+    // Simulate practice tag verification and immediate connection
     setTimeout(() => {
       const validTags = ["NDC2024", "SMILE123", "DENTAL456", "DEMO", "TEST"];
       
       if (validTags.includes(practiceTag.toUpperCase())) {
+        // Store the authenticated practice tag for immediate diary access
+        sessionStorage.setItem('authenticatedPracticeTag', practiceTag.toUpperCase());
+        sessionStorage.setItem('searchMode', searchMode);
         onConnect(practiceTag);
       } else {
         setError("Practice tag not recognized. Please check with your practice or try 'DEMO' for the demo.");
@@ -46,6 +49,8 @@ export default function PracticeConnect({
 
   const handleDemoConnect = () => {
     setPracticeTag("DEMO");
+    sessionStorage.setItem('authenticatedPracticeTag', 'DEMO');
+    sessionStorage.setItem('searchMode', searchMode);
     onConnect("DEMO");
   };
 
