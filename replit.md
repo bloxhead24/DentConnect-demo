@@ -118,6 +118,15 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+✓ **Enhanced Virtual Consultation Pricing and Early Access Integration** (July 10, 2025)
+→ Updated virtual consultation pricing to £24.99 for patients (30 minutes)
+→ Set dentist earnings to £20 per 30-minute virtual consultation
+→ All demo flows now redirect to early access signup (https://dentconnect.replit.app/)
+→ Added virtual consultation fee notes to dentist dashboard Quick Actions section
+→ Updated BookingFlow success screen to redirect to early access instead of home
+→ Enhanced VirtualConsultation component with clear pricing structure for both user types
+→ Virtual consultations prominently displayed at start of patient flow and in dentist dashboard
+
 ✓ **Simplified Pricing Model with Practice Dashboard** (July 10, 2025)
 → Removed all specific treatment pricing and replaced with simple £5 appointment booking fee
 → Treatment costs now assessed by dentist during appointment based on individual needs

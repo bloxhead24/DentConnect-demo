@@ -315,9 +315,12 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
                 A confirmation email has been sent to {formData.email}
               </p>
               
-              <Button onClick={handleSuccess} className="w-full">
-                <i className="fas fa-home mr-2"></i>
-                Return to Home
+              <Button 
+                onClick={() => window.open('https://dentconnect.replit.app/', '_blank')} 
+                className="w-full bg-green-600 hover:bg-green-700"
+              >
+                <i className="fas fa-star mr-2"></i>
+                Get Early Access
               </Button>
             </div>
           </div>

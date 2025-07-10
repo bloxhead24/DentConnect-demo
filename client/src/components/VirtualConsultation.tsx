@@ -106,6 +106,8 @@ export function VirtualConsultation({ isOpen, onClose, userType, onSuccess }: Vi
                   <p>• 15-minute minimum billing increment</p>
                   <p>• Automatic payment processing</p>
                   <p>• Same-day earnings transfer</p>
+                  <p>• <strong>Patients pay £24.99 per 30-minute session</strong></p>
+                  <p>• <strong>You earn £20 per 30-minute session</strong></p>
                 </div>
               </CardContent>
             </Card>
@@ -433,9 +435,12 @@ export function VirtualConsultation({ isOpen, onClose, userType, onSuccess }: Vi
               </CardContent>
             </Card>
 
-            <Button onClick={handleSuccess} className="bg-green-600 hover:bg-green-700">
-              <i className="fas fa-check mr-2"></i>
-              Complete Demo
+            <Button 
+              onClick={() => window.open('https://dentconnect.replit.app/', '_blank')} 
+              className="bg-green-600 hover:bg-green-700"
+            >
+              <i className="fas fa-star mr-2"></i>
+              Get Early Access
             </Button>
           </div>
         )}

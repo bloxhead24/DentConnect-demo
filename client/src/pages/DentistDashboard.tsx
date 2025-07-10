@@ -341,6 +341,17 @@ export default function DentistDashboard() {
                       <span className="text-sm">Reports</span>
                     </Button>
                   </div>
+                  
+                  {/* Virtual Consultation Fee Note */}
+                  <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-3">
+                    <div className="text-xs text-green-700 text-center">
+                      <strong>💰 Virtual Consultation Earnings</strong>
+                      <br />
+                      You earn £20 per 30-minute session
+                      <br />
+                      <span className="text-green-600">Patients pay £24.99 • Instant payment processing</span>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </div>
