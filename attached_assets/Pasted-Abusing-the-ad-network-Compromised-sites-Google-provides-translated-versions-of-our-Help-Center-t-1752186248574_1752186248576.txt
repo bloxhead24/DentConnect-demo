@@ -1,0 +1,39 @@
+Abusing the ad network: Compromised sites
+Google provides translated versions of our Help Center, though they are not meant to change the content of our policies. The English version is the official language we use to enforce our policies. To view this article in a different language, use the language dropdown at the bottom of the page.
+
+Read more
+Ads across the Google Network should be useful, varied, relevant, and safe for users. Google Ads doesn't allow advertisers to run ads, content, or destinations that attempt to trick or circumvent our ad review processes.
+
+Learn more about the Abusing the ad network policy.
+
+A compromised site refers to a site or destination whose code has been manipulated to act in ways that benefit a third party without the knowledge of the site or destination’s owner or operator and often in a way that harms the site’s users. The following scenarios would lead to disapproval for compromised site:
+
+red x mark Destinations which are hijacked and hacked
+
+Examples (non-exhaustive): Sites injecting scripts or code that transmits user data without consent, like credit card skimmers, installing malware on end user devices, launching pop-up ads, redirecting users to other websites, and doing things with user data without the end user’s consent; Operating a website using a content management system with known security vulnerabilities, where it has been exploited
+
+Options to fix
+Verify disapproved ads for Compromised site
+In your Google Ads account, click the Campaigns icon Campaigns Icon.
+Click the Campaigns drop down in the section menu.
+Click Ads.
+Add a filter for "Policy Details: Compromised site".
+If there are ads disapproved for "Compromised site", continue to the next steps.
+Review the disapproval reason
+Review the disapproval reason to view where the content is loaded from. We sometimes show compromised domains in your Google Ads account when we find them.
+
+Review your site and remove any code that refers to the identified domains. Google provides information to help you fix your site through Help for Hacked Websites.
+
+Submit an appeal
+In the “Status” column of the ad you want to dispute, hover over the ad status, and click Appeal.
+Under "Reason for appealing", select Dispute decision or Made changes to comply with policy.
+Under "Appeal the following", select which ads you want to appeal.
+Click Submit.
+You can check the status of your appeal in Policy manager in your account.
+
+Check the status of your site
+Check the status of the website or final URL of disapproved ads in Google's External Safe Browsing Site Status Checker.
+
+When a site is disallowed in Safe Browsing, it means that it has been disallowed as a result of the unsafe content that it may be exposing to users using features like organic listings. Fix the malware issue on your site and file an appeal through Google Search Console to have the domain removed from the Safe Browsing threat list. Your site or landing pages should automatically be re-enabled to serve ads after you’ve successfully completed this process. Contact support if your ads are still disapproved after completing this process.
+
+If you can’t fix the ad’s destination, you can update the ad with a new destination that follows this policy. Editing the ad will resubmit the ad and its destination for review.

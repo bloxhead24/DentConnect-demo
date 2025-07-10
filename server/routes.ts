@@ -2,8 +2,25 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertBookingSchema, insertUserSchema } from "@shared/schema";
+import { securityHeaders, corsOptions, validateInput, apiRateLimiter, requestLogger, antiMalwareCheck, ipReputationCheck, contentIntegrityCheck } from "./security";
+import cors from "cors";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Apply comprehensive security middleware for Google Ads compliance
+  app.use(cors(corsOptions));
+  app.use(securityHeaders);
+  app.use(requestLogger);
+  
+  // Apply security checks more selectively in development
+  if (process.env.NODE_ENV === 'production') {
+    app.use(antiMalwareCheck);
+    app.use(ipReputationCheck);
+    app.use(contentIntegrityCheck);
+  }
+  
+  app.use(validateInput);
+  app.use(apiRateLimiter);
+
   // Practice routes
   app.get("/api/practices", async (req, res) => {
     try {

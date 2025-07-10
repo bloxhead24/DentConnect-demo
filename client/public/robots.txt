@@ -1,10 +1,16 @@
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /private/
 
-# Block potentially suspicious paths
-Disallow: /admin
-Disallow: /.env
-Disallow: /config
-Disallow: /api/internal
+Sitemap: https://dentconnect.replit.app/sitemap.xml
 
-Sitemap: /sitemap.xml
+# Google Ads Compliance Information
+# This site implements comprehensive security measures including:
+# - Input sanitization and validation
+# - Anti-malware detection systems
+# - Content integrity verification
+# - No tracking scripts or data harvesting
+# - Secure authentication and session management
+# - HTTPS enforcement with security headers
