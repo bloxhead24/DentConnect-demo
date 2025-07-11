@@ -84,19 +84,19 @@ export function EnhancedMapSearch({
   };
 
   return (
-    <div className="absolute top-4 left-4 right-4 z-40 space-y-3">
-      {/* Search Mode Indicator */}
+    <div className="w-full space-y-3">
+      {/* Search Mode Indicator - Mobile Optimized */}
       <Card className="bg-white/95 backdrop-blur-sm shadow-gentle">
-        <div className="p-3">
+        <div className="mobile-padding tablet-padding desktop-padding">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <i className={cn(searchModeConfig[searchMode].icon, "text-teal-600")}></i>
               <div>
-                <p className="text-sm font-medium text-gray-900">{searchModeConfig[searchMode].title}</p>
-                <p className="text-xs text-gray-600">{searchModeConfig[searchMode].description}</p>
+                <p className="mobile-text md:text-sm font-medium text-gray-900">{searchModeConfig[searchMode].title}</p>
+                <p className="mobile-text-sm md:text-xs text-gray-600">{searchModeConfig[searchMode].description}</p>
               </div>
             </div>
-            <Badge className={cn("text-xs", searchModeConfig[searchMode].color)}>
+            <Badge className={cn("mobile-text-sm md:text-xs", searchModeConfig[searchMode].color)}>
               <i className={cn(searchModeConfig[searchMode].icon, "mr-1")}></i>
               Active
             </Badge>
@@ -104,9 +104,9 @@ export function EnhancedMapSearch({
         </div>
       </Card>
 
-      {/* Main Search Bar */}
+      {/* Main Search Bar - Mobile Optimized */}
       <Card className="bg-white/95 backdrop-blur-sm shadow-gentle">
-        <div className="p-4">
+        <div className="mobile-padding tablet-padding desktop-padding">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
               {isSearching ? (
@@ -118,7 +118,7 @@ export function EnhancedMapSearch({
             <Input
               type="text"
               placeholder="Enter your location or postcode"
-              className="flex-1 border-none shadow-none focus-visible:ring-0 bg-transparent"
+              className="flex-1 border-none shadow-none focus-visible:ring-0 bg-transparent mobile-text md:text-base touch-target"
               value={location}
               onChange={(e) => {
                 setLocation(e.target.value);
@@ -130,7 +130,7 @@ export function EnhancedMapSearch({
             <Button 
               size="sm" 
               variant="ghost" 
-              className="p-2 rounded-full hover:bg-primary/10"
+              className="p-2 rounded-full hover:bg-primary/10 touch-target"
               onClick={handleCurrentLocation}
             >
               <i className="fas fa-location-arrow text-primary text-sm"></i>

@@ -60,16 +60,18 @@ export default function AccessibilityForm({ onComplete, onBack, selectedNeeds }:
 
   return (
     <div className="onboarding-step active animate-in fade-in-50 slide-in-from-right-8 duration-500">
-      <div className="px-4 py-8 space-y-6">
+      <div className="mobile-padding tablet-padding desktop-padding py-8 space-y-6">
         <div className="text-center space-y-4">
-          <div className="w-20 h-20 bg-gradient-to-br from-secondary via-secondary/80 to-primary rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl">
-            <i className="fas fa-heart text-white text-3xl animate-pulse"></i>
+          <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-secondary via-secondary/80 to-primary rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl">
+            <svg className="w-8 h-8 md:w-10 md:h-10 text-white animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 leading-tight">Your Care Preferences</h2>
-          <p className="text-gray-600 text-lg">We want to ensure you have the best possible experience</p>
+          <h2 className="mobile-header md:text-2xl font-bold text-gray-900 leading-tight">Your Care Preferences</h2>
+          <p className="text-gray-600 mobile-text md:text-lg">We want to ensure you have the best possible experience</p>
         </div>
 
-        {/* Accessibility Options with Staggered Animation */}
+        {/* Accessibility Options - Mobile Optimized */}
         <div className="space-y-3">
           {accessibilityNeeds.map((need, index) => (
             <div 

@@ -124,6 +124,111 @@
     @apply translate-y-0;
   }
 
+  /* Mobile-first responsive design */
+  @media (max-width: 768px) {
+    .mobile-padding {
+      @apply px-4 py-2;
+    }
+    
+    .mobile-text {
+      @apply text-sm;
+    }
+    
+    .mobile-button {
+      @apply h-12 px-4 text-sm;
+    }
+    
+    .mobile-card {
+      @apply mx-2 mb-4;
+    }
+    
+    .mobile-header {
+      @apply text-lg font-semibold;
+    }
+    
+    .mobile-map-container {
+      @apply h-screen w-full relative;
+    }
+    
+    .mobile-map {
+      @apply h-full w-full absolute inset-0;
+    }
+    
+    /* Leaflet map mobile optimizations */
+    .leaflet-container {
+      height: 100vh !important;
+      width: 100% !important;
+    }
+    
+    .leaflet-control-container {
+      pointer-events: auto !important;
+    }
+    
+    .leaflet-control-zoom {
+      margin-bottom: 120px !important;
+    }
+    
+    @media (max-width: 768px) {
+      .leaflet-control-zoom {
+        margin-bottom: 140px !important;
+        margin-right: 10px !important;
+      }
+    }
+    
+    .mobile-overlay {
+      @apply fixed inset-0 z-50 bg-black/50;
+    }
+    
+    .mobile-sheet {
+      @apply fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-lg shadow-lg max-h-[85vh] overflow-y-auto;
+    }
+    
+    .mobile-search-bar {
+      @apply fixed top-0 left-0 right-0 z-40 bg-white shadow-md p-4;
+    }
+    
+    .mobile-back-button {
+      @apply fixed top-4 left-4 z-50 bg-white rounded-full p-2 shadow-lg;
+    }
+    
+    .mobile-floating-button {
+      @apply fixed bottom-20 right-4 z-40 bg-primary text-white rounded-full p-3 shadow-lg;
+    }
+  }
+
+  /* Tablet optimizations */
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .tablet-grid {
+      @apply grid grid-cols-2 gap-4;
+    }
+    
+    .tablet-padding {
+      @apply px-6 py-4;
+    }
+  }
+
+  /* Desktop optimizations */
+  @media (min-width: 1025px) {
+    .desktop-grid {
+      @apply grid grid-cols-3 gap-6;
+    }
+    
+    .desktop-padding {
+      @apply px-8 py-6;
+    }
+  }
+
+  /* Touch-friendly interactions */
+  @media (hover: none) and (pointer: coarse) {
+    .touch-target {
+      @apply min-h-[44px] min-w-[44px];
+    }
+    
+    .touch-button {
+      @apply h-12 px-6 text-base;
+    }
+  }
+
   .onboarding-step {
     @apply opacity-0 transform translate-y-5 transition-all duration-500 ease-out;
   }

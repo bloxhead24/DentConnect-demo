@@ -59,9 +59,16 @@ export default function MapView({ selectedTreatment, selectedAccessibility, sele
       // Create map centered on Newcastle upon Tyne
       mapInstanceRef.current = L.map(mapRef.current, {
         center: [54.9783, -1.6178], // Newcastle upon Tyne coordinates
-        zoom: 11,
+        zoom: window.innerWidth < 768 ? 10 : 11, // Adjust zoom for mobile
         zoomControl: false,
         attributionControl: false,
+        touchZoom: true,
+        scrollWheelZoom: true,
+        doubleClickZoom: true,
+        boxZoom: false,
+        keyboard: true,
+        dragging: true,
+        tap: true,
       });
 
       // Add OpenStreetMap tiles
@@ -70,8 +77,16 @@ export default function MapView({ selectedTreatment, selectedAccessibility, sele
         maxZoom: 19,
       }).addTo(mapInstanceRef.current);
 
-      // Add custom zoom control
-      L.control.zoom({ position: 'bottomright' }).addTo(mapInstanceRef.current);
+      // Add custom zoom control - position based on screen size
+      const zoomPosition = window.innerWidth < 768 ? 'bottomright' : 'bottomright';
+      L.control.zoom({ position: zoomPosition }).addTo(mapInstanceRef.current);
+      
+      // Force map to invalidate size after initialization
+      setTimeout(() => {
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.invalidateSize();
+        }
+      }, 100);
     }
 
     return () => {
@@ -79,6 +94,25 @@ export default function MapView({ selectedTreatment, selectedAccessibility, sele
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
       }
+    };
+  }, []);
+
+  // Handle window resize for mobile responsiveness
+  useEffect(() => {
+    const handleResize = () => {
+      if (mapInstanceRef.current) {
+        setTimeout(() => {
+          mapInstanceRef.current?.invalidateSize();
+        }, 100);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
     };
   }, []);
 
@@ -215,17 +249,19 @@ export default function MapView({ selectedTreatment, selectedAccessibility, sele
 
   return (
     <div className="onboarding-step active">
-      {/* Enhanced Search Bar */}
-      <EnhancedMapSearch
-        onLocationChange={handleLocationChange}
-        onFilterToggle={handleFilterToggle}
-        onQuestionnaireOpen={() => setShowQuestionnaire(true)}
-        searchMode={selectedSearchMode}
-        searchFilters={searchFilters}
-      />
+      {/* Enhanced Search Bar - Mobile Optimized */}
+      <div className="absolute top-16 left-4 right-4 z-50 md:relative md:top-0 md:left-0 md:right-0 md:z-auto">
+        <EnhancedMapSearch
+          onLocationChange={handleLocationChange}
+          onFilterToggle={handleFilterToggle}
+          onQuestionnaireOpen={() => setShowQuestionnaire(true)}
+          searchMode={selectedSearchMode}
+          searchFilters={searchFilters}
+        />
+      </div>
 
-      {/* Map Container with Leaflet */}
-      <div className="map-container h-screen relative overflow-hidden">
+      {/* Map Container with Leaflet - Mobile Optimized */}
+      <div className="h-screen w-full relative overflow-hidden">
         <div 
           ref={mapRef} 
           className="absolute inset-0 w-full h-full z-10"
@@ -235,53 +271,62 @@ export default function MapView({ selectedTreatment, selectedAccessibility, sele
         {/* Enhanced Loading State */}
         <MapLoadingState isLoading={isLoading} searchQuery={location} />
         
-        {/* Urgent Search Floating Button */}
+        {/* Mobile Back Button */}
+        <div className="absolute top-4 left-4 z-50">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onBack}
+            className="touch-target bg-white hover:bg-primary/10 shadow-lg"
+          >
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Back
+          </Button>
+        </div>
+        
+        {/* Urgent Search Floating Button - Mobile Optimized */}
         <div className="absolute bottom-20 right-4 z-50">
           <Button
             onClick={handleUrgentSearch}
-            className="urgent-search-button w-16 h-16 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-floating flex items-center justify-center animate-pulse"
+            className="touch-target w-16 h-16 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg flex items-center justify-center animate-pulse"
             size="icon"
           >
             <div className="text-center">
-              <i className="fas fa-bolt text-xl mb-1"></i>
+              <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
               <div className="text-xs font-bold">URGENT</div>
             </div>
           </Button>
         </div>
       </div>
 
-      {/* Filter Button */}
+      {/* Filter Button - Mobile Optimized */}
       <div className="absolute bottom-32 right-4 z-40">
         <Button
           size="icon"
-          className="floating-button w-14 h-14 bg-white hover:bg-primary/10 rounded-full shadow-floating"
+          className="touch-target w-14 h-14 bg-white hover:bg-primary/10 rounded-full shadow-lg"
           variant="outline"
+          onClick={() => setShowQuestionnaire(true)}
         >
-          <i className="fas fa-filter text-primary"></i>
+          <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
+          </svg>
         </Button>
       </div>
 
-      {/* List View Toggle */}
+      {/* List View Toggle - Mobile Optimized */}
       <div className="absolute bottom-32 left-4 z-40">
         <Button
           size="icon"
-          className="floating-button w-14 h-14 bg-white hover:bg-primary/10 rounded-full shadow-floating"
+          className="touch-target w-14 h-14 bg-white hover:bg-primary/10 rounded-full shadow-lg"
           variant="outline"
         >
-          <i className="fas fa-list text-primary"></i>
-        </Button>
-      </div>
-
-      {/* Back Button */}
-      <div className="absolute top-20 left-4 z-40">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={onBack}
-          className="bg-white hover:bg-primary/10"
-        >
-          <i className="fas fa-arrow-left mr-2"></i>
-          Back
+          <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+          </svg>
         </Button>
       </div>
 

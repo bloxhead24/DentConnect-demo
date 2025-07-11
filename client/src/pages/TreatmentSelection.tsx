@@ -57,20 +57,22 @@ export default function TreatmentSelection({ onTreatmentSelect, selectedTreatmen
   };
   return (
     <div className="onboarding-step active">
-      <div className="px-4 py-8 space-y-6">
-        {/* Welcome Message with Enhanced Design */}
+      <div className="mobile-padding tablet-padding desktop-padding py-8 space-y-6">
+        {/* Welcome Message - Mobile Optimized */}
         <div className="text-center space-y-4">
-          <div className="w-20 h-20 bg-gradient-to-br from-primary via-primary/80 to-secondary rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl animate-pulse">
-            <i className="fas fa-tooth text-white text-3xl"></i>
+          <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-primary via-primary/80 to-secondary rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl animate-pulse">
+            <svg className="w-8 h-8 md:w-10 md:h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 leading-tight">How can we help you today?</h2>
-          <p className="text-gray-600 text-lg">Find the perfect dental appointment based on your needs</p>
+          <h2 className="mobile-header md:text-2xl font-bold text-gray-900 leading-tight">How can we help you today?</h2>
+          <p className="text-gray-600 mobile-text md:text-lg">Find the perfect dental appointment based on your needs</p>
         </div>
 
-        {/* Treatment Type Selection with Enhanced Grid */}
+        {/* Treatment Type Selection - Mobile Optimized */}
         <div className="space-y-6">
-          <h3 className="text-lg font-semibold text-gray-900 text-center">What type of treatment do you need?</h3>
-          <div className="grid grid-cols-2 gap-4">
+          <h3 className="mobile-header md:text-lg font-semibold text-gray-900 text-center">What type of treatment do you need?</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mobile-card">
             {treatmentTypes.map((treatment, index) => (
               <div 
                 key={treatment.id}
