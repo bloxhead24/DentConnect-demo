@@ -249,35 +249,15 @@ export default function MapView({ selectedTreatment, selectedAccessibility, sele
 
   return (
     <div className="onboarding-step active">
-      {/* Enhanced Search Bar - Mobile Optimized */}
-      <div className="absolute top-16 left-4 right-4 z-50 md:relative md:top-0 md:left-0 md:right-0 md:z-auto">
-        <EnhancedMapSearch
-          onLocationChange={handleLocationChange}
-          onFilterToggle={handleFilterToggle}
-          onQuestionnaireOpen={() => setShowQuestionnaire(true)}
-          searchMode={selectedSearchMode}
-          searchFilters={searchFilters}
-        />
-      </div>
-
-      {/* Map Container with Leaflet - Mobile Optimized */}
-      <div className="h-screen w-full relative overflow-hidden">
-        <div 
-          ref={mapRef} 
-          className="absolute inset-0 w-full h-full z-10"
-          style={{ background: '#f8f9fa' }}
-        />
-        
-        {/* Enhanced Loading State */}
-        <MapLoadingState isLoading={isLoading} searchQuery={location} />
-        
+      {/* Mobile Layout */}
+      <div className="block md:hidden">
         {/* Mobile Back Button */}
         <div className="absolute top-4 left-4 z-50">
           <Button
             variant="outline"
             size="sm"
             onClick={onBack}
-            className="touch-target bg-white hover:bg-primary/10 shadow-lg"
+            className="touch-target bg-white/90 hover:bg-primary/10 shadow-lg backdrop-blur-sm"
           >
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -285,49 +265,168 @@ export default function MapView({ selectedTreatment, selectedAccessibility, sele
             Back
           </Button>
         </div>
-        
-        {/* Urgent Search Floating Button - Mobile Optimized */}
-        <div className="absolute bottom-20 right-4 z-50">
-          <Button
-            onClick={handleUrgentSearch}
-            className="touch-target w-16 h-16 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg flex items-center justify-center animate-pulse"
-            size="icon"
-          >
-            <div className="text-center">
-              <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+        {/* Compact Search Mode Indicator */}
+        <div className="absolute top-4 right-4 z-50">
+          <div className="bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg">
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
+              <span className="text-xs font-medium text-gray-700">
+                {selectedSearchMode === "open" ? "Open Search" : 
+                 selectedSearchMode === "practice" ? "My Practice" : "My Dentist"}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Full Screen Map Container */}
+        <div className="h-screen w-full relative overflow-hidden">
+          <div 
+            ref={mapRef} 
+            className="absolute inset-0 w-full h-full z-10"
+            style={{ background: '#f8f9fa' }}
+          />
+          
+          {/* Enhanced Loading State */}
+          <MapLoadingState isLoading={isLoading} searchQuery={location} />
+          
+          {/* Floating Action Buttons */}
+          <div className="absolute bottom-6 right-4 z-50 flex flex-col space-y-3">
+            {/* Urgent Search Button */}
+            <Button
+              onClick={handleUrgentSearch}
+              className="touch-target w-14 h-14 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg flex items-center justify-center animate-pulse"
+              size="icon"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
-              <div className="text-xs font-bold">URGENT</div>
+            </Button>
+            
+            {/* Filter Button */}
+            <Button
+              size="icon"
+              className="touch-target w-12 h-12 bg-white/90 hover:bg-primary/10 rounded-full shadow-lg backdrop-blur-sm"
+              variant="outline"
+              onClick={() => setShowQuestionnaire(true)}
+            >
+              <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
+              </svg>
+            </Button>
+          </div>
+
+          {/* Search Bar at Bottom */}
+          <div className="absolute bottom-20 left-4 right-4 z-40">
+            <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-lg p-3">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                  <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  placeholder="Search location..."
+                  className="flex-1 bg-transparent border-none outline-none text-sm placeholder-gray-500"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                />
+                <Button size="sm" variant="ghost" className="p-1">
+                  <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </Button>
+              </div>
             </div>
-          </Button>
+          </div>
         </div>
       </div>
 
-      {/* Filter Button - Mobile Optimized */}
-      <div className="absolute bottom-32 right-4 z-40">
-        <Button
-          size="icon"
-          className="touch-target w-14 h-14 bg-white hover:bg-primary/10 rounded-full shadow-lg"
-          variant="outline"
-          onClick={() => setShowQuestionnaire(true)}
-        >
-          <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
-          </svg>
-        </Button>
+      {/* Desktop Layout */}
+      <div className="hidden md:block">
+        {/* Enhanced Search Bar - Desktop */}
+        <div className="absolute top-16 left-4 right-4 z-50 md:relative md:top-0 md:left-0 md:right-0 md:z-auto">
+          <EnhancedMapSearch
+            onLocationChange={handleLocationChange}
+            onFilterToggle={handleFilterToggle}
+            onQuestionnaireOpen={() => setShowQuestionnaire(true)}
+            searchMode={selectedSearchMode}
+            searchFilters={searchFilters}
+          />
+        </div>
+
+        {/* Map Container - Desktop */}
+        <div className="h-screen w-full relative overflow-hidden">
+          <div 
+            ref={mapRef} 
+            className="absolute inset-0 w-full h-full z-10"
+            style={{ background: '#f8f9fa' }}
+          />
+          
+          {/* Enhanced Loading State */}
+          <MapLoadingState isLoading={isLoading} searchQuery={location} />
+          
+          {/* Desktop Back Button */}
+          <div className="absolute top-4 left-4 z-50">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onBack}
+              className="touch-target bg-white hover:bg-primary/10 shadow-lg"
+            >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Back
+            </Button>
+          </div>
+          
+          {/* Desktop Floating Buttons */}
+          <div className="absolute bottom-20 right-4 z-50">
+            <Button
+              onClick={handleUrgentSearch}
+              className="touch-target w-16 h-16 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg flex items-center justify-center animate-pulse"
+              size="icon"
+            >
+              <div className="text-center">
+                <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                <div className="text-xs font-bold">URGENT</div>
+              </div>
+            </Button>
+          </div>
+        </div>
       </div>
 
-      {/* List View Toggle - Mobile Optimized */}
-      <div className="absolute bottom-32 left-4 z-40">
-        <Button
-          size="icon"
-          className="touch-target w-14 h-14 bg-white hover:bg-primary/10 rounded-full shadow-lg"
-          variant="outline"
-        >
-          <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-          </svg>
-        </Button>
+      {/* Desktop Filter Buttons */}
+      <div className="hidden md:block">
+        <div className="absolute bottom-32 right-4 z-40">
+          <Button
+            size="icon"
+            className="touch-target w-14 h-14 bg-white hover:bg-primary/10 rounded-full shadow-lg"
+            variant="outline"
+            onClick={() => setShowQuestionnaire(true)}
+          >
+            <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
+            </svg>
+          </Button>
+        </div>
+
+        <div className="absolute bottom-32 left-4 z-40">
+          <Button
+            size="icon"
+            className="touch-target w-14 h-14 bg-white hover:bg-primary/10 rounded-full shadow-lg"
+            variant="outline"
+          >
+            <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+            </svg>
+          </Button>
+        </div>
       </div>
 
       {/* Practice PIN Authentication Modal */}
