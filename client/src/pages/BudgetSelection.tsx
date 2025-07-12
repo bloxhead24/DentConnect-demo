@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { ArrowLeft, Check } from "lucide-react";
 import type { TreatmentType, AccessibilityNeed } from "@/lib/types";
-import { EarlyAccessPopup } from "@/components/EarlyAccessPopup";
+
 
 interface BudgetOption {
   id: string;
@@ -71,12 +71,10 @@ export default function BudgetSelection({
   selectedBudget 
 }: BudgetSelectionProps) {
   const [hoveredBudget, setHoveredBudget] = useState<string | null>(null);
-  const [showEarlyAccess, setShowEarlyAccess] = useState(false);
 
   const handleBudgetSelect = (budget: BudgetOption) => {
     onBudgetSelect(budget);
-    // Show early access popup after budget selection
-    setTimeout(() => setShowEarlyAccess(true), 1200);
+    // Navigation is handled immediately by the parent component
   };
 
   return (
@@ -268,14 +266,7 @@ export default function BudgetSelection({
         )}
       </div>
       
-      {/* Early Access Popup */}
-      <EarlyAccessPopup 
-        isOpen={showEarlyAccess}
-        onClose={() => setShowEarlyAccess(false)}
-        trigger="preferences-complete"
-        title="Budget Selected! 💰"
-        description="You've set your budget preferences. Join early access for personalized dental care matching."
-      />
+
     </div>
   );
 }
