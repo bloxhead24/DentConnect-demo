@@ -12,24 +12,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.sendFile(path.join(__dirname, "../client/src/fallback.html"));
   });
   
-  // Serve minimal version for slow devices/connections
-  app.get("/minimal", (req, res) => {
-    res.redirect("/?minimal=true");
+  // Serve fast loading version
+  app.get("/fast", (req, res) => {
+    res.redirect("/?fast=true");
   });
-  // Apply comprehensive security middleware for Google Ads compliance
+  // Minimal security middleware to prevent loading issues
   app.use(cors(corsOptions));
-  app.use(securityHeaders);
-  app.use(requestLogger);
   
-  // Apply security checks more selectively in development
+  // Only apply essential security in production
   if (process.env.NODE_ENV === 'production') {
-    app.use(antiMalwareCheck);
-    app.use(ipReputationCheck);
-    app.use(contentIntegrityCheck);
+    app.use(securityHeaders);
+    app.use(requestLogger);
   }
-  
-  app.use(validateInput);
-  app.use(apiRateLimiter);
 
   // Practice routes
   app.get("/api/practices", async (req, res) => {

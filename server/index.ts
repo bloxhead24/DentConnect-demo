@@ -6,23 +6,12 @@ import cors from "cors";
 
 const app = express();
 
-// Validate environment variables
-security.validateEnvironment();
-
-// Security middleware
-app.use(security.securityHeaders);
+// Basic middleware only to prevent loading issues
 app.use(cors(security.corsOptions));
 
-// Body parsing middleware with size limits
+// Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
-
-// Input validation middleware
-app.use(security.validateInput);
-
-// API rate limiting
-app.use('/api', security.apiRateLimiter);
-app.use('/api/bookings', security.bookingRateLimiter);
 
 // Trust proxy for correct IP addresses behind reverse proxy
 app.set('trust proxy', 1);

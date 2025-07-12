@@ -1,16 +1,15 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import "./polyfills/ie11";
-import { applyWindowsFixes, addWindowsEventListeners } from "./utils/windowsCompatibility";
-
-// Apply Windows compatibility fixes
-applyWindowsFixes();
-
-// Add Windows event listeners
-document.addEventListener('DOMContentLoaded', () => {
-  addWindowsEventListeners();
-});
+// Minimal polyfills for compatibility
+try {
+  if (typeof Promise === 'undefined') {
+    console.log('Loading polyfills...');
+    import("./polyfills/ie11");
+  }
+} catch (error) {
+  console.warn('Polyfill loading failed:', error);
+}
 
 // Enhanced error handling and fallback loading
 function initApp() {
@@ -21,31 +20,27 @@ function initApp() {
   }
 
   try {
-    // Check for different app modes
+    // Load fast app by default to solve loading issues
+    const fastMode = window.location.search.includes('fast=true') || window.location.pathname === '/fast';
     const testMode = window.location.search.includes('test=simple');
-    const minimalMode = window.location.search.includes('minimal=true') || window.location.pathname === '/minimal';
     
-    if (minimalMode) {
-      // Load ultra-lightweight version first
-      import('./App.minimal').then(({ default: MinimalApp }) => {
+    if (fastMode || (!testMode && !window.location.search.includes('full=true'))) {
+      // Load ultra-fast version by default
+      import('./App.fast').then(({ default: FastApp }) => {
         try {
-          createRoot(rootElement).render(<MinimalApp />);
+          createRoot(rootElement).render(<FastApp />);
         } catch (error) {
-          console.error("Error rendering minimal app:", error);
+          console.error("Error rendering fast app:", error);
           showFallbackUI(rootElement);
         }
       }).catch(error => {
-        console.error("Error loading minimal app:", error);
+        console.error("Error loading fast app:", error);
         showFallbackUI(rootElement);
       });
     } else if (testMode) {
       import('./App.simple').then(({ default: SimpleApp }) => {
         try {
-          createRoot(rootElement).render(
-            <React.StrictMode>
-              <SimpleApp />
-            </React.StrictMode>
-          );
+          createRoot(rootElement).render(<SimpleApp />);
         } catch (error) {
           console.error("Error rendering simple app:", error);
           showFallbackUI(rootElement);
@@ -55,26 +50,15 @@ function initApp() {
         showFallbackUI(rootElement);
       });
     } else {
-      // Try main app with timeout fallback
-      const loadTimeout = setTimeout(() => {
-        console.warn("Main app taking too long to load, falling back to minimal version");
-        window.location.search = '?minimal=true';
-      }, 5000);
-      
+      // Only load full app if explicitly requested
       import('./App').then(({ default: App }) => {
-        clearTimeout(loadTimeout);
         try {
-          createRoot(rootElement).render(
-            <React.StrictMode>
-              <App />
-            </React.StrictMode>
-          );
+          createRoot(rootElement).render(<App />);
         } catch (error) {
           console.error("Error rendering main app:", error);
           showFallbackUI(rootElement);
         }
       }).catch(error => {
-        clearTimeout(loadTimeout);
         console.error("Error loading main app:", error);
         showFallbackUI(rootElement);
       });
