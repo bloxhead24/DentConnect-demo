@@ -1,11 +1,16 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import path from "path";
 import { storage } from "./storage";
 import { insertBookingSchema, insertUserSchema } from "@shared/schema";
 import { securityHeaders, corsOptions, validateInput, apiRateLimiter, requestLogger, antiMalwareCheck, ipReputationCheck, contentIntegrityCheck } from "./security";
 import cors from "cors";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Serve fallback HTML for older browsers
+  app.get("/fallback", (req, res) => {
+    res.sendFile(path.join(__dirname, "../client/src/fallback.html"));
+  });
   // Apply comprehensive security middleware for Google Ads compliance
   app.use(cors(corsOptions));
   app.use(securityHeaders);

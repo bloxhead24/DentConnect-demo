@@ -22,26 +22,32 @@ export function isEdge(): boolean {
 export function applyWindowsFixes(): void {
   if (typeof window === 'undefined') return;
   
-  // Critical Windows browser fixes
-  fixNavigatorAPI();
-  fixDOMTiming();
-  fixES6Compatibility();
-  
-  // Fix for Windows touch events
-  if (isWindowsBrowser()) {
-    document.body.style.touchAction = 'manipulation';
-    document.body.style.msUserSelect = 'none';
-    document.body.style.webkitUserSelect = 'none';
-  }
-  
-  // Fix for Internet Explorer
-  if (isInternetExplorer()) {
-    addIEPolyfills();
-  }
-  
-  // Fix for Edge-specific issues
-  if (isEdge()) {
-    fixEdgeIssues();
+  try {
+    // Critical Windows browser fixes
+    fixNavigatorAPI();
+    fixDOMTiming();
+    fixES6Compatibility();
+    
+    // Fix for Windows touch events
+    if (isWindowsBrowser()) {
+      if (document.body) {
+        document.body.style.touchAction = 'manipulation';
+        document.body.style.msUserSelect = 'none';
+        document.body.style.webkitUserSelect = 'none';
+      }
+    }
+    
+    // Fix for Internet Explorer
+    if (isInternetExplorer()) {
+      addIEPolyfills();
+    }
+    
+    // Fix for Edge-specific issues
+    if (isEdge()) {
+      fixEdgeIssues();
+    }
+  } catch (error) {
+    console.warn('Windows compatibility fixes failed:', error);
   }
 }
 
