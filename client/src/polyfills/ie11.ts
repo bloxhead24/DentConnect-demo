@@ -6,7 +6,7 @@ if (typeof window !== 'undefined') {
   // 1. Object.assign polyfill
   if (!Object.assign) {
     Object.defineProperty(Object, 'assign', {
-      value: function assign(target: any, ...sources: any[]) {
+      value: function assign(target: any) {
         'use strict';
         if (target == null) {
           throw new TypeError('Cannot convert undefined or null to object');
@@ -52,8 +52,9 @@ if (typeof window !== 'undefined') {
 
   // 3. Array.prototype.includes polyfill
   if (!Array.prototype.includes) {
-    Array.prototype.includes = function(searchElement: any, fromIndex: number = 0) {
+    Array.prototype.includes = function(searchElement: any, fromIndex: any) {
       'use strict';
+      fromIndex = fromIndex || 0;
       const o = Object(this);
       const len = parseInt(o.length) || 0;
       if (len === 0) return false;
@@ -69,8 +70,9 @@ if (typeof window !== 'undefined') {
 
   // 4. String.prototype.includes polyfill
   if (!String.prototype.includes) {
-    String.prototype.includes = function(search: string, start: number = 0) {
+    String.prototype.includes = function(search: string, start: any) {
       'use strict';
+      start = start || 0;
       if (typeof start !== 'number') {
         start = 0;
       }
