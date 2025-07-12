@@ -7,6 +7,11 @@ import { securityHeaders, corsOptions, validateInput, apiRateLimiter, requestLog
 import cors from "cors";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Serve test page for debugging
+  app.get("/test", (req, res) => {
+    res.sendFile(path.join(__dirname, "..", "test-simple.html"));
+  });
+
   // Serve fallback HTML for older browsers
   app.get("/fallback", (req, res) => {
     res.sendFile(path.join(__dirname, "../client/src/fallback.html"));
