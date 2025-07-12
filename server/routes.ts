@@ -1,10 +1,14 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import path from "path";
+import { fileURLToPath } from "url";
 import { storage } from "./storage";
 import { insertBookingSchema, insertUserSchema } from "@shared/schema";
 import { securityHeaders, corsOptions, validateInput, apiRateLimiter, requestLogger, antiMalwareCheck, ipReputationCheck, contentIntegrityCheck } from "./security";
 import cors from "cors";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Serve test page for debugging
