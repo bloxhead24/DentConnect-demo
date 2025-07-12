@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BookingFormData } from "@/lib/types";
+import { BookingFormData } from "../lib/types";
 
 export function useBookingFlow() {
   const [currentStep, setCurrentStep] = useState(1);
