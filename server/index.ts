@@ -67,17 +67,9 @@ app.use((req, res, next) => {
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
   
-  // Force production mode for deployment
-  const isProduction = process.env.NODE_ENV === "production" || process.env.NODE_ENV === undefined;
-  
-  console.log("NODE_ENV is:", process.env.NODE_ENV);
-  console.log("Running in production mode:", isProduction);
-  
-  if (!isProduction) {
-    console.log("Setting up Vite for development");
+  if (process.env.NODE_ENV === "development") {
     await setupVite(app, server);
   } else {
-    console.log("Setting up static file serving for production");
     serveStatic(app);
   }
 

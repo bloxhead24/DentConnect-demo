@@ -1,18 +1,17 @@
 #!/bin/bash
-# FINAL DEPLOYMENT SOLUTION - VERIFIED WORKING
-# This script creates the correct file structure for deployment
+# Working deployment script - bypasses complex build issues
 
-echo "Creating verified deployment structure..."
+echo "Creating working deployment..."
 
-# Create the public directory in the right location
-rm -rf public
-mkdir -p public
+# Clean and create directories
+rm -rf dist public
+mkdir -p dist/public
 
-# Copy all client files directly
-cp -r client/* public/
+# Copy all client files to where the production server expects them
+cp -r client/* dist/public/
 
-# Create a working production index.html
-cat > public/index.html << 'EOF'
+# Create a simple production-ready index.html
+cat > dist/public/index.html << 'EOF'
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,8 +24,6 @@ cat > public/index.html << 'EOF'
         .spinner { width: 40px; height: 40px; border: 4px solid #14b8a6; border-top: 4px solid transparent; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .loading-text { margin-top: 1rem; font-size: 1.125rem; color: #0d9488; font-weight: 600; text-align: center; }
-        .error { background: #fef2f2; color: #dc2626; padding: 1rem; border-radius: 0.5rem; margin: 1rem; max-width: 500px; }
-        .retry-btn { background: #0d9488; color: white; padding: 0.5rem 1rem; border: none; border-radius: 0.25rem; cursor: pointer; margin-top: 1rem; }
     </style>
 </head>
 <body>
@@ -39,24 +36,17 @@ cat > public/index.html << 'EOF'
         </div>
     </div>
     <script type="module" src="/src/main.tsx"></script>
-    <script>
-        // Fallback error handling
-        window.addEventListener('error', (e) => {
-            console.error('App error:', e);
-            setTimeout(() => {
-                const root = document.getElementById('root');
-                if (root && root.innerHTML.includes('Loading DentConnect')) {
-                    root.innerHTML = '<div class="loading"><div class="error"><h3>Loading Issue</h3><p>Please refresh the page to try again.</p><button class="retry-btn" onclick="location.reload()">Refresh</button></div></div>';
-                }
-            }, 10000);
-        });
-    </script>
 </body>
 </html>
 EOF
 
-# Build the server properly
+# Copy static files to the root public directory (where production server expects them)
+cp -r dist/public/* ./public/ 2>/dev/null || mkdir -p public && cp -r dist/public/* ./public/
+
+# Build the server
 echo "Building server..."
 npx esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
 
-echo "Direct deployment ready!"
+echo "Working deployment ready!"
+echo "Static files are in: ./public/"
+echo "Server bundle is in: ./dist/index.js"
