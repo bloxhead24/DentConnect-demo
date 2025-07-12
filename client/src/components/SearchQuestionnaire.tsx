@@ -145,13 +145,13 @@ export function SearchQuestionnaire({ isOpen, onClose, onComplete }: SearchQuest
         <SheetHeader>
           <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4"></div>
           <SheetTitle className="text-left">A few gentle questions</SheetTitle>
-          <p className="text-sm text-text-soft text-left">This helps us find the perfect dentist for you</p>
+          <p className="text-sm text-gray-600 text-left">This helps us find the perfect dentist for you</p>
         </SheetHeader>
         
         <div className="space-y-6">
           {/* Progress Bar */}
           <div className="space-y-2">
-            <div className="flex justify-between text-sm text-text-soft">
+            <div className="flex justify-between text-sm text-gray-600">
               <span>Progress</span>
               <span>{currentStep} of {totalSteps}</span>
             </div>
@@ -166,7 +166,7 @@ export function SearchQuestionnaire({ isOpen, onClose, onComplete }: SearchQuest
                   <i className="fas fa-user-md text-primary text-xl"></i>
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900">Medical History</h3>
-                <p className="text-text-soft">Do you have any of these conditions?</p>
+                <p className="text-gray-600">Do you have any of these conditions?</p>
               </div>
               
               <div className="grid grid-cols-1 gap-3">
@@ -202,13 +202,13 @@ export function SearchQuestionnaire({ isOpen, onClose, onComplete }: SearchQuest
                 <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto">
                   <i className="fas fa-pills text-orange-500 text-xl"></i>
                 </div>
-                <h3 className="text-xl font-semibold text-text-primary">Medications & Allergies</h3>
-                <p className="text-text-soft">Help us keep you safe during treatment</p>
+                <h3 className="text-xl font-semibold text-gray-900">Medications & Allergies</h3>
+                <p className="text-gray-600">Help us keep you safe during treatment</p>
               </div>
               
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-text-primary">
+                  <label className="text-sm font-medium text-gray-900">
                     Current medications (if any)
                   </label>
                   <Textarea
@@ -220,7 +220,7 @@ export function SearchQuestionnaire({ isOpen, onClose, onComplete }: SearchQuest
                 </div>
                 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-text-primary">
+                  <label className="text-sm font-medium text-gray-900">
                     Known allergies (if any)
                   </label>
                   <Textarea
@@ -241,8 +241,8 @@ export function SearchQuestionnaire({ isOpen, onClose, onComplete }: SearchQuest
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
                   <i className="fas fa-heart text-green-500 text-xl"></i>
                 </div>
-                <h3 className="text-xl font-semibold text-text-primary">How are you feeling?</h3>
-                <p className="text-text-soft">We understand dental visits can be stressful</p>
+                <h3 className="text-xl font-semibold text-gray-900">How are you feeling?</h3>
+                <p className="text-gray-600">We understand dental visits can be stressful</p>
               </div>
               
               <img 
@@ -267,8 +267,8 @@ src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' he
                         <i className={`${level.icon} text-white text-sm`}></i>
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-medium text-text-primary">{level.label}</h4>
-                        <p className="text-xs text-text-soft">{level.description}</p>
+                        <h4 className="font-medium text-gray-900">{level.label}</h4>
+                        <p className="text-xs text-gray-600">{level.description}</p>
                       </div>
                       {formData.anxietyLevel === level.value && (
                         <i className="fas fa-check text-primary"></i>
@@ -287,13 +287,13 @@ src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' he
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
                   <i className="fas fa-calendar-check text-blue-500 text-xl"></i>
                 </div>
-                <h3 className="text-xl font-semibold text-text-primary">Final details</h3>
-                <p className="text-text-soft">When would you prefer your appointment?</p>
+                <h3 className="text-xl font-semibold text-gray-900">Final details</h3>
+                <p className="text-gray-600">When would you prefer your appointment?</p>
               </div>
               
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-text-primary">How urgent is this?</label>
+                  <label className="text-sm font-medium text-gray-900">How urgent is this?</label>
                   <Select value={formData.urgency} onValueChange={(value) => updateFormData({ urgency: value })}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select urgency" />
@@ -308,7 +308,7 @@ src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' he
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-text-primary">Preferred time of day</label>
+                  <label className="text-sm font-medium text-gray-900">Preferred time of day</label>
                   <Select value={formData.preferredTime} onValueChange={(value) => updateFormData({ preferredTime: value })}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select preference" />
@@ -323,7 +323,7 @@ src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' he
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-text-primary">
+                  <label className="text-sm font-medium text-gray-900">
                     Anything else we should know?
                   </label>
                   <Textarea

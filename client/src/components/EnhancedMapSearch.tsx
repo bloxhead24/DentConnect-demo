@@ -152,8 +152,8 @@ export function EnhancedMapSearch({
                   className="flex items-center space-x-2 p-2 rounded-lg hover:bg-primary/5 cursor-pointer transition-colors"
                   onClick={() => handleLocationSelect(suggestion)}
                 >
-                  <i className="fas fa-map-marker-alt text-text-soft text-xs"></i>
-                  <span className="text-sm text-text-primary">{suggestion}</span>
+                  <i className="fas fa-map-marker-alt text-gray-600 text-xs"></i>
+                  <span className="text-sm text-gray-900">{suggestion}</span>
                 </div>
               ))}
             </div>
@@ -197,7 +197,7 @@ export function EnhancedMapSearch({
       {(searchFilters?.urgency || searchFilters?.anxietyLevel || (searchFilters?.accessibilityNeeds && searchFilters.accessibilityNeeds.length > 0)) && (
         <Card className="bg-white/95 backdrop-blur-sm p-3">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-medium text-text-primary">Active Filters</span>
+            <span className="text-xs font-medium text-gray-900">Active Filters</span>
             <Button variant="ghost" size="sm" className="h-6 px-2 text-xs">
               <i className="fas fa-times mr-1"></i>
               Clear

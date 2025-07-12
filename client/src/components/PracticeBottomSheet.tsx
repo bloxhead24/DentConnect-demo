@@ -246,7 +246,7 @@ export function PracticeBottomSheet({ practice, isOpen, onClose, onBookAppointme
           {/* Standard Appointments List for Open Search or as fallback */}
           {(searchMode === "open" || (!earliestAppointment && filteredAppointments.length > 0)) && (
             <div className="space-y-4">
-              <h4 className="font-medium text-text-primary">
+              <h4 className="font-medium text-gray-900">
                 {searchMode === "open" ? "Available Today" : "All Available Appointments"}
               </h4>
               <div className="grid grid-cols-2 gap-3">
