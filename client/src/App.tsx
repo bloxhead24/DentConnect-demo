@@ -64,17 +64,11 @@ function LoadingScreen() {
 
 // Import components directly to avoid lazy loading issues
 import Home from "@/pages/Home";
-import EarlyAccessForm from "@/pages/EarlyAccessForm";
-import DentistSignup from "@/pages/DentistSignup";
-import DentistDashboard from "@/pages/DentistDashboard";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
-      <Route path="/early-access" component={EarlyAccessForm} />
-      <Route path="/dentist-signup" component={DentistSignup} />
-      <Route path="/dentist-dashboard" component={DentistDashboard} />
       <Route component={NotFound} />
     </Switch>
   );
