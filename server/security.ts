@@ -78,7 +78,7 @@ export const corsOptions: cors.CorsOptions = {
         // Reject other origins
         return callback(new Error('Not allowed by CORS'));
       }
-    : ['http://localhost:5000', 'http://localhost:3000'],
+    : true, // Allow all origins in development for Chrome compatibility
   credentials: true,
   optionsSuccessStatus: 200,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],

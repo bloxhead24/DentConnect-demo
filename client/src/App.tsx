@@ -62,23 +62,21 @@ function LoadingScreen() {
   );
 }
 
-// Lazy load components to fix loading issues
-const Home = React.lazy(() => import("@/pages/Home"));
-const EarlyAccessForm = React.lazy(() => import("@/pages/EarlyAccessForm"));
-const DentistSignup = React.lazy(() => import("@/pages/DentistSignup"));
-const DentistDashboard = React.lazy(() => import("@/pages/DentistDashboard"));
+// Import components directly to avoid lazy loading issues
+import Home from "@/pages/Home";
+import EarlyAccessForm from "@/pages/EarlyAccessForm";
+import DentistSignup from "@/pages/DentistSignup";
+import DentistDashboard from "@/pages/DentistDashboard";
 
 function Router() {
   return (
-    <Suspense fallback={<LoadingScreen />}>
-      <Switch>
-        <Route path="/" component={Home} />
-        <Route path="/early-access" component={EarlyAccessForm} />
-        <Route path="/dentist-signup" component={DentistSignup} />
-        <Route path="/dentist-dashboard" component={DentistDashboard} />
-        <Route component={NotFound} />
-      </Switch>
-    </Suspense>
+    <Switch>
+      <Route path="/" component={Home} />
+      <Route path="/early-access" component={EarlyAccessForm} />
+      <Route path="/dentist-signup" component={DentistSignup} />
+      <Route path="/dentist-dashboard" component={DentistDashboard} />
+      <Route component={NotFound} />
+    </Switch>
   );
 }
 
