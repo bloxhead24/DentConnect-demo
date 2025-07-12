@@ -32,6 +32,64 @@
         -moz-appearance: none; 
         appearance: none; 
       }
+      
+      /* Internet Explorer 11 fixes */
+      @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+        html, body {
+          height: 100%;
+          font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        #root {
+          height: 100%;
+          display: -ms-flexbox;
+          display: flex;
+          -ms-flex-direction: column;
+          flex-direction: column;
+        }
+        
+        .flex {
+          display: -ms-flexbox;
+          display: flex;
+        }
+        
+        .items-center {
+          -ms-flex-align: center;
+          align-items: center;
+        }
+        
+        .justify-center {
+          -ms-flex-pack: center;
+          justify-content: center;
+        }
+        
+        .justify-between {
+          -ms-flex-pack: justify;
+          justify-content: space-between;
+        }
+        
+        .flex-1 {
+          -ms-flex: 1;
+          flex: 1;
+        }
+        
+        .flex-col {
+          -ms-flex-direction: column;
+          flex-direction: column;
+        }
+        
+        .space-y-4 > :not([hidden]) ~ :not([hidden]) {
+          --tw-space-y-reverse: 0;
+          margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
+          margin-bottom: calc(1rem * var(--tw-space-y-reverse));
+        }
+        
+        .space-y-2 > :not([hidden]) ~ :not([hidden]) {
+          --tw-space-y-reverse: 0;
+          margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
+          margin-bottom: calc(0.5rem * var(--tw-space-y-reverse));
+        }
+      }
     </style>
   </head>
   <body>
