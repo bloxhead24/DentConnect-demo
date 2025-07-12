@@ -21,10 +21,24 @@ function initApp() {
   }
 
   try {
-    // Test with simple app first to diagnose issues
+    // Check for different app modes
     const testMode = window.location.search.includes('test=simple');
+    const minimalMode = window.location.search.includes('minimal=true') || window.location.pathname === '/minimal';
     
-    if (testMode) {
+    if (minimalMode) {
+      // Load ultra-lightweight version first
+      import('./App.minimal').then(({ default: MinimalApp }) => {
+        try {
+          createRoot(rootElement).render(<MinimalApp />);
+        } catch (error) {
+          console.error("Error rendering minimal app:", error);
+          showFallbackUI(rootElement);
+        }
+      }).catch(error => {
+        console.error("Error loading minimal app:", error);
+        showFallbackUI(rootElement);
+      });
+    } else if (testMode) {
       import('./App.simple').then(({ default: SimpleApp }) => {
         try {
           createRoot(rootElement).render(
@@ -41,7 +55,14 @@ function initApp() {
         showFallbackUI(rootElement);
       });
     } else {
+      // Try main app with timeout fallback
+      const loadTimeout = setTimeout(() => {
+        console.warn("Main app taking too long to load, falling back to minimal version");
+        window.location.search = '?minimal=true';
+      }, 5000);
+      
       import('./App').then(({ default: App }) => {
+        clearTimeout(loadTimeout);
         try {
           createRoot(rootElement).render(
             <React.StrictMode>
@@ -53,6 +74,7 @@ function initApp() {
           showFallbackUI(rootElement);
         }
       }).catch(error => {
+        clearTimeout(loadTimeout);
         console.error("Error loading main app:", error);
         showFallbackUI(rootElement);
       });
@@ -111,13 +133,17 @@ function showFallbackUI(rootElement: HTMLElement) {
         </div>
         
         <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-          <button onclick="window.location.reload()" 
-                  style="padding: 12px 24px; background: #0d9488; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
-            Try Again
+          <button onclick="window.location.href='/?minimal=true'" 
+                  style="padding: 12px 24px; background: #10b981; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+            Fast Version
           </button>
           <button onclick="window.location.href='/fallback'" 
                   style="padding: 12px 24px; background: #f59e0b; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
             Simple Version
+          </button>
+          <button onclick="window.location.reload()" 
+                  style="padding: 12px 24px; background: #0d9488; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+            Try Again
           </button>
           <button onclick="window.open('https://dentconnect.replit.app/', '_blank')" 
                   style="padding: 12px 24px; background: white; color: #0d9488; border: 2px solid #0d9488; border-radius: 8px; cursor: pointer; font-weight: 600;">

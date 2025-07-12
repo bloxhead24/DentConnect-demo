@@ -11,6 +11,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/fallback", (req, res) => {
     res.sendFile(path.join(__dirname, "../client/src/fallback.html"));
   });
+  
+  // Serve minimal version for slow devices/connections
+  app.get("/minimal", (req, res) => {
+    res.redirect("/?minimal=true");
+  });
   // Apply comprehensive security middleware for Google Ads compliance
   app.use(cors(corsOptions));
   app.use(securityHeaders);
