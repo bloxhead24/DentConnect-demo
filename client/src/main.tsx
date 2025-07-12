@@ -13,8 +13,20 @@ document.addEventListener('DOMContentLoaded', () => {
   addWindowsEventListeners();
 });
 
-createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+// Test with simple app first
+const testMode = window.location.search.includes('test=simple');
+if (testMode) {
+  import('./App.simple').then(({ default: SimpleApp }) => {
+    createRoot(document.getElementById("root")!).render(
+      <React.StrictMode>
+        <SimpleApp />
+      </React.StrictMode>
+    );
+  });
+} else {
+  createRoot(document.getElementById("root")!).render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
+}

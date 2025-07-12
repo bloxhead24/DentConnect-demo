@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DentConnect Test</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; text-align: center; }
+        .treatment-card { 
+            border: 2px solid #0d9488; 
+            border-radius: 8px; 
+            padding: 20px; 
+            margin: 10px 0; 
+            cursor: pointer; 
+            transition: all 0.3s ease;
+        }
+        .treatment-card:hover { 
+            background-color: #0d9488; 
+            color: white; 
+            transform: translateY(-2px);
+        }
+        .header { 
+            color: #0d9488; 
+            margin-bottom: 30px; 
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState } = React;
+        
+        function TestApp() {
+            const [step, setStep] = useState('home');
+            const [selectedTreatment, setSelectedTreatment] = useState(null);
+            
+            const treatments = [
+                { id: 'routine', name: 'Routine Check-up', description: 'Regular dental cleaning and examination' },
+                { id: 'urgent', name: 'Urgent Treatment', description: 'Pain relief and urgent dental care' },
+                { id: 'emergency', name: 'Emergency', description: 'Immediate dental emergency treatment' },
+                { id: 'cosmetic', name: 'Cosmetic', description: 'Aesthetic dental treatments' }
+            ];
+            
+            if (step === 'home') {
+                return (
+                    <div className="container">
+                        <div className="header">
+                            <h1>🦷 DentConnect</h1>
+                            <p>Find available dental appointments near you</p>
+                        </div>
+                        
+                        <h2>What type of treatment do you need?</h2>
+                        
+                        {treatments.map(treatment => (
+                            <div 
+                                key={treatment.id}
+                                className="treatment-card"
+                                onClick={() => {
+                                    setSelectedTreatment(treatment);
+                                    setStep('selected');
+                                }}
+                            >
+                                <h3>{treatment.name}</h3>
+                                <p>{treatment.description}</p>
+                            </div>
+                        ))}
+                    </div>
+                );
+            }
+            
+            if (step === 'selected') {
+                return (
+                    <div className="container">
+                        <div className="header">
+                            <h1>🦷 DentConnect</h1>
+                            <button onClick={() => setStep('home')}>← Back</button>
+                        </div>
+                        
+                        <h2>Selected: {selectedTreatment.name}</h2>
+                        <p>{selectedTreatment.description}</p>
+                        
+                        <div className="treatment-card">
+                            <h3>✅ Demo Working!</h3>
+                            <p>The basic React functionality is working correctly.</p>
+                        </div>
+                        
+                        <button onClick={() => window.location.href = '/'}>
+                            Back to Full App
+                        </button>
+                    </div>
+                );
+            }
+        }
+        
+        ReactDOM.render(<TestApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
