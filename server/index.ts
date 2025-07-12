@@ -6,12 +6,20 @@ import cors from "cors";
 
 const app = express();
 
-// Basic middleware only to prevent loading issues
-app.use(cors(security.corsOptions));
-
-// Body parsing middleware
+// Basic middleware only
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
+app.use(cors());
+
+// Only add security in production
+if (process.env.NODE_ENV === 'production') {
+  security.validateEnvironment();
+  app.use(security.securityHeaders);
+  app.use(cors(security.corsOptions));
+  app.use(security.validateInput);
+  app.use('/api', security.apiRateLimiter);
+  app.use('/api/bookings', security.bookingRateLimiter);
+}
 
 // Trust proxy for correct IP addresses behind reverse proxy
 app.set('trust proxy', 1);

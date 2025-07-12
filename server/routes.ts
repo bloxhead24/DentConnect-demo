@@ -16,13 +16,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/fast", (req, res) => {
     res.redirect("/?fast=true");
   });
-  // Minimal security middleware to prevent loading issues
-  app.use(cors(corsOptions));
-  
-  // Only apply essential security in production
+  // Minimal middleware for development
   if (process.env.NODE_ENV === 'production') {
+    app.use(cors(corsOptions));
     app.use(securityHeaders);
     app.use(requestLogger);
+    app.use(antiMalwareCheck);
+    app.use(ipReputationCheck);
+    app.use(contentIntegrityCheck);
+    app.use(validateInput);
+    app.use(apiRateLimiter);
   }
 
   // Practice routes
