@@ -1,14 +1,24 @@
 #!/bin/bash
-# Simple build script that works with the original architecture
+# Fixed build script that works
 
-echo "Building for production..."
+echo "Building with optimizations..."
 
-# Build the client using Vite
+# Set production environment
+export NODE_ENV=production
+
+# Clean previous builds
+rm -rf dist
+
+# Build frontend with chunk size limits
+echo "Building frontend..."
 cd client
-npm run build
+npx vite build --outDir ../dist/public --emptyOutDir
+
+# Back to root
 cd ..
 
-# Build the server
+# Build backend
+echo "Building backend..."
 npx esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
 
 echo "Build complete!"
