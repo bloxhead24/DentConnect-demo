@@ -97,16 +97,16 @@ export function PracticeBottomSheet({ practice, isOpen, onClose, onBookAppointme
                     <i key={i} className={`fas fa-star text-sm ${i < Math.floor(practice.rating || 0) ? 'text-yellow-400' : 'text-gray-300'}`}></i>
                   ))}
                 </div>
-                <span className="text-sm text-text-soft">({practice.rating})</span>
+                <span className="text-sm text-gray-600">({practice.rating})</span>
               </div>
             </div>
             
-            <div className="flex items-center space-x-2 text-text-soft">
+            <div className="flex items-center space-x-2 text-gray-600">
               <i className="fas fa-map-marker-alt text-primary"></i>
               <span className="text-sm">{practice.address}</span>
             </div>
             
-            <div className="flex items-center space-x-2 text-text-soft">
+            <div className="flex items-center space-x-2 text-gray-600">
               <i className="fas fa-clock text-primary"></i>
               <span className="text-sm">{practice.openingHours}</span>
             </div>
@@ -114,7 +114,7 @@ export function PracticeBottomSheet({ practice, isOpen, onClose, onBookAppointme
           
           {availableFeatures.length > 0 && (
             <div className="space-y-2">
-              <h4 className="font-medium text-text-primary">Accessibility Features</h4>
+              <h4 className="font-medium text-gray-900">Accessibility Features</h4>
               <div className="flex flex-wrap gap-2">
                 {availableFeatures.map(feature => (
                   <Badge key={feature.key} variant="secondary" className="bg-primary/10 text-primary">

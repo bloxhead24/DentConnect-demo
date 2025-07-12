@@ -165,7 +165,7 @@ export function SearchQuestionnaire({ isOpen, onClose, onComplete }: SearchQuest
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
                   <i className="fas fa-user-md text-primary text-xl"></i>
                 </div>
-                <h3 className="text-xl font-semibold text-text-primary">Medical History</h3>
+                <h3 className="text-xl font-semibold text-gray-900">Medical History</h3>
                 <p className="text-text-soft">Do you have any of these conditions?</p>
               </div>
               
@@ -184,7 +184,7 @@ export function SearchQuestionnaire({ isOpen, onClose, onComplete }: SearchQuest
                       <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
                         <i className={`${condition.icon} text-primary text-sm`}></i>
                       </div>
-                      <span className="font-medium text-text-primary">{condition.name}</span>
+                      <span className="font-medium text-gray-900">{condition.name}</span>
                       {formData.medicalConditions.includes(condition.id) && (
                         <i className="fas fa-check text-primary ml-auto"></i>
                       )}

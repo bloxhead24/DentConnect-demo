@@ -43,11 +43,11 @@ export function MapLoadingState({ isLoading, searchQuery }: MapLoadingStateProps
           </div>
           
           <div className="space-y-2">
-            <h3 className="text-lg font-semibold text-text-primary">
+            <h3 className="text-lg font-semibold text-gray-900">
               {loadingSteps[loadingStep].text}
             </h3>
             {searchQuery && (
-              <p className="text-sm text-text-soft">Searching in {searchQuery}</p>
+              <p className="text-sm text-gray-600">Searching in {searchQuery}</p>
             )}
           </div>
 

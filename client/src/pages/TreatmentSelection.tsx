@@ -57,7 +57,7 @@ export default function TreatmentSelection({ onTreatmentSelect, selectedTreatmen
   };
   return (
     <div className="onboarding-step active">
-      <div className="mobile-padding tablet-padding desktop-padding py-8 space-y-6">
+      <div className="container mx-auto max-w-4xl space-y-8">
         {/* Welcome Message - Mobile Optimized */}
         <div className="text-center space-y-4">
           <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-primary via-primary/80 to-secondary rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl animate-pulse">
@@ -65,18 +65,18 @@ export default function TreatmentSelection({ onTreatmentSelect, selectedTreatmen
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h2 className="mobile-header md:text-2xl font-bold text-gray-900 leading-tight">How can we help you today?</h2>
-          <p className="text-gray-600 mobile-text md:text-lg">Find the perfect dental appointment based on your needs</p>
+          <h2 className="responsive-title text-gray-900 leading-tight">How can we help you today?</h2>
+          <p className="text-gray-600 responsive-subtitle max-w-2xl mx-auto">Find the perfect dental appointment based on your needs</p>
         </div>
 
         {/* Treatment Type Selection - Mobile Optimized */}
         <div className="space-y-6">
-          <h3 className="mobile-header md:text-lg font-semibold text-gray-900 text-center">What type of treatment do you need?</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mobile-card">
+          <h3 className="responsive-subtitle font-semibold text-gray-900 text-center">What type of treatment do you need?</h3>
+          <div className="treatment-grid">
             {treatmentTypes.map((treatment, index) => (
               <div 
                 key={treatment.id}
-                className="animate-in fade-in-50 slide-in-from-bottom-8 duration-500"
+                className="animate-in"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <TreatmentCard

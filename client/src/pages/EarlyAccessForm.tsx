@@ -5,14 +5,14 @@ import { ArrowLeft, ExternalLink } from "lucide-react";
 
 export default function EarlyAccessForm() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-light via-white to-primary-light">
+    <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-teal-50">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
           <DentConnectLogo width={300} height={75} className="mx-auto mb-6" />
           <Button
             variant="ghost"
             onClick={() => window.history.back()}
-            className="mb-4 text-text-soft hover:text-text-primary"
+            className="mb-4 text-gray-600 hover:text-gray-900"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Demo

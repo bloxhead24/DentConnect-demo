@@ -34,7 +34,7 @@ export function SuccessModal({ isOpen, onClose }: SuccessModalProps) {
           <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto">
             <i className="fas fa-check text-white text-xl"></i>
           </div>
-          <h3 className="text-xl font-semibold text-text-primary">Appointment Confirmed!</h3>
+          <h3 className="text-xl font-semibold text-gray-900">Appointment Confirmed!</h3>
           <p className="text-text-soft">Your appointment has been successfully booked. We'll send you a reminder.</p>
           
           <img 

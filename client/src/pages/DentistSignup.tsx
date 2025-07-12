@@ -177,7 +177,7 @@ export default function DentistSignup() {
 
   if (currentStep === 5) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-light via-white to-primary-light flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-teal-50 flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6 text-center">
             <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
@@ -216,7 +216,7 @@ export default function DentistSignup() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-light via-white to-primary-light">
+    <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-teal-50">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
           <DentConnectLogo width={300} height={75} className="mx-auto mb-6" />

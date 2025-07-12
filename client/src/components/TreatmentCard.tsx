@@ -26,25 +26,25 @@ export function TreatmentCard({ treatment, selected, onSelect }: TreatmentCardPr
   return (
     <Card
       className={cn(
-        "treatment-card p-5 cursor-pointer border-2 transition-all duration-300 transform hover:scale-105",
-        "hover:shadow-xl",
+        "treatment-card p-4 sm:p-5 cursor-pointer border-2 transition-all duration-300 transform hover:scale-105",
+        "hover:shadow-xl touch-friendly min-h-[120px] sm:min-h-[140px]",
         selected ? "border-primary bg-gradient-to-br from-primary/10 to-primary/20 shadow-xl shadow-primary/20 scale-105" : "border-transparent hover:border-primary/30",
         colorClasses[treatment.category]
       )}
       onClick={() => onSelect(treatment)}
     >
-      <div className="text-center space-y-3">
+      <div className="text-center space-y-3 h-full flex flex-col justify-center">
         <div className={cn(
-          "w-12 h-12 rounded-full flex items-center justify-center mx-auto shadow-lg",
+          "w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mx-auto shadow-lg",
           selected ? "bg-primary" : bgClasses[treatment.category]
         )}>
-          <i className={`${treatment.icon} text-white text-lg`}></i>
+          <i className={`${treatment.icon} text-white text-sm sm:text-lg`}></i>
         </div>
         <div>
-          <h4 className={`font-bold ${selected ? 'text-primary' : 'text-gray-900'}`}>
+          <h4 className={`font-bold responsive-body ${selected ? 'text-primary' : 'text-gray-900'}`}>
             {treatment.name}
           </h4>
-          <p className={`text-xs ${selected ? 'text-primary/80' : 'text-gray-600'}`}>
+          <p className={`text-xs sm:text-sm ${selected ? 'text-primary/80' : 'text-gray-600'}`}>
             {treatment.description}
           </p>
         </div>
