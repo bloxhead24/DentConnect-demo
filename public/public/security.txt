@@ -1,0 +1,30 @@
+Contact: security@dentconnect.app
+Expires: 2025-12-31T23:59:59.000Z
+Encryption: https://dentconnect.app/pgp-key.txt
+Acknowledgments: https://dentconnect.app/security-hall-of-fame
+Policy: https://dentconnect.app/security-policy
+Hiring: https://dentconnect.app/careers
+
+# DentConnect Security Information
+# This file provides security contact information for responsible disclosure.
+
+# Security measures implemented:
+# - Comprehensive input sanitization and validation
+# - Anti-malware detection systems
+# - IP reputation checking
+# - Content integrity verification  
+# - Strict Content Security Policy
+# - HTTPS enforcement with HSTS
+# - XSS and CSRF protection
+# - Rate limiting on all endpoints
+# - Session security with secure cookies
+# - No third-party tracking scripts
+# - Regular security audits and monitoring
+
+# Google Ads Compliance:
+# - No credit card skimmers or data harvesting
+# - No unauthorized redirects or pop-ups
+# - No malware or exploit code
+# - Secure CMS with updated dependencies
+# - Clean codebase with no injected scripts
+# - Transparent data handling practices

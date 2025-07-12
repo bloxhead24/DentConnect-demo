@@ -1,18 +1,3 @@
-#!/bin/bash
-# FINAL DEPLOYMENT SOLUTION - VERIFIED WORKING
-# This script creates the correct file structure for deployment
-
-echo "Creating verified deployment structure..."
-
-# Create the public directory in the right location
-rm -rf public
-mkdir -p public
-
-# Copy all client files directly
-cp -r client/* public/
-
-# Create a working production index.html
-cat > public/index.html << 'EOF'
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -53,10 +38,3 @@ cat > public/index.html << 'EOF'
     </script>
 </body>
 </html>
-EOF
-
-# Build the server properly
-echo "Building server..."
-npx esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
-
-echo "Direct deployment ready!"
