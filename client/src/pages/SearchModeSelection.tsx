@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import { TreatmentType, AccessibilityNeed } from "@/lib/types";
-import { EarlyAccessPopup } from "@/components/EarlyAccessPopup";
+import { Button } from "../components/ui/button";
+import { Card } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { cn } from "../lib/utils";
+import { TreatmentType, AccessibilityNeed } from "../lib/types";
+import { EarlyAccessPopup } from "../components/EarlyAccessPopup";
 
 type SearchMode = "open" | "practice" | "mydentist";
 

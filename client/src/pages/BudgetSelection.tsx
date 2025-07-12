@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { Button } from "../components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { cn } from "../lib/utils";
 import { ArrowLeft, Check } from "lucide-react";
-import type { TreatmentType, AccessibilityNeed } from "@/lib/types";
+import type { TreatmentType, AccessibilityNeed } from "../lib/types";
 
 
 interface BudgetOption {

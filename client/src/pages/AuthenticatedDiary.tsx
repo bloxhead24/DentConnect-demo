@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import { DiaryView } from "@/components/DiaryView";
+import { Button } from "../components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { cn } from "../lib/utils";
+import { DiaryView } from "../components/DiaryView";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import type { Practice, Dentist, Appointment } from "@shared/schema";

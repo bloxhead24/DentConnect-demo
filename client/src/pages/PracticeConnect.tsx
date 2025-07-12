@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { TreatmentType, AccessibilityNeed } from "@/lib/types";
-import { cn } from "@/lib/utils";
-import { EarlyAccessPopup } from "@/components/EarlyAccessPopup";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Alert, AlertDescription } from "../components/ui/alert";
+import { TreatmentType, AccessibilityNeed } from "../lib/types";
+import { cn } from "../lib/utils";
+import { EarlyAccessPopup } from "../components/EarlyAccessPopup";
 
 interface PracticeConnectProps {
   selectedTreatment: TreatmentType | null;

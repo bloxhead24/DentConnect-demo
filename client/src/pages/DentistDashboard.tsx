@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import { Badge } from "../components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { useQuery } from "@tanstack/react-query";
-import DentConnectLogo from "@/components/DentConnectLogo";
-import { VirtualConsultation } from "@/components/VirtualConsultation";
+import DentConnectLogo from "../components/DentConnectLogo";
+import { VirtualConsultation } from "../components/VirtualConsultation";
 import { 
   Calendar, 
   Users, 
@@ -22,7 +22,7 @@ import {
   Bell,
   Video
 } from "lucide-react";
-import PricingManagement from "@/components/PricingManagement";
+import PricingManagement from "../components/PricingManagement";
 
 interface DashboardStats {
   totalPatients: number;

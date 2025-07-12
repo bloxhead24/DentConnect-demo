@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { AccessibilityNeed } from "@/lib/types";
-import { AccessibilityOption } from "@/components/AccessibilityOption";
-import { Button } from "@/components/ui/button";
-import { EarlyAccessPopup } from "@/components/EarlyAccessPopup";
+import { AccessibilityNeed } from "../lib/types";
+import { AccessibilityOption } from "../components/AccessibilityOption";
+import { Button } from "../components/ui/button";
+import { EarlyAccessPopup } from "../components/EarlyAccessPopup";
 
 interface AccessibilityFormProps {
   onComplete: (needs: AccessibilityNeed[]) => void;

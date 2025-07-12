@@ -1,5 +1,5 @@
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "../components/ui/dialog";
+import { Button } from "../components/ui/button";
 import { DemoCompleteModal } from "./DemoCompleteModal";
 import { useState, useEffect } from "react";
 

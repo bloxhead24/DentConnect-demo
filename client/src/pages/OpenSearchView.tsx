@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "../components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../components/ui/dialog";
 import { ArrowLeft, MapPin, Clock, Star, Phone, Car, Brain, Map, Zap, Calendar } from "lucide-react";
 import { format, addDays, startOfWeek } from "date-fns";
-import { cn } from "@/lib/utils";
-import type { TreatmentType, AccessibilityNeed } from "@/lib/types";
+import { cn } from "../lib/utils";
+import type { TreatmentType, AccessibilityNeed } from "../lib/types";
 import type { Practice, Appointment, Dentist } from "@shared/schema";
-import { BookingFlow } from "@/components/BookingFlow";
+import { BookingFlow } from "../components/BookingFlow";
 
 interface OpenSearchViewProps {
   selectedTreatment: TreatmentType | null;

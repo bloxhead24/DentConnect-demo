@@ -1,5 +1,5 @@
 import { Practice } from "@shared/schema";
-import { cn } from "@/lib/utils";
+import { cn } from "../lib/utils";
 
 interface PracticePinProps {
   practice: Practice;

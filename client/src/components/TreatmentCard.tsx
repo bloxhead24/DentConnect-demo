@@ -1,6 +1,6 @@
-import { TreatmentType } from "@/lib/types";
-import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { TreatmentType } from "../lib/types";
+import { Card } from "../components/ui/card";
+import { cn } from "../lib/utils";
 
 interface TreatmentCardProps {
   treatment: TreatmentType;

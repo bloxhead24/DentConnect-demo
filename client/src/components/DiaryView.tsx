@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Calendar } from "@/components/ui/calendar";
-import { Card } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../components/ui/dialog";
+import { Button } from "../components/ui/button";
+import { Badge } from "../components/ui/badge";
+import { Calendar } from "../components/ui/calendar";
+import { Card } from "../components/ui/card";
 import { format, addDays, startOfWeek, addWeeks } from "date-fns";
 import { Practice, Appointment, Dentist } from "@shared/schema";
 import { useQuery } from "@tanstack/react-query";
-import { cn } from "@/lib/utils";
+import { cn } from "../lib/utils";
 
 interface DiaryViewProps {
   practice: Practice;

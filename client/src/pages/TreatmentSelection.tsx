@@ -1,9 +1,9 @@
-import { TreatmentType } from "@/lib/types";
-import { TreatmentCard } from "@/components/TreatmentCard";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { TreatmentType } from "../lib/types";
+import { TreatmentCard } from "../components/TreatmentCard";
+import { Button } from "../components/ui/button";
+import { Card, CardContent } from "../components/ui/card";
 import { Video } from "lucide-react";
-import { EarlyAccessPopup } from "@/components/EarlyAccessPopup";
+import { EarlyAccessPopup } from "../components/EarlyAccessPopup";
 import { useState } from "react";
 
 interface TreatmentSelectionProps {

@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { TreatmentType, AccessibilityNeed } from "@/lib/types";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { TreatmentType, AccessibilityNeed } from "../lib/types";
+import { Button } from "../components/ui/button";
+import { Badge } from "../components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import TreatmentSelection from "./TreatmentSelection";
 import AccessibilityForm from "./AccessibilityForm";
 import SearchModeSelection from "./SearchModeSelection";
@@ -11,9 +11,9 @@ import PracticeConnect from "./PracticeConnect";
 import AuthenticatedDiary from "./AuthenticatedDiary";
 import BudgetSelection from "./BudgetSelection";
 import OpenSearchView from "./OpenSearchView";
-import DentConnectLogo from "@/components/DentConnectLogo";
-import { DemoCompleteModal } from "@/components/DemoCompleteModal";
-import { VirtualConsultation } from "@/components/VirtualConsultation";
+import DentConnectLogo from "../components/DentConnectLogo";
+import { DemoCompleteModal } from "../components/DemoCompleteModal";
+import { VirtualConsultation } from "../components/VirtualConsultation";
 import { Stethoscope, Users, MapPin, Clock, Shield, Star, Video } from "lucide-react";
 
 export default function Home() {

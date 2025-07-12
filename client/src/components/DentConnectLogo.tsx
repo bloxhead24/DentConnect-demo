@@ -1,4 +1,4 @@
-import logoPath from "@assets/Website Header updated_1751940892927.png";
+import logoPath from "../../../attached_assets/Website Header updated_1751940892927.png";
 
 interface DentConnectLogoProps {
   className?: string;

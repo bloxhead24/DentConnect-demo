@@ -1,20 +1,20 @@
 import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { TreatmentType, AccessibilityNeed } from "@/lib/types";
-import { PracticePin } from "@/components/PracticePin";
-import { PracticeBottomSheet } from "@/components/PracticeBottomSheet";
-import { BookingFlow } from "@/components/BookingFlow";
-import { SuccessModal } from "@/components/SuccessModal";
-import { EnhancedMapSearch } from "@/components/EnhancedMapSearch";
-import { SearchQuestionnaire, QuestionnaireData } from "@/components/SearchQuestionnaire";
-import { MapLoadingState } from "@/components/MapLoadingState";
-import { UrgentSearchLoading } from "@/components/UrgentSearchLoading";
-import { DirectionsPage } from "@/components/DirectionsPage";
-import { Button } from "@/components/ui/button";
+import { TreatmentType, AccessibilityNeed } from "../lib/types";
+import { PracticePin } from "../components/PracticePin";
+import { PracticeBottomSheet } from "../components/PracticeBottomSheet";
+import { BookingFlow } from "../components/BookingFlow";
+import { SuccessModal } from "../components/SuccessModal";
+import { EnhancedMapSearch } from "../components/EnhancedMapSearch";
+import { SearchQuestionnaire, QuestionnaireData } from "../components/SearchQuestionnaire";
+import { MapLoadingState } from "../components/MapLoadingState";
+import { UrgentSearchLoading } from "../components/UrgentSearchLoading";
+import { DirectionsPage } from "../components/DirectionsPage";
+import { Button } from "../components/ui/button";
 import { Practice, Appointment } from "@shared/schema";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { PracticePinModal } from "@/components/PracticePinModal";
+import { PracticePinModal } from "../components/PracticePinModal";
 
 interface MapViewProps {
   selectedTreatment: TreatmentType | null;

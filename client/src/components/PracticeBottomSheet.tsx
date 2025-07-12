@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Practice, Appointment, Dentist } from "@shared/schema";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../components/ui/sheet";
+import { Button } from "../components/ui/button";
+import { Badge } from "../components/ui/badge";
+import { Avatar, AvatarImage, AvatarFallback } from "../components/ui/avatar";
 import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { MapPin, Phone, Clock, Star, Languages, GraduationCap } from "lucide-react";

@@ -1,6 +1,6 @@
-import { AccessibilityNeed } from "@/lib/types";
-import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { AccessibilityNeed } from "../lib/types";
+import { Card } from "../components/ui/card";
+import { cn } from "../lib/utils";
 
 interface AccessibilityOptionProps {
   need: AccessibilityNeed;
