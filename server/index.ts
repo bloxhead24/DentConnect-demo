@@ -76,7 +76,9 @@ app.use((req, res, next) => {
   const port = process.env.PORT || 5000;
   server.listen(port, "0.0.0.0", () => {
     log(`serving on port ${port}`);
+    log(`NODE_ENV: ${process.env.NODE_ENV}`);
     log(`App should be available at: http://localhost:${port}`);
     log(`Test page at: http://localhost:${port}/test`);
+    log(`External domain: ${process.env.REPLIT_DOMAINS || 'Not set'}`);
   });
 })();
