@@ -50,6 +50,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.sendFile(path.join(__dirname, "..", "test-simple.html"));
   });
 
+  // Serve map test page
+  app.get("/test-map", (req, res) => {
+    res.sendFile(path.join(__dirname, "..", "test-map.html"));
+  });
+
   // Test CSP in production mode endpoint
   app.get("/test-csp", (req, res) => {
     const nonce = res.locals.nonce || 'no-nonce';

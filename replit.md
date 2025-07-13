@@ -118,6 +118,15 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+✓ **NEWCASTLE MAP LOADING FIXES IMPLEMENTED** (July 13, 2025)
+→ **ENHANCED CSP POLICIES**: Updated Content Security Policy to fully support OpenStreetMap tiles
+→ **ROBUST MAP INITIALIZATION**: Added comprehensive error handling for map tile loading
+→ **NEWCASTLE-FOCUSED MAPPING**: Centered map on Newcastle upon Tyne with real coordinates
+→ **FALLBACK MECHANISMS**: Added error tile URLs and tile loading event handlers
+→ **DENTAL PRACTICE MARKERS**: Custom dental practice markers across Northeast England
+→ **MOBILE-OPTIMIZED CONTROLS**: Responsive zoom controls and attribution positioning
+→ **COMPREHENSIVE LOGGING**: Added tile loading success/error logging for debugging
+
 ✓ **DEPLOYMENT HEALTH CHECK FIXES IMPLEMENTED** (July 13, 2025)
 → **DEDICATED HEALTH CHECK ENDPOINT**: Added `/health` endpoint that responds with 200 status and JSON health data
 → **EARLY HEALTH CHECK REGISTRATION**: Health check endpoint registered at the very beginning of middleware stack

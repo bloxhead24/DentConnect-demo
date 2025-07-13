@@ -43,7 +43,7 @@ export const createSecurityHeaders = (nonce?: string) => {
         defaultSrc: ["'self'"],
         styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
         fontSrc: ["'self'", "https://fonts.gstatic.com"],
-        imgSrc: ["'self'", "data:", "https://*.tile.openstreetmap.org"],
+        imgSrc: ["'self'", "data:", "https://*.tile.openstreetmap.org", "https://tile.openstreetmap.org"],
         scriptSrc: [
           "'self'",
           ...(isDevelopment ? [
@@ -62,6 +62,7 @@ export const createSecurityHeaders = (nonce?: string) => {
         connectSrc: [
           "'self'",
           "https://*.tile.openstreetmap.org",
+          "https://tile.openstreetmap.org",
           // Add websocket support for HMR
           ...(isDevelopment ? ["wss:", "ws:", "ws://localhost:*"] : []),
         ].filter(Boolean),

@@ -56,37 +56,59 @@ export default function MapView({ selectedTreatment, selectedAccessibility, sele
   // Initialize map
   useEffect(() => {
     if (mapRef.current && !mapInstanceRef.current) {
-      // Create map centered on Newcastle upon Tyne
-      mapInstanceRef.current = L.map(mapRef.current, {
-        center: [54.9783, -1.6178], // Newcastle upon Tyne coordinates
-        zoom: window.innerWidth < 768 ? 10 : 11, // Adjust zoom for mobile
-        zoomControl: false,
-        attributionControl: false,
-        touchZoom: true,
-        scrollWheelZoom: true,
-        doubleClickZoom: true,
-        boxZoom: false,
-        keyboard: true,
-        dragging: true,
-        tap: true,
-      });
+      try {
+        // Create map centered on Newcastle upon Tyne
+        mapInstanceRef.current = L.map(mapRef.current, {
+          center: [54.9783, -1.6178], // Newcastle upon Tyne coordinates
+          zoom: window.innerWidth < 768 ? 10 : 11, // Adjust zoom for mobile
+          zoomControl: false,
+          attributionControl: true,
+          touchZoom: true,
+          scrollWheelZoom: true,
+          doubleClickZoom: true,
+          boxZoom: false,
+          keyboard: true,
+          dragging: true,
+          tap: true,
+        });
 
-      // Add OpenStreetMap tiles
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-        maxZoom: 19,
-      }).addTo(mapInstanceRef.current);
+        // Add OpenStreetMap tiles with error handling
+        const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          maxZoom: 19,
+          subdomains: ['a', 'b', 'c'],
+          errorTileUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+        });
+        
+        tileLayer.addTo(mapInstanceRef.current);
 
-      // Add custom zoom control - position based on screen size
-      const zoomPosition = window.innerWidth < 768 ? 'bottomright' : 'bottomright';
-      L.control.zoom({ position: zoomPosition }).addTo(mapInstanceRef.current);
-      
-      // Force map to invalidate size after initialization
-      setTimeout(() => {
-        if (mapInstanceRef.current) {
-          mapInstanceRef.current.invalidateSize();
-        }
-      }, 100);
+        // Add custom zoom control - position based on screen size
+        const zoomPosition = window.innerWidth < 768 ? 'bottomright' : 'bottomright';
+        L.control.zoom({ position: zoomPosition }).addTo(mapInstanceRef.current);
+        
+        // Add attribution control
+        L.control.attribution({ position: 'bottomleft' }).addTo(mapInstanceRef.current);
+        
+        // Force map to invalidate size after initialization
+        setTimeout(() => {
+          if (mapInstanceRef.current) {
+            mapInstanceRef.current.invalidateSize();
+          }
+        }, 100);
+
+        // Add error handling for tile loading
+        tileLayer.on('tileerror', (error) => {
+          console.warn('Map tile failed to load:', error);
+        });
+
+        // Add load event to confirm tiles are loading
+        tileLayer.on('load', () => {
+          console.log('Map tiles loaded successfully');
+        });
+
+      } catch (error) {
+        console.error('Error initializing map:', error);
+      }
     }
 
     return () => {
