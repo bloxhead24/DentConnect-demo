@@ -352,6 +352,16 @@
     .leaflet-container {
       height: 100vh !important;
       width: 100% !important;
+      position: relative !important;
+      outline: none !important;
+    }
+    
+    .leaflet-tile-pane {
+      z-index: 200 !important;
+    }
+    
+    .leaflet-tile {
+      max-width: none !important;
     }
     
     .leaflet-control-container {
@@ -467,6 +477,18 @@
   /* Leaflet Map Styles */
   .leaflet-container {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    height: 100% !important;
+    width: 100% !important;
+    position: relative !important;
+    outline: none !important;
+  }
+
+  .leaflet-tile-pane {
+    z-index: 200 !important;
+  }
+
+  .leaflet-tile {
+    max-width: none !important;
   }
   
   .leaflet-control-zoom {

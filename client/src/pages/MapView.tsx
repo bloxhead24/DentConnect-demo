@@ -53,15 +53,20 @@ export default function MapView({ selectedTreatment, selectedAccessibility, sele
     queryKey: ["/api/practices", { location }],
   });
 
-  // Initialize map
+  // Initialize map with better error handling
   useEffect(() => {
     if (mapRef.current && !mapInstanceRef.current) {
       try {
+        console.log('Initializing map...');
+        
+        // Clear the container first
+        mapRef.current.innerHTML = '';
+        
         // Create map centered on Newcastle upon Tyne
         mapInstanceRef.current = L.map(mapRef.current, {
           center: [54.9783, -1.6178], // Newcastle upon Tyne coordinates
           zoom: window.innerWidth < 768 ? 10 : 11, // Adjust zoom for mobile
-          zoomControl: false,
+          zoomControl: true,
           attributionControl: true,
           touchZoom: true,
           scrollWheelZoom: true,
@@ -72,42 +77,58 @@ export default function MapView({ selectedTreatment, selectedAccessibility, sele
           tap: true,
         });
 
-        // Add OpenStreetMap tiles with error handling
+        console.log('Map instance created');
+
+        // Add OpenStreetMap tiles with multiple fallback servers
         const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
           maxZoom: 19,
           subdomains: ['a', 'b', 'c'],
-          errorTileUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+          crossOrigin: true,
+          errorTileUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgZmlsbD0iI2Y4ZjlmYSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudGVyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNjY2Ij5NYXAgVGlsZSBVbmF2YWlsYWJsZTwvdGV4dD48L3N2Zz4=',
         });
         
         tileLayer.addTo(mapInstanceRef.current);
+        console.log('Tile layer added');
 
-        // Add custom zoom control - position based on screen size
-        const zoomPosition = window.innerWidth < 768 ? 'bottomright' : 'bottomright';
-        L.control.zoom({ position: zoomPosition }).addTo(mapInstanceRef.current);
+        // Handle tile loading events
+        tileLayer.on('load', () => {
+          console.log('Map tiles loaded successfully');
+        });
         
-        // Add attribution control
-        L.control.attribution({ position: 'bottomleft' }).addTo(mapInstanceRef.current);
-        
-        // Force map to invalidate size after initialization
-        setTimeout(() => {
-          if (mapInstanceRef.current) {
-            mapInstanceRef.current.invalidateSize();
-          }
-        }, 100);
-
-        // Add error handling for tile loading
         tileLayer.on('tileerror', (error) => {
           console.warn('Map tile failed to load:', error);
         });
 
-        // Add load event to confirm tiles are loading
-        tileLayer.on('load', () => {
-          console.log('Map tiles loaded successfully');
-        });
+        // Force map to invalidate size after initialization
+        setTimeout(() => {
+          if (mapInstanceRef.current) {
+            mapInstanceRef.current.invalidateSize();
+            console.log('Map size invalidated');
+          }
+        }, 100);
+
+        // Add a test marker to confirm map is working
+        const testMarker = L.marker([54.9783, -1.6178])
+          .addTo(mapInstanceRef.current)
+          .bindPopup('Newcastle upon Tyne<br>Map is working!');
+        
+        console.log('Test marker added');
 
       } catch (error) {
         console.error('Error initializing map:', error);
+        // Fallback: show a simple message if map fails to load
+        if (mapRef.current) {
+          mapRef.current.innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: #f8f9fa; color: #666; text-align: center; padding: 20px;">
+              <div>
+                <div style="font-size: 24px; margin-bottom: 10px;">🗺️</div>
+                <div style="font-size: 16px; margin-bottom: 10px;">Map Loading...</div>
+                <div style="font-size: 14px;">Newcastle upon Tyne Area</div>
+              </div>
+            </div>
+          `;
+        }
       }
     }
 
@@ -306,7 +327,11 @@ export default function MapView({ selectedTreatment, selectedAccessibility, sele
           <div 
             ref={mapRef} 
             className="absolute inset-0 w-full h-full z-10"
-            style={{ background: '#f8f9fa' }}
+            style={{ 
+              background: '#f8f9fa',
+              minHeight: '100vh',
+              minWidth: '100vw'
+            }}
           />
           
           {/* Enhanced Loading State */}
@@ -384,7 +409,11 @@ export default function MapView({ selectedTreatment, selectedAccessibility, sele
           <div 
             ref={mapRef} 
             className="absolute inset-0 w-full h-full z-10"
-            style={{ background: '#f8f9fa' }}
+            style={{ 
+              background: '#f8f9fa',
+              minHeight: '100vh',
+              minWidth: '100vw'
+            }}
           />
           
           {/* Enhanced Loading State */}
