@@ -11,6 +11,40 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Health check endpoint for deployment - responds quickly with 200 status
+  app.get("/health", (req, res) => {
+    res.status(200).json({
+      status: "ok",
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      environment: process.env.NODE_ENV || "development"
+    });
+  });
+
+  // Root health check for deployment platforms that check '/'
+  // This will be handled by Vite in development, but we need it for production health checks
+  if (process.env.NODE_ENV === 'production') {
+    app.get("/", (req, res) => {
+      // Check if this is a health check request (typically has specific user agents or headers)
+      const userAgent = req.get('User-Agent') || '';
+      const isHealthCheck = userAgent.includes('kube-probe') || 
+                           userAgent.includes('healthcheck') || 
+                           userAgent.includes('ELB-HealthChecker') ||
+                           req.get('X-Health-Check') === 'true';
+      
+      if (isHealthCheck) {
+        return res.status(200).json({
+          status: "healthy",
+          timestamp: new Date().toISOString(),
+          uptime: process.uptime()
+        });
+      }
+      
+      // For production, serve the main application
+      return res.sendFile(path.join(__dirname, "..", "dist", "public", "index.html"));
+    });
+  }
+
   // Serve test page for debugging
   app.get("/test", (req, res) => {
     res.sendFile(path.join(__dirname, "..", "test-simple.html"));

@@ -6,6 +6,16 @@ import cors from "cors";
 
 const app = express();
 
+// Health check endpoints - MUST be first for deployment
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || "development"
+  });
+});
+
 // Basic middleware only
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
@@ -93,31 +103,63 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  const server = await registerRoutes(app);
+  try {
+    const server = await registerRoutes(app);
 
-  // Global error handler
-  app.use(security.errorHandler);
+    // Global error handler
+    app.use(security.errorHandler);
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
-  
-  if (process.env.NODE_ENV === "development") {
-    await setupVite(app, server);
-  } else {
-    serveStatic(app);
+    // importantly only setup vite in development and after
+    // setting up all the other routes so the catch-all route
+    // doesn't interfere with the other routes
+    
+    if (process.env.NODE_ENV === "development") {
+      await setupVite(app, server);
+    } else {
+      serveStatic(app);
+    }
+
+    // ALWAYS serve the app on port 5000
+    // this serves both the API and the client.
+    // It is the only port that is not firewalled.
+    const port = process.env.PORT || 5000;
+    
+    // Start server synchronously with error handling
+    server.listen(port, "0.0.0.0", () => {
+      log(`✅ Server listening on port ${port}`);
+      log(`✅ Bound to all interfaces (0.0.0.0:${port})`);
+      log(`NODE_ENV: ${process.env.NODE_ENV}`);
+      log(`Local access: http://localhost:${port}`);
+      log(`Test page: http://localhost:${port}/test`);
+      log(`Health check: http://localhost:${port}/health`);
+      log(`External domain: ${process.env.REPLIT_DOMAINS || 'Not set'}`);
+    });
+
+    // Handle server errors
+    server.on('error', (err) => {
+      console.error('Server error:', err);
+      process.exit(1);
+    });
+
+    // Handle graceful shutdown
+    process.on('SIGINT', () => {
+      log('Received SIGINT, shutting down gracefully...');
+      server.close(() => {
+        log('Server closed');
+        process.exit(0);
+      });
+    });
+
+    process.on('SIGTERM', () => {
+      log('Received SIGTERM, shutting down gracefully...');
+      server.close(() => {
+        log('Server closed');
+        process.exit(0);
+      });
+    });
+
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
   }
-
-  // ALWAYS serve the app on port 5000
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = process.env.PORT || 5000;
-  server.listen(port, "0.0.0.0", () => {
-    log(`✅ Server listening on port ${port}`);
-    log(`✅ Bound to all interfaces (0.0.0.0:${port})`);
-    log(`NODE_ENV: ${process.env.NODE_ENV}`);
-    log(`Local access: http://localhost:${port}`);
-    log(`Test page: http://localhost:${port}/test`);
-    log(`External domain: ${process.env.REPLIT_DOMAINS || 'Not set'}`);
-  });
 })();
