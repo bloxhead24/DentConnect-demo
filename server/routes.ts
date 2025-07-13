@@ -16,24 +16,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.sendFile(path.join(__dirname, "..", "test-simple.html"));
   });
 
-  // Test nonce endpoint
-  app.get("/test-nonce", (req, res) => {
+  // Test CSP in production mode endpoint
+  app.get("/test-csp", (req, res) => {
     const nonce = res.locals.nonce || 'no-nonce';
     res.send(`
       <!DOCTYPE html>
       <html>
         <head>
-          <title>Nonce Test</title>
+          <title>CSP Production Test</title>
         </head>
         <body>
-          <h1>CSP Nonce Test</h1>
+          <h1>CSP Production Test</h1>
+          <p>Environment: ${process.env.NODE_ENV}</p>
           <p>Nonce: ${nonce}</p>
-          <script nonce="${nonce}">
-            console.log('Script with nonce loaded successfully!');
-            document.body.innerHTML += '<p>Script executed successfully!</p>';
-          </script>
+          <script src="https://example.com/test.js"></script>
           <script>
-            console.log('Script without nonce - should be blocked by CSP');
+            console.log('Inline script test - should work with unsafe-inline');
+            document.body.innerHTML += '<p>Inline script executed!</p>';
           </script>
         </body>
       </html>

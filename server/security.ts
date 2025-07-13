@@ -54,7 +54,8 @@ export const createSecurityHeaders = (nonce?: string) => {
             "ws:",
             "wss:"
           ] : [
-            "'strict-dynamic'",
+            "'unsafe-inline'", // Allow inline scripts for Vite bundles
+            "'unsafe-eval'", // Allow dynamic script evaluation 
             ...(nonce ? [`'nonce-${nonce}'`] : [])
           ]),
         ].filter(Boolean),
@@ -89,7 +90,7 @@ export const createSecurityHeaders = (nonce?: string) => {
       preload: true
     } : false,
     noSniff: true,
-    frameguard: { action: 'deny' },
+    frameguard: false, // Disable X-Frame-Options to allow Replit embedding
     xssFilter: true,
     referrerPolicy: { policy: "strict-origin-when-cross-origin" }
   });
