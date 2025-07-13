@@ -1,7 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import security from "./security";
+import security, { generateNonce, createSecurityHeaders } from "./security";
 import cors from "cors";
 
 const app = express();
@@ -11,10 +11,48 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 app.use(cors());
 
-// Only add security in production
+// Add nonce middleware for CSP - only in production
+if (process.env.NODE_ENV === 'production') {
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    const nonce = generateNonce();
+    res.locals.nonce = nonce;
+    
+    // Apply security headers with nonce
+    const securityMiddleware = createSecurityHeaders(nonce);
+    securityMiddleware(req, res, () => {});
+    
+    // Intercept HTML responses to add nonce attributes
+    const originalSend = res.send;
+    res.send = function(body: any) {
+      const contentType = res.getHeader('content-type');
+      if (typeof body === 'string' && 
+          (contentType?.toString().includes('text/html') || body.includes('<!DOCTYPE html>') || body.includes('<html'))) {
+        // Add nonce to script tags that don't already have one
+        let processedBody = body;
+        const scriptMatches = body.match(/<script[^>]*>/gi);
+        
+        if (scriptMatches) {
+          scriptMatches.forEach(match => {
+            if (!match.includes('nonce=')) {
+              const newMatch = match.replace(/<script/, `<script nonce="${nonce}"`);
+              processedBody = processedBody.replace(match, newMatch);
+            }
+          });
+        }
+        
+        body = processedBody;
+      }
+      
+      return originalSend.call(this, body);
+    };
+    
+    next();
+  });
+}
+
+// Only add additional security in production
 if (process.env.NODE_ENV === 'production') {
   security.validateEnvironment();
-  app.use(security.securityHeaders);
   app.use(cors(security.corsOptions));
   app.use(security.validateInput);
   app.use('/api', security.apiRateLimiter);

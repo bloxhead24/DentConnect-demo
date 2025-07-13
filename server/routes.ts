@@ -16,6 +16,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.sendFile(path.join(__dirname, "..", "test-simple.html"));
   });
 
+  // Test nonce endpoint
+  app.get("/test-nonce", (req, res) => {
+    const nonce = res.locals.nonce || 'no-nonce';
+    res.send(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Nonce Test</title>
+        </head>
+        <body>
+          <h1>CSP Nonce Test</h1>
+          <p>Nonce: ${nonce}</p>
+          <script nonce="${nonce}">
+            console.log('Script with nonce loaded successfully!');
+            document.body.innerHTML += '<p>Script executed successfully!</p>';
+          </script>
+          <script>
+            console.log('Script without nonce - should be blocked by CSP');
+          </script>
+        </body>
+      </html>
+    `);
+  });
+
   // Serve fallback HTML for older browsers
   app.get("/fallback", (req, res) => {
     res.sendFile(path.join(__dirname, "../client/src/fallback.html"));

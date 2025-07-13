@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import cors from 'cors';
+import crypto from 'crypto';
 
 // Rate limiting configuration
 export const createRateLimiter = (windowMs: number, max: number) => {
@@ -28,40 +29,74 @@ export const bookingRateLimiter = createRateLimiter(
   process.env.NODE_ENV === 'development' ? 100 : 10 // 100 bookings per hour in dev, 10 in prod
 );
 
-// Security headers middleware
-export const securityHeaders = helmet({
-  contentSecurityPolicy: process.env.NODE_ENV === 'production' ? {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      imgSrc: ["'self'", "data:", "https://*.tile.openstreetmap.org"],
-      scriptSrc: ["'self'", "'strict-dynamic'"],
-      connectSrc: ["'self'", "https://*.tile.openstreetmap.org"],
-      frameSrc: ["'none'"],
-      frameAncestors: ["'none'"],
-      objectSrc: ["'none'"],
-      mediaSrc: ["'self'"],
-      workerSrc: ["'self'"],
-      childSrc: ["'none'"],
-      formAction: ["'self'"],
-      baseUri: ["'self'"],
-      manifestSrc: ["'self'"],
-      upgradeInsecureRequests: [],
-      blockAllMixedContent: [],
+// Generate nonce for CSP
+export const generateNonce = () => crypto.randomUUID();
+
+// Create CSP headers with nonce support
+export const createSecurityHeaders = (nonce?: string) => {
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  const isProduction = process.env.NODE_ENV === 'production';
+  
+  return helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        imgSrc: ["'self'", "data:", "https://*.tile.openstreetmap.org"],
+        scriptSrc: [
+          "'self'",
+          ...(isDevelopment ? [
+            "'unsafe-eval'",
+            "'unsafe-inline'",
+            "blob:",
+            "data:",
+            "ws:",
+            "wss:"
+          ] : [
+            "'strict-dynamic'",
+            ...(nonce ? [`'nonce-${nonce}'`] : [])
+          ]),
+        ].filter(Boolean),
+        connectSrc: [
+          "'self'",
+          "https://*.tile.openstreetmap.org",
+          // Add websocket support for HMR
+          ...(isDevelopment ? ["wss:", "ws:", "ws://localhost:*"] : []),
+        ].filter(Boolean),
+        frameSrc: ["'none'"],
+        frameAncestors: [
+          "'self'",
+          "https://*.replit.app",
+          "https://*.replit.dev",
+          "https://*.replit.com"
+        ],
+        objectSrc: ["'none'"],
+        mediaSrc: ["'self'"],
+        workerSrc: ["'self'"],
+        childSrc: ["'none'"],
+        formAction: ["'self'"],
+        baseUri: ["'self'"],
+        manifestSrc: ["'self'"],
+        upgradeInsecureRequests: [],
+        blockAllMixedContent: [],
+      },
     },
-  } : false, // Disable CSP in development to allow Vite HMR
-  crossOriginEmbedderPolicy: false,
-  hsts: process.env.NODE_ENV === 'production' ? {
-    maxAge: 31536000,
-    includeSubDomains: true,
-    preload: true
-  } : false,
-  noSniff: true,
-  frameguard: { action: 'deny' },
-  xssFilter: true,
-  referrerPolicy: { policy: "strict-origin-when-cross-origin" }
-});
+    crossOriginEmbedderPolicy: false,
+    hsts: process.env.NODE_ENV === 'production' ? {
+      maxAge: 31536000,
+      includeSubDomains: true,
+      preload: true
+    } : false,
+    noSniff: true,
+    frameguard: { action: 'deny' },
+    xssFilter: true,
+    referrerPolicy: { policy: "strict-origin-when-cross-origin" }
+  });
+};
+
+// Legacy security headers for backward compatibility
+export const securityHeaders = createSecurityHeaders();
 
 // CORS configuration
 export const corsOptions: cors.CorsOptions = {
