@@ -75,10 +75,11 @@ app.use((req, res, next) => {
   // It is the only port that is not firewalled.
   const port = process.env.PORT || 5000;
   server.listen(port, "0.0.0.0", () => {
-    log(`serving on port ${port}`);
+    log(`✅ Server listening on port ${port}`);
+    log(`✅ Bound to all interfaces (0.0.0.0:${port})`);
     log(`NODE_ENV: ${process.env.NODE_ENV}`);
-    log(`App should be available at: http://localhost:${port}`);
-    log(`Test page at: http://localhost:${port}/test`);
+    log(`Local access: http://localhost:${port}`);
+    log(`Test page: http://localhost:${port}/test`);
     log(`External domain: ${process.env.REPLIT_DOMAINS || 'Not set'}`);
   });
 })();
