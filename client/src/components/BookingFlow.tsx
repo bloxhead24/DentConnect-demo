@@ -11,6 +11,7 @@ import { cn } from "../lib/utils";
 import type { Practice, Appointment, Dentist } from "@shared/schema";
 import { GDPRPrivacyNotice, type ConsentData } from "./GDPRPrivacyNotice";
 import { TriageAssessment, type TriageAssessmentData } from "./TriageAssessment";
+import { UrgencyQuestionnaire, type UrgencyData } from "./UrgencyQuestionnaire";
 
 interface BookingFlowProps {
   practice: Practice | null;
@@ -22,7 +23,7 @@ interface BookingFlowProps {
 }
 
 export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, onSuccess }: BookingFlowProps) {
-  const [currentStep, setCurrentStep] = useState<"gdpr" | "triage" | "details" | "confirmation" | "success">("gdpr");
+  const [currentStep, setCurrentStep] = useState<"urgency" | "gdpr" | "triage" | "details" | "confirmation" | "success">("urgency");
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -40,6 +41,17 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
     marketingConsent: false,
     clinicalDataConsent: false,
     communicationConsent: false
+  });
+  const [urgencyData, setUrgencyData] = useState<UrgencyData>({
+    painLevel: 0,
+    painDuration: "",
+    symptoms: "",
+    swelling: false,
+    trauma: false,
+    bleeding: false,
+    infection: false,
+    urgencyLevel: "low",
+    additionalNotes: ""
   });
   const [triageData, setTriageData] = useState<TriageAssessmentData>({
     painLevel: 0,
@@ -60,13 +72,22 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleUrgencyComplete = (data: UrgencyData) => {
+    setUrgencyData(data);
+    setCurrentStep("gdpr");
+  };
+
   const handleGDPRConsent = (consents: ConsentData) => {
     setConsentData(consents);
     setCurrentStep("triage");
   };
 
   const handleTriageComplete = (assessment: TriageAssessmentData) => {
-    setTriageData(assessment);
+    // Use urgency data for triage data to maintain consistency
+    setTriageData({
+      ...urgencyData,
+      triageNotes: assessment.triageNotes || urgencyData.additionalNotes
+    });
     setCurrentStep("details");
   };
 
@@ -142,6 +163,7 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
             <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
               <i className={cn(
                 "text-white",
+                currentStep === "urgency" ? "fas fa-exclamation-triangle" :
                 currentStep === "gdpr" ? "fas fa-shield-alt" :
                 currentStep === "triage" ? "fas fa-stethoscope" :
                 "fas fa-calendar-check"
@@ -149,12 +171,14 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
             </div>
             <div>
               <h3 className="text-xl font-bold">
-                {currentStep === "gdpr" ? "Data Protection Notice" :
+                {currentStep === "urgency" ? "Quick Assessment" :
+                 currentStep === "gdpr" ? "Data Protection Notice" :
                  currentStep === "triage" ? "Clinical Assessment" :
                  "Book Appointment"}
               </h3>
               <p className="text-sm text-gray-600">
-                {currentStep === "gdpr" ? "GDPR compliance and consent management" :
+                {currentStep === "urgency" ? "Help us understand your dental needs" :
+                 currentStep === "gdpr" ? "GDPR compliance and consent management" :
                  currentStep === "triage" ? "Clinical triage for patient safety" :
                  "Complete your booking details"}
               </p>
@@ -168,6 +192,13 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
             </p>
           </div>
         </DialogHeader>
+
+        {currentStep === "urgency" && (
+          <UrgencyQuestionnaire
+            onComplete={handleUrgencyComplete}
+            onBack={onClose}
+          />
+        )}
 
         {currentStep === "gdpr" && (
           <GDPRPrivacyNotice
