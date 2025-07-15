@@ -163,8 +163,23 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
       const booking = await bookingResponse.json();
       console.log('Booking created:', booking);
 
-      // Create triage assessment if we have triage data
-      if (triageData && triageData.painLevel !== undefined) {
+      // Create triage assessment if we have triage data (check if triage step was completed)
+      // Check if any triage data has been modified from defaults
+      const hasTriageData = triageData && (
+        triageData.urgencyLevel !== "low" || 
+        triageData.painLevel > 0 || 
+        triageData.symptoms.trim() !== "" || 
+        triageData.medicalHistory.trim() !== "" ||
+        triageData.currentMedications.trim() !== "" ||
+        triageData.allergies.trim() !== "" ||
+        triageData.anxietyLevel !== "none" ||
+        triageData.swelling || 
+        triageData.trauma || 
+        triageData.bleeding || 
+        triageData.infection
+      );
+      
+      if (hasTriageData) {
         const triagePayload = {
           userId: user.id,
           painLevel: triageData.painLevel,
