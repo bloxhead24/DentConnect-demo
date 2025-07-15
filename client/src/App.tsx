@@ -28,7 +28,7 @@ class ErrorBoundary extends React.Component {
           <div className="text-center">
             <h1 className="text-2xl font-bold text-red-800 mb-4">Something went wrong</h1>
             <p className="text-red-600 mb-4">Please refresh the page to try again.</p>
-            <button 
+            <button
               onClick={() => window.location.reload()}
               className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
             >
@@ -43,10 +43,10 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-// Loading component
+// Loading screen component
 function LoadingScreen() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-50 to-blue-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-teal-50 via-cyan-50 to-blue-50 flex items-center justify-center">
       <div className="max-w-md w-full text-center">
         <div className="bg-white rounded-lg shadow-lg p-6">
           <div className="animate-spin w-8 h-8 border-4 border-teal-500 border-t-transparent rounded-full mx-auto mb-4"></div>
@@ -66,8 +66,6 @@ function LoadingScreen() {
 import Home from "./pages/Home";
 import EarlyAccessForm from "./pages/EarlyAccessForm";
 import DentistSignup from "./pages/DentistSignup";
-import DentistLogin from "./pages/DentistLogin";
-import DentistDashboard from "./pages/DentistDashboard";
 
 function Router() {
   return (
@@ -75,8 +73,6 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/early-access" component={EarlyAccessForm} />
       <Route path="/dentist-signup" component={DentistSignup} />
-      <Route path="/dentist-login" component={DentistLogin} />
-      <Route path="/dentist-dashboard" component={DentistDashboard} />
       <Route component={NotFound} />
     </Switch>
   );

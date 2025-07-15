@@ -3,8 +3,8 @@ import {
   type User, type InsertUser, type Practice, type InsertPractice,
   type Treatment, type InsertTreatment, type Dentist, type InsertDentist,
   type Appointment, type InsertAppointment,
-  type Booking, type InsertBooking, type PracticeWithAppointments, type BookingWithDetails,
-  type Session, type InsertSession
+  type Booking, type InsertBooking, type Session, type InsertSession,
+  type PracticeWithAppointments, type BookingWithDetails
 } from "@shared/schema";
 
 export interface IStorage {
@@ -66,7 +66,7 @@ export class MemStorage implements IStorage {
   }
 
   private initializeData() {
-    // Sample practices with all required fields
+    // Sample practices with detailed information across Northeast England
     const samplePractices: Practice[] = [
       {
         id: 1,
@@ -284,6 +284,7 @@ export class MemStorage implements IStorage {
   async deleteSession(sessionId: string): Promise<void> {
     this.sessions.delete(sessionId);
   }
+
 
   // Practice operations
   async getPractices(): Promise<Practice[]> {
