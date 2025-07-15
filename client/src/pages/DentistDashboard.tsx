@@ -127,7 +127,13 @@ export default function DentistDashboard() {
                 <div className="h-8 w-px bg-gray-300" />
                 <div>
                   <h1 className="text-xl font-semibold text-gray-900">Dentist Dashboard</h1>
-                  <p className="text-sm text-gray-500">Welcome back, Dr. Richard</p>
+                  <p className="text-sm text-gray-500">Welcome back, Dr. Richard Thompson</p>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <span className="text-xs text-gray-400">Practice Connection Tag:</span>
+                    <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs">
+                      DRRICHARD
+                    </Badge>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center space-x-3">

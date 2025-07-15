@@ -111,7 +111,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Find practice by connection tag (must come before :id route)
+  // Find practice by connection tag with appointments (must come before :id route)
   app.get("/api/practices/tag/:connectionTag", async (req, res) => {
     try {
       const connectionTag = req.params.connectionTag;
@@ -119,7 +119,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!practice) {
         return res.status(404).json({ message: "Practice not found with connection tag" });
       }
-      res.json(practice);
+      
+      // Get appointments and dentists for this practice
+      const appointments = await storage.getAvailableAppointments(practice.id);
+      const dentists = await storage.getDentistsByPractice(practice.id);
+      
+      const practiceWithAppointments = {
+        ...practice,
+        availableAppointments: appointments,
+        dentists: dentists
+      };
+      
+      res.json(practiceWithAppointments);
     } catch (error) {
       console.error("Error fetching practice by connection tag:", error);
       res.status(500).json({ message: "Failed to fetch practice by connection tag" });

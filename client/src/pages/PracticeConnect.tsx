@@ -35,7 +35,7 @@ export default function PracticeConnect({
 
     // Simulate practice tag verification and immediate connection
     setTimeout(() => {
-      const validTags = ["NDC2024", "SMILE123", "DENTAL456", "DEMO", "TEST"];
+      const validTags = ["NDC2024", "SMILE123", "DENTAL456", "DEMO", "TEST", "DRRICHARD"];
       
       if (validTags.includes(practiceTag.toUpperCase())) {
         // Store the authenticated practice tag for immediate diary access
