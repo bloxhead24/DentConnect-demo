@@ -5,6 +5,8 @@ import { fileURLToPath } from "url";
 import { storage } from "./storage";
 import { insertBookingSchema, insertUserSchema } from "@shared/schema";
 import { securityHeaders, corsOptions, validateInput, apiRateLimiter, requestLogger, antiMalwareCheck, ipReputationCheck, contentIntegrityCheck } from "./security";
+import { authenticate, authenticateDentist, hashPassword, verifyPassword, createSession, validateSession, invalidateSession } from "./auth";
+import { sendBookingNotification, sendWelcomeEmail } from "./email-service";
 import cors from "cors";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -188,6 +190,186 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Authentication routes
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const { email, password, firstName, lastName, userType, practiceTag } = req.body;
+      
+      // Validate input
+      if (!email || !password || !firstName || !lastName || !userType) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(409).json({ message: "User already exists" });
+      }
+      
+      // For dentists, verify practice tag
+      let practiceId = null;
+      if (userType === 'dentist') {
+        if (!practiceTag) {
+          return res.status(400).json({ message: "Practice tag is required for dentists" });
+        }
+        
+        const practice = await storage.getPracticeByTag(practiceTag);
+        if (!practice) {
+          return res.status(404).json({ message: "Invalid practice tag" });
+        }
+        practiceId = practice.id;
+      }
+      
+      // Hash password
+      const hashedPassword = await hashPassword(password);
+      
+      // Create user
+      const user = await storage.createUser({
+        email,
+        password: hashedPassword,
+        firstName,
+        lastName,
+        userType,
+        practiceId,
+        verified: false,
+        verificationToken: null,
+        resetToken: null,
+        resetTokenExpiry: null
+      });
+      
+      // Create session
+      const session = await createSession(user.id);
+      
+      // Send welcome email
+      if (userType === 'dentist' && practiceId) {
+        const practice = await storage.getPractice(practiceId);
+        await sendWelcomeEmail(user, practice);
+      } else {
+        await sendWelcomeEmail(user);
+      }
+      
+      res.status(201).json({ 
+        message: "User registered successfully",
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          userType: user.userType,
+          practiceId: user.practiceId
+        },
+        sessionToken: session.id
+      });
+    } catch (error) {
+      console.error("Registration error:", error);
+      res.status(500).json({ message: "Registration failed" });
+    }
+  });
+
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      if (!email || !password) {
+        return res.status(400).json({ message: "Email and password are required" });
+      }
+      
+      // Find user
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+      
+      // Verify password
+      const isValidPassword = await verifyPassword(password, user.password);
+      if (!isValidPassword) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+      
+      // Create session
+      const session = await createSession(user.id);
+      
+      res.json({ 
+        message: "Login successful",
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          userType: user.userType,
+          practiceId: user.practiceId
+        },
+        sessionToken: session.id
+      });
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ message: "Login failed" });
+    }
+  });
+
+  app.post("/api/auth/logout", authenticate, async (req, res) => {
+    try {
+      const sessionToken = req.headers.authorization?.replace('Bearer ', '');
+      if (sessionToken) {
+        await invalidateSession(sessionToken);
+      }
+      res.json({ message: "Logout successful" });
+    } catch (error) {
+      console.error("Logout error:", error);
+      res.status(500).json({ message: "Logout failed" });
+    }
+  });
+
+  app.get("/api/auth/me", authenticate, async (req, res) => {
+    try {
+      const user = await storage.getUser(req.user.id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      res.json({
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        userType: user.userType,
+        practiceId: user.practiceId
+      });
+    } catch (error) {
+      console.error("Get user error:", error);
+      res.status(500).json({ message: "Failed to get user" });
+    }
+  });
+
+  // Practice tag verification
+  app.post("/api/auth/verify-practice-tag", async (req, res) => {
+    try {
+      const { practiceTag } = req.body;
+      
+      if (!practiceTag) {
+        return res.status(400).json({ message: "Practice tag is required" });
+      }
+      
+      const practice = await storage.getPracticeByTag(practiceTag);
+      if (!practice) {
+        return res.status(404).json({ message: "Invalid practice tag" });
+      }
+      
+      res.json({ 
+        valid: true,
+        practice: {
+          id: practice.id,
+          name: practice.name,
+          address: practice.address,
+          practiceTag: practice.practiceTag
+        }
+      });
+    } catch (error) {
+      console.error("Practice tag verification error:", error);
+      res.status(500).json({ message: "Verification failed" });
+    }
+  });
+
   // Booking routes
   app.post("/api/bookings", async (req, res) => {
     try {
@@ -195,24 +377,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create user if doesn't exist
       let userId = bookingData.userId;
+      let patient;
       if (!userId) {
-        const user = await storage.createUser({
+        patient = await storage.createUser({
           email: req.body.email || "guest@example.com",
           firstName: req.body.firstName || "Guest",
           lastName: req.body.lastName || "User",
           userType: "patient",
+          password: "temporary_password",
+          verified: false,
+          verificationToken: null,
+          resetToken: null,
+          resetTokenExpiry: null,
+          practiceId: null
         });
-        userId = user.id;
+        userId = patient.id;
+      } else {
+        patient = await storage.getUser(userId);
       }
 
       // Book the appointment
-      await storage.bookAppointment(bookingData.appointmentId, userId);
+      const bookedAppointment = await storage.bookAppointment(bookingData.appointmentId, userId);
       
       // Create booking record
       const booking = await storage.createBooking({
         ...bookingData,
         userId,
       });
+      
+      // Send email notification to practice
+      try {
+        // Get appointment details for email
+        const appointment = await storage.getAvailableAppointments(bookedAppointment.practiceId);
+        const appointmentDetails = appointment.find(a => a.id === bookedAppointment.id);
+        
+        if (appointmentDetails) {
+          const practice = await storage.getPractice(bookedAppointment.practiceId);
+          const treatments = await storage.getTreatments();
+          const treatment = treatments.find(t => t.id === appointmentDetails.treatmentId);
+          
+          if (practice && treatment && patient) {
+            await sendBookingNotification({
+              patient,
+              practice,
+              appointment: appointmentDetails,
+              treatment
+            });
+          }
+        }
+      } catch (emailError) {
+        console.error("Failed to send booking notification email:", emailError);
+        // Don't fail the booking if email fails
+      }
       
       res.json(booking);
     } catch (error) {

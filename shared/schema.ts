@@ -1,13 +1,19 @@
-import { pgTable, text, serial, integer, boolean, timestamp, real, varchar } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, real, varchar, unique } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   email: varchar("email", { length: 255 }).notNull().unique(),
+  password: varchar("password", { length: 255 }).notNull(),
   firstName: varchar("first_name", { length: 100 }),
   lastName: varchar("last_name", { length: 100 }),
   userType: varchar("user_type", { length: 20 }).notNull().default("patient"), // patient or dentist
+  practiceId: integer("practice_id").references(() => practices.id), // for dentist users
+  verified: boolean("verified").default(false),
+  verificationToken: varchar("verification_token", { length: 255 }),
+  resetToken: varchar("reset_token", { length: 255 }),
+  resetTokenExpiry: timestamp("reset_token_expiry"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -19,6 +25,8 @@ export const practices = pgTable("practices", {
   latitude: real("latitude").notNull(),
   longitude: real("longitude").notNull(),
   phone: varchar("phone", { length: 20 }),
+  email: varchar("email", { length: 255 }).notNull(), // for booking notifications
+  practiceTag: varchar("practice_tag", { length: 50 }).notNull().unique(), // unique tag for practice access
   rating: real("rating").default(0),
   reviewCount: integer("review_count").default(0),
   wheelchairAccess: boolean("wheelchair_access").default(false),
@@ -70,13 +78,30 @@ export const bookings = pgTable("bookings", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
   appointmentId: integer("appointment_id").references(() => appointments.id).notNull(),
-  treatmentCategory: varchar("treatment_category", { length: 50 }).notNull(),
-  accessibilityNeeds: text("accessibility_needs"), // JSON string
-  medications: boolean("medications").default(false),
-  allergies: boolean("allergies").default(false),
-  lastDentalVisit: varchar("last_dental_visit", { length: 50 }),
-  anxietyLevel: varchar("anxiety_level", { length: 20 }).default("comfortable"), // comfortable, nervous, anxious
+  practiceId: integer("practice_id").references(() => practices.id).notNull(),
+  dentistId: integer("dentist_id").references(() => dentists.id).notNull(),
+  treatmentId: integer("treatment_id").references(() => treatments.id).notNull(),
+  appointmentDate: timestamp("appointment_date").notNull(),
+  status: varchar("status", { length: 20 }).notNull().default("confirmed"), // confirmed, cancelled, completed
+  totalAmount: real("total_amount").default(0),
+  paymentStatus: varchar("payment_status", { length: 20 }).default("pending"), // pending, paid, refunded
+  patientName: varchar("patient_name", { length: 255 }).notNull(),
+  patientEmail: varchar("patient_email", { length: 255 }).notNull(),
+  patientPhone: varchar("patient_phone", { length: 20 }),
+  medicalHistory: text("medical_history"),
+  allergies: text("allergies"),
+  medications: text("medications"),
+  emergencyContact: varchar("emergency_contact", { length: 255 }),
+  emergencyPhone: varchar("emergency_phone", { length: 20 }),
   specialRequests: text("special_requests"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Session management for authentication
+export const sessions = pgTable("sessions", {
+  id: varchar("id", { length: 255 }).primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -109,6 +134,10 @@ export const insertBookingSchema = createInsertSchema(bookings).omit({
   createdAt: true,
 });
 
+export const insertSessionSchema = createInsertSchema(sessions).omit({
+  createdAt: true,
+});
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type Practice = typeof practices.$inferSelect;
@@ -121,6 +150,8 @@ export type Appointment = typeof appointments.$inferSelect;
 export type InsertAppointment = z.infer<typeof insertAppointmentSchema>;
 export type Booking = typeof bookings.$inferSelect;
 export type InsertBooking = z.infer<typeof insertBookingSchema>;
+export type Session = typeof sessions.$inferSelect;
+export type InsertSession = z.infer<typeof insertSessionSchema>;
 
 export type PracticeWithAppointments = Practice & {
   availableAppointments: Appointment[];

@@ -66,6 +66,7 @@ function LoadingScreen() {
 import Home from "./pages/Home";
 import EarlyAccessForm from "./pages/EarlyAccessForm";
 import DentistSignup from "./pages/DentistSignup";
+import DentistLogin from "./pages/DentistLogin";
 import DentistDashboard from "./pages/DentistDashboard";
 
 function Router() {
@@ -74,6 +75,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/early-access" component={EarlyAccessForm} />
       <Route path="/dentist-signup" component={DentistSignup} />
+      <Route path="/dentist-login" component={DentistLogin} />
       <Route path="/dentist-dashboard" component={DentistDashboard} />
       <Route component={NotFound} />
     </Switch>
