@@ -230,20 +230,20 @@ export default function DentistSignup() {
           {/* Demo Skip Feature */}
           <div className="mt-8 p-6 bg-blue-50 border border-blue-200 rounded-xl max-w-md mx-auto animate-in fade-in-50 slide-in-from-bottom-4 duration-500">
             <div className="flex items-center justify-center space-x-2 mb-4">
-              <i className="fas fa-info-circle text-blue-600 text-lg"></i>
-              <span className="font-bold text-blue-800">Demo Mode Available</span>
+              <i className="fas fa-user-md text-blue-600 text-lg"></i>
+              <span className="font-bold text-blue-800">Dr Richard - Demo Account</span>
             </div>
             <p className="text-sm text-blue-700 mb-4 leading-relaxed">
-              This is a demonstration platform. Skip the verification process to explore the dentist dashboard 
-              with sample data including patient sign-ups, fees owed, and profit analytics.
+              Access the demo account for Dr Richard, a practicing dentist with real patient data, 
+              appointment bookings, and revenue analytics to explore the full platform experience.
             </p>
             <Button 
               variant="outline" 
               onClick={() => window.location.href = "/dentist-dashboard"}
               className="w-full bg-blue-600 text-white border-blue-600 hover:bg-blue-700 transition-all duration-300"
             >
-              <i className="fas fa-chart-line mr-2"></i>
-              Skip to Dashboard Demo
+              <i className="fas fa-sign-in-alt mr-2"></i>
+              Login as Dr Richard
             </Button>
           </div>
         </div>

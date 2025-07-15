@@ -125,7 +125,7 @@ export default function DentistDashboard() {
                 <div className="h-8 w-px bg-gray-300" />
                 <div>
                   <h1 className="text-xl font-semibold text-gray-900">Dentist Dashboard</h1>
-                  <p className="text-sm text-gray-500">Welcome back, Dr. Anderson</p>
+                  <p className="text-sm text-gray-500">Welcome back, Dr. Richard</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
@@ -160,7 +160,7 @@ export default function DentistDashboard() {
                 </Button>
                 <Avatar>
                   <AvatarImage src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 300 300'%3E%3Ccircle cx='150' cy='150' r='150' fill='%234F46E5'/%3E%3Ctext x='150' y='160' text-anchor='middle' dy='.3em' fill='white' font-size='48' font-family='Arial'%3E👨‍⚕️%3C/text%3E%3C/svg%3E" />
-                  <AvatarFallback>DA</AvatarFallback>
+                  <AvatarFallback>DR</AvatarFallback>
                 </Avatar>
               </div>
             </div>
@@ -174,10 +174,10 @@ export default function DentistDashboard() {
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-blue-800">
-                      🏆 Nominated for Innovation Award
+                      🏆 Dr Richard - Excellence in Patient Care
                     </p>
                     <p className="text-xs text-blue-600">
-                      Royal College of Surgeons - National Contribution to Dentistry 2024
+                      Royal College of Surgeons - Outstanding Dental Practice 2024
                     </p>
                   </div>
                   <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
