@@ -61,49 +61,37 @@ export function CallbackRequestModal({ practiceId, practiceName, children }: Cal
   const callbackRequestMutation = useMutation({
     mutationFn: async (data: any) => {
       // Create user first
-      const userResponse = await apiRequest("/api/users", {
-        method: "POST",
-        body: JSON.stringify({
-          firstName: data.firstName,
-          lastName: data.lastName,
-          email: data.email,
-          phone: data.phone,
-          dateOfBirth: data.dateOfBirth,
-          userType: "patient"
-        }),
-        headers: {
-          "Content-Type": "application/json"
-        }
+      const userResponse = await apiRequest("POST", "/api/users", {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        phone: data.phone,
+        dateOfBirth: data.dateOfBirth,
+        userType: "patient"
       });
 
       const user = await userResponse.json();
 
       // Create triage assessment
-      const triageResponse = await apiRequest("/api/triage-assessments", {
-        method: "POST",
-        body: JSON.stringify({
-          userId: user.id,
-          painLevel: data.painLevel,
-          painDuration: data.painDuration,
-          symptoms: data.symptoms,
-          swelling: data.swelling,
-          trauma: data.trauma,
-          bleeding: data.bleeding,
-          infection: data.infection,
-          urgencyLevel: data.urgencyLevel,
-          triageNotes: data.triageNotes,
-          anxietyLevel: data.anxietyLevel,
-          medicalHistory: data.medicalHistory,
-          currentMedications: data.currentMedications,
-          allergies: data.allergies,
-          previousDentalTreatment: data.previousDentalTreatment,
-          smokingStatus: data.smokingStatus,
-          alcoholConsumption: data.alcoholConsumption,
-          pregnancyStatus: data.pregnancyStatus
-        }),
-        headers: {
-          "Content-Type": "application/json"
-        }
+      const triageResponse = await apiRequest("POST", "/api/triage-assessments", {
+        userId: user.id,
+        painLevel: data.painLevel,
+        painDuration: data.painDuration,
+        symptoms: data.symptoms,
+        swelling: data.swelling,
+        trauma: data.trauma,
+        bleeding: data.bleeding,
+        infection: data.infection,
+        urgencyLevel: data.urgencyLevel,
+        triageNotes: data.triageNotes,
+        anxietyLevel: data.anxietyLevel,
+        medicalHistory: data.medicalHistory,
+        currentMedications: data.currentMedications,
+        allergies: data.allergies,
+        previousDentalTreatment: data.previousDentalTreatment,
+        smokingStatus: data.smokingStatus,
+        alcoholConsumption: data.alcoholConsumption,
+        pregnancyStatus: data.pregnancyStatus
       });
 
       const triage = await triageResponse.json();
@@ -124,13 +112,7 @@ export function CallbackRequestModal({ practiceId, practiceName, children }: Cal
         callbackData.triageAssessmentId = triage.id;
       }
       
-      return apiRequest("/api/callback-requests", {
-        method: "POST",
-        body: JSON.stringify(callbackData),
-        headers: {
-          "Content-Type": "application/json"
-        }
-      });
+      return apiRequest("POST", "/api/callback-requests", callbackData);
     },
     onSuccess: () => {
       toast({
