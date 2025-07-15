@@ -234,6 +234,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get user by email
+  app.get("/api/users/email/:email", async (req, res) => {
+    try {
+      const email = decodeURIComponent(req.params.email);
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user by email:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
   // Booking routes
   app.post("/api/bookings", async (req, res) => {
     try {

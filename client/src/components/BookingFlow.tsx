@@ -95,7 +95,7 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
     try {
       console.log('Starting booking submission...');
       
-      // Create user first
+      // Create user first or get existing user
       const userPayload = {
         firstName: formData.firstName,
         lastName: formData.lastName,
@@ -114,14 +114,22 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
         body: JSON.stringify(userPayload)
       });
 
-      if (!userResponse.ok) {
-        const errorData = await userResponse.json();
-        console.error('User creation failed:', errorData);
-        throw new Error('Failed to create user');
+      let user;
+      if (userResponse.ok) {
+        user = await userResponse.json();
+        console.log('User created:', user);
+      } else {
+        // If user creation fails (likely due to existing email), try to get existing user
+        const existingUserResponse = await fetch(`/api/users/email/${encodeURIComponent(formData.email)}`);
+        if (existingUserResponse.ok) {
+          user = await existingUserResponse.json();
+          console.log('Using existing user:', user);
+        } else {
+          const errorData = await userResponse.json();
+          console.error('User creation failed:', errorData);
+          throw new Error('Failed to create or find user');
+        }
       }
-
-      const user = await userResponse.json();
-      console.log('User created:', user);
 
       // Create booking with all compliance data
       const bookingPayload = {
@@ -395,8 +403,8 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
             </div>
             
             <div>
-              <h3 className="text-2xl font-bold text-green-600 mb-2">Booking Confirmed!</h3>
-              <p className="text-gray-600">Your appointment has been successfully booked.</p>
+              <h3 className="text-2xl font-bold text-green-600 mb-2">Booking Submitted!</h3>
+              <p className="text-gray-600">Your appointment request has been successfully submitted.</p>
             </div>
             
             <Card className="bg-green-50 border-green-200">
@@ -425,9 +433,22 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
               </CardContent>
             </Card>
             
-            <div className="space-y-3">
+            <div className="space-y-4">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 className="font-semibold text-blue-800 mb-2">
+                  <i className="fas fa-stethoscope mr-2"></i>
+                  Next Steps
+                </h4>
+                <div className="text-sm text-blue-700 space-y-1">
+                  <p>• Your appointment will be triaged by the dentist</p>
+                  <p>• You'll receive an email confirmation if approved</p>
+                  <p>• The dentist will review your symptoms and urgency level</p>
+                  <p>• Check your email for updates on your appointment status</p>
+                </div>
+              </div>
+              
               <p className="text-sm text-gray-600">
-                A confirmation email has been sent to {formData.email}
+                A confirmation email will be sent to {formData.email} once your appointment is approved by the dentist.
               </p>
               
               <Button 
