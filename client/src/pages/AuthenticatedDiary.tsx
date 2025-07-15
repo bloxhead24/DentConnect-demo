@@ -5,6 +5,7 @@ import { Badge } from "../components/ui/badge";
 import { cn } from "../lib/utils";
 import { DiaryView } from "../components/DiaryView";
 import { CallbackRequestModal } from "../components/CallbackRequestModal";
+import { AppointmentStatusTracker } from "../components/AppointmentStatusTracker";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { PhoneCall } from "lucide-react";
@@ -13,15 +14,18 @@ import type { Practice, Dentist, Appointment } from "@shared/schema";
 interface AuthenticatedDiaryProps {
   onBack: () => void;
   onBookAppointment: (appointment: Appointment) => void;
+  currentUserId?: number;
 }
 
-export default function AuthenticatedDiary({ onBack, onBookAppointment }: AuthenticatedDiaryProps) {
+export default function AuthenticatedDiary({ onBack, onBookAppointment, currentUserId }: AuthenticatedDiaryProps) {
   const [showFullDiary, setShowFullDiary] = useState(false);
   const [selectedPractice, setSelectedPractice] = useState<Practice | null>(null);
   const [selectedDentist, setSelectedDentist] = useState<Dentist | null>(null);
+  const [showStatusTracker, setShowStatusTracker] = useState(false);
   
   const practiceTag = sessionStorage.getItem('authenticatedPracticeTag');
   const searchMode = sessionStorage.getItem('searchMode') as "practice" | "mydentist";
+  const userId = currentUserId || parseInt(sessionStorage.getItem('currentUserId') || '0');
 
   // Query for practice by connection tag (includes appointments and dentists)
   const { data: practiceData } = useQuery<Practice & { availableAppointments: Appointment[], dentists: Dentist[] }>({
@@ -91,6 +95,16 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment }: Authen
         isOpen={true}
         onClose={() => setShowFullDiary(false)}
         onBookAppointment={onBookAppointment}
+      />
+    );
+  }
+
+  if (showStatusTracker && selectedPractice && userId) {
+    return (
+      <AppointmentStatusTracker
+        userId={userId}
+        practice={selectedPractice}
+        onBack={() => setShowStatusTracker(false)}
       />
     );
   }
@@ -210,6 +224,23 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment }: Authen
                   <i className="fas fa-bolt mr-3"></i>
                   {quickestAppointment ? "Book This Appointment" : "No Appointments Available"}
                 </Button>
+                
+                {/* Status Tracker Button */}
+                {userId && (
+                  <Button
+                    onClick={() => setShowStatusTracker(true)}
+                    variant="outline"
+                    className={cn(
+                      "w-full py-3 text-lg font-semibold border-2",
+                      searchMode === "mydentist" 
+                        ? "border-teal-600 text-teal-600 hover:bg-teal-50" 
+                        : "border-blue-600 text-blue-600 hover:bg-blue-50"
+                    )}
+                  >
+                    <i className="fas fa-clock mr-3"></i>
+                    Check Booking Status
+                  </Button>
+                )}
                 
                 {/* Callback Request Button */}
                 <CallbackRequestModal practiceId={selectedPractice.id} practiceName={selectedPractice.name}>

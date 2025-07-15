@@ -299,7 +299,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get all bookings for a user
-  app.get("/api/bookings/:userId", async (req, res) => {
+  app.get("/api/users/:userId/bookings", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
       const bookings = await storage.getUserBookings(userId);

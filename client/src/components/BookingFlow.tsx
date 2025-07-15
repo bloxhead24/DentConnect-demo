@@ -246,6 +246,8 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
         }
       }
 
+      // Store user ID for status tracking
+      sessionStorage.setItem('currentUserId', user.id.toString());
       setCurrentStep("success");
     } catch (error) {
       console.error('Booking submission error:', error);

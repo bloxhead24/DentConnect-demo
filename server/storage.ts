@@ -877,8 +877,111 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserBookings(userId: number): Promise<BookingWithDetails[]> {
-    // This would need a more complex query with joins in a real implementation
-    return [];
+    const userBookings = await db
+      .select({
+        id: bookings.id,
+        userId: bookings.userId,
+        appointmentId: bookings.appointmentId,
+        triageAssessmentId: bookings.triageAssessmentId,
+        treatmentCategory: bookings.treatmentCategory,
+        accessibilityNeeds: bookings.accessibilityNeeds,
+        medications: bookings.medications,
+        allergies: bookings.allergies,
+        lastDentalVisit: bookings.lastDentalVisit,
+        anxietyLevel: bookings.anxietyLevel,
+        specialRequests: bookings.specialRequests,
+        status: bookings.status,
+        approvalStatus: bookings.approvalStatus,
+        approvedBy: bookings.approvedBy,
+        approvedAt: bookings.approvedAt,
+        createdAt: bookings.createdAt,
+        updatedAt: bookings.updatedAt,
+        // User details
+        userFirstName: users.firstName,
+        userLastName: users.lastName,
+        userEmail: users.email,
+        userPhone: users.phone,
+        userDateOfBirth: users.dateOfBirth,
+        // Appointment details
+        appointmentDate: appointments.appointmentDate,
+        appointmentTime: appointments.appointmentTime,
+        appointmentDuration: appointments.duration,
+        appointmentTreatmentType: appointments.treatmentType,
+        appointmentStatus: appointments.status,
+        // Practice details
+        practiceId: practices.id,
+        practiceName: practices.name,
+        practiceAddress: practices.address,
+        practicePhone: practices.phone,
+        practicePostcode: practices.postcode,
+        practiceLatitude: practices.latitude,
+        practiceLongitude: practices.longitude,
+        // Treatment details
+        treatmentId: treatments.id,
+        treatmentName: treatments.name,
+        treatmentCategory: treatments.category,
+        treatmentPrice: treatments.price,
+        treatmentDescription: treatments.description
+      })
+      .from(bookings)
+      .innerJoin(users, eq(bookings.userId, users.id))
+      .innerJoin(appointments, eq(bookings.appointmentId, appointments.id))
+      .innerJoin(practices, eq(appointments.practiceId, practices.id))
+      .innerJoin(treatments, eq(appointments.treatmentId, treatments.id))
+      .where(eq(bookings.userId, userId))
+      .orderBy(bookings.createdAt);
+
+    // Transform the results to match the expected structure
+    return userBookings.map(booking => ({
+      id: booking.id,
+      userId: booking.userId,
+      appointmentId: booking.appointmentId,
+      triageAssessmentId: booking.triageAssessmentId,
+      treatmentCategory: booking.treatmentCategory,
+      accessibilityNeeds: booking.accessibilityNeeds,
+      medications: booking.medications,
+      allergies: booking.allergies,
+      lastDentalVisit: booking.lastDentalVisit,
+      anxietyLevel: booking.anxietyLevel,
+      specialRequests: booking.specialRequests,
+      status: booking.status,
+      approvalStatus: booking.approvalStatus,
+      approvedBy: booking.approvedBy,
+      approvedAt: booking.approvedAt,
+      createdAt: booking.createdAt,
+      updatedAt: booking.updatedAt,
+      practice: {
+        id: booking.practiceId,
+        name: booking.practiceName,
+        address: booking.practiceAddress,
+        phone: booking.practicePhone,
+        postcode: booking.practicePostcode,
+        latitude: booking.practiceLatitude,
+        longitude: booking.practiceLongitude
+      },
+      appointment: {
+        id: booking.appointmentId,
+        appointmentDate: booking.appointmentDate,
+        appointmentTime: booking.appointmentTime,
+        duration: booking.appointmentDuration,
+        treatmentType: booking.appointmentTreatmentType,
+        status: booking.appointmentStatus
+      },
+      treatment: {
+        id: booking.treatmentId,
+        name: booking.treatmentName,
+        category: booking.treatmentCategory,
+        price: booking.treatmentPrice,
+        description: booking.treatmentDescription
+      },
+      user: {
+        firstName: booking.userFirstName,
+        lastName: booking.userLastName,
+        email: booking.userEmail,
+        phone: booking.userPhone,
+        dateOfBirth: booking.userDateOfBirth
+      }
+    }));
   }
 
   async getApprovedBookings(practiceId: number): Promise<any[]> {
