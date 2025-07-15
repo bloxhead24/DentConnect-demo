@@ -1,0 +1,39 @@
+Context:
+We're piloting Dentconnect, an app that lets dental practices fill last-minute appointment cancellations by offering them directly to their own patients. The app must fully comply with UK and EU legal, data protection, clinical, and regulatory standards (specifically: GDPR, CQC, GDC) to protect patients and the clinic.
+
+Instructions:
+Please review, update, or add the following features and processes to the Dentconnect app. All requirements must be met for full legal and regulatory compliance in England:
+
+1. Data Protection (GDPR, UK Data Law)
+Implement a privacy notice visible during sign-up and accessible at all times, explaining:
+
+What personal and health data is collected
+
+The purpose and lawful basis for processing (including special category health data)
+
+Details on storage, access, retention, sharing, and deletion of data
+
+Add explicit, user-friendly consent mechanisms for all uses of personal data, especially special category data and communications (SMS/email). Users must be able to withdraw consent easily from within the app.
+
+Apply data minimization: only collect data essential for the booking/triage processes.
+
+Ensure secure storage and transmission (encryption, access controls, use of secure cloud services compliant with UK/EU law).
+
+Enable users to see, correct, and request deletion of their data within the app.
+
+Implement a process/protocol for data breaches, including user and ICO notification.
+
+Maintain an internal record of processing activities (ROPA) covering all data lifecycle stages.
+
+2. Clinical Governance, Safety & CQC
+Add structured symptom and urgency assessments (triage): When booking, users must answer questions about symptoms/pain (e.g., pain scale, duration, swelling/trauma; include SOCRATES questions where possible).
+
+Use an automated triage system to classify appointments as emergency/urgent/routine, with high-priority cases flagged for manual review/approval by staff before confirmation.
+
+Add an audit log: all system and booking activities must be logged (who did what, when).
+
+Require staff sign-in with role-based permissions (e.g., reception vs. dentist) to protect confidential info and limit system access.
+
+All confirmed/cancelled appointments, triage notes, messages, and changes must be written back to patient records (linked, or generate a PDF summary if integration is not possible).
+
+Provide for clinical oversight: allow a dentist/nurse to review and approve red-flagged cases before confirming bookings.

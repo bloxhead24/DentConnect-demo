@@ -7,8 +7,22 @@ export const users = pgTable("users", {
   email: varchar("email", { length: 255 }).notNull().unique(),
   firstName: varchar("first_name", { length: 100 }),
   lastName: varchar("last_name", { length: 100 }),
+  phone: varchar("phone", { length: 20 }),
+  dateOfBirth: varchar("date_of_birth", { length: 10 }),
   userType: varchar("user_type", { length: 20 }).notNull().default("patient"), // patient or dentist
+  // GDPR Compliance
+  gdprConsentGiven: boolean("gdpr_consent_given").default(false),
+  gdprConsentDate: timestamp("gdpr_consent_date"),
+  marketingConsentGiven: boolean("marketing_consent_given").default(false),
+  marketingConsentDate: timestamp("marketing_consent_date"),
+  dataRetentionDate: timestamp("data_retention_date"),
+  // Clinical Data
+  emergencyContact: varchar("emergency_contact", { length: 255 }),
+  medicalConditions: text("medical_conditions"),
+  medications: text("medications"),
+  allergies: text("allergies"),
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const practices = pgTable("practices", {
@@ -70,10 +84,57 @@ export const appointments = pgTable("appointments", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Clinical Triage and Safety Assessment
+export const triageAssessments = pgTable("triage_assessments", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  appointmentId: integer("appointment_id").references(() => appointments.id),
+  painLevel: integer("pain_level"), // 1-10 scale
+  painDuration: varchar("pain_duration", { length: 50 }),
+  symptoms: text("symptoms"),
+  swelling: boolean("swelling").default(false),
+  trauma: boolean("trauma").default(false),
+  bleeding: boolean("bleeding").default(false),
+  infection: boolean("infection").default(false),
+  urgencyLevel: varchar("urgency_level", { length: 20 }).notNull(), // low, medium, high, emergency
+  triageNotes: text("triage_notes"),
+  requiresApproval: boolean("requires_approval").default(false),
+  approvedBy: integer("approved_by").references(() => users.id),
+  approvedAt: timestamp("approved_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Audit Log for Clinical Governance
+export const auditLogs = pgTable("audit_logs", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id),
+  action: varchar("action", { length: 100 }).notNull(),
+  entityType: varchar("entity_type", { length: 50 }).notNull(), // booking, appointment, user, etc.
+  entityId: integer("entity_id"),
+  oldValues: text("old_values"), // JSON string of old values
+  newValues: text("new_values"), // JSON string of new values
+  ipAddress: varchar("ip_address", { length: 45 }),
+  userAgent: text("user_agent"),
+  timestamp: timestamp("timestamp").defaultNow(),
+});
+
+// Data Processing Records (GDPR)
+export const dataProcessingRecords = pgTable("data_processing_records", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  processingActivity: varchar("processing_activity", { length: 255 }).notNull(),
+  lawfulBasis: varchar("lawful_basis", { length: 100 }).notNull(),
+  dataCategories: text("data_categories"), // JSON array of data types
+  retentionPeriod: varchar("retention_period", { length: 100 }),
+  thirdPartySharing: text("third_party_sharing"), // JSON array of sharing details
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const bookings = pgTable("bookings", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
   appointmentId: integer("appointment_id").references(() => appointments.id).notNull(),
+  triageAssessmentId: integer("triage_assessment_id").references(() => triageAssessments.id),
   treatmentCategory: varchar("treatment_category", { length: 50 }).notNull(),
   accessibilityNeeds: text("accessibility_needs"), // JSON string
   medications: boolean("medications").default(false),
@@ -81,7 +142,12 @@ export const bookings = pgTable("bookings", {
   lastDentalVisit: varchar("last_dental_visit", { length: 50 }),
   anxietyLevel: varchar("anxiety_level", { length: 20 }).default("comfortable"), // comfortable, nervous, anxious
   specialRequests: text("special_requests"),
+  status: varchar("status", { length: 20 }).notNull().default("pending"), // pending, confirmed, cancelled, completed
+  approvalStatus: varchar("approval_status", { length: 20 }).notNull().default("pending"), // pending, approved, rejected
+  approvedBy: integer("approved_by").references(() => users.id),
+  approvedAt: timestamp("approved_at"),
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const insertUserSchema = createInsertSchema(users).omit({
@@ -111,6 +177,22 @@ export const insertAppointmentSchema = createInsertSchema(appointments).omit({
 export const insertBookingSchema = createInsertSchema(bookings).omit({
   id: true,
   createdAt: true,
+  updatedAt: true,
+});
+
+export const insertTriageAssessmentSchema = createInsertSchema(triageAssessments).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertAuditLogSchema = createInsertSchema(auditLogs).omit({
+  id: true,
+  timestamp: true,
+});
+
+export const insertDataProcessingRecordSchema = createInsertSchema(dataProcessingRecords).omit({
+  id: true,
+  createdAt: true,
 });
 
 export type User = typeof users.$inferSelect;
@@ -125,6 +207,12 @@ export type Appointment = typeof appointments.$inferSelect;
 export type InsertAppointment = z.infer<typeof insertAppointmentSchema>;
 export type Booking = typeof bookings.$inferSelect;
 export type InsertBooking = z.infer<typeof insertBookingSchema>;
+export type TriageAssessment = typeof triageAssessments.$inferSelect;
+export type InsertTriageAssessment = z.infer<typeof insertTriageAssessmentSchema>;
+export type AuditLog = typeof auditLogs.$inferSelect;
+export type InsertAuditLog = z.infer<typeof insertAuditLogSchema>;
+export type DataProcessingRecord = typeof dataProcessingRecords.$inferSelect;
+export type InsertDataProcessingRecord = z.infer<typeof insertDataProcessingRecordSchema>;
 
 export type PracticeWithAppointments = Practice & {
   availableAppointments: Appointment[];

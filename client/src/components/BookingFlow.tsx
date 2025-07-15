@@ -9,6 +9,8 @@ import { Textarea } from "../components/ui/textarea";
 import { format } from "date-fns";
 import { cn } from "../lib/utils";
 import type { Practice, Appointment, Dentist } from "@shared/schema";
+import { GDPRPrivacyNotice, type ConsentData } from "./GDPRPrivacyNotice";
+import { TriageAssessment, type TriageAssessmentData } from "./TriageAssessment";
 
 interface BookingFlowProps {
   practice: Practice | null;
@@ -20,7 +22,7 @@ interface BookingFlowProps {
 }
 
 export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, onSuccess }: BookingFlowProps) {
-  const [currentStep, setCurrentStep] = useState<"details" | "confirmation" | "success">("details");
+  const [currentStep, setCurrentStep] = useState<"gdpr" | "triage" | "details" | "confirmation" | "success">("gdpr");
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -33,6 +35,23 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
     allergies: "",
     specialRequests: ""
   });
+  const [consentData, setConsentData] = useState<ConsentData>({
+    gdprConsent: false,
+    marketingConsent: false,
+    clinicalDataConsent: false,
+    communicationConsent: false
+  });
+  const [triageData, setTriageData] = useState<TriageAssessmentData>({
+    painLevel: 0,
+    painDuration: "",
+    symptoms: "",
+    swelling: false,
+    trauma: false,
+    bleeding: false,
+    infection: false,
+    urgencyLevel: "low",
+    triageNotes: ""
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!practice || !appointment) return null;
@@ -41,11 +60,31 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleGDPRConsent = (consents: ConsentData) => {
+    setConsentData(consents);
+    setCurrentStep("triage");
+  };
+
+  const handleTriageComplete = (assessment: TriageAssessmentData) => {
+    setTriageData(assessment);
+    setCurrentStep("details");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate booking submission
+    // Simulate booking submission with all compliance data
+    const bookingData = {
+      ...formData,
+      consents: consentData,
+      triageAssessment: triageData,
+      appointmentId: appointment.id,
+      practiceId: practice.id
+    };
+
+    console.log('Booking data with compliance:', bookingData);
+
     setTimeout(() => {
       setCurrentStep("success");
       setIsSubmitting(false);
@@ -61,15 +100,28 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-              <i className="fas fa-calendar-check text-white"></i>
+              <i className={cn(
+                "text-white",
+                currentStep === "gdpr" ? "fas fa-shield-alt" :
+                currentStep === "triage" ? "fas fa-stethoscope" :
+                "fas fa-calendar-check"
+              )}></i>
             </div>
             <div>
-              <h3 className="text-xl font-bold">Book Appointment</h3>
-              <p className="text-sm text-gray-600">Complete your booking details</p>
+              <h3 className="text-xl font-bold">
+                {currentStep === "gdpr" ? "Data Protection Notice" :
+                 currentStep === "triage" ? "Clinical Assessment" :
+                 "Book Appointment"}
+              </h3>
+              <p className="text-sm text-gray-600">
+                {currentStep === "gdpr" ? "GDPR compliance and consent management" :
+                 currentStep === "triage" ? "Clinical triage for patient safety" :
+                 "Complete your booking details"}
+              </p>
             </div>
           </DialogTitle>
           {/* Demo Notice */}
@@ -80,6 +132,22 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
             </p>
           </div>
         </DialogHeader>
+
+        {currentStep === "gdpr" && (
+          <GDPRPrivacyNotice
+            isOpen={true}
+            onClose={() => setCurrentStep("details")}
+            onConsentGiven={handleGDPRConsent}
+            showAsModal={false}
+          />
+        )}
+
+        {currentStep === "triage" && (
+          <TriageAssessment
+            onComplete={handleTriageComplete}
+            onCancel={() => setCurrentStep("gdpr")}
+          />
+        )}
 
         {currentStep === "details" && (
           <div className="space-y-6">
