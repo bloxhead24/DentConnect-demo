@@ -1,17 +1,11 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { useQuery } from "@tanstack/react-query";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
-import { Textarea } from "./ui/textarea";
-import { Label } from "./ui/label";
-import { Alert, AlertDescription } from "./ui/alert";
-import { ScrollArea } from "./ui/scroll-area";
-import { cn } from "../lib/utils";
+import { Calendar, Clock, User, AlertCircle, CheckCircle, XCircle, FileText, Phone, Mail } from "lucide-react";
 import { format } from "date-fns";
-import { apiRequest } from "../lib/queryClient";
+import { cn } from "../lib/utils";
 
 interface PendingBooking {
   id: number;
@@ -44,6 +38,16 @@ interface PendingBooking {
   status: string;
   approvalStatus: string;
   createdAt: string;
+  specialRequests?: string;
+}
+
+interface Appointment {
+  id: number;
+  appointmentDate: string;
+  appointmentTime: string;
+  duration: number;
+  treatmentType: string;
+  status: string;
 }
 
 interface AppointmentApprovalDashboardProps {
@@ -51,391 +55,260 @@ interface AppointmentApprovalDashboardProps {
 }
 
 export function AppointmentApprovalDashboard({ practiceId }: AppointmentApprovalDashboardProps) {
-  const [selectedBooking, setSelectedBooking] = useState<PendingBooking | null>(null);
-  const [approvalNotes, setApprovalNotes] = useState("");
-  const queryClient = useQueryClient();
+  const [selectedDate, setSelectedDate] = useState<string>("");
 
-  const { data: pendingBookings = [], isLoading } = useQuery({
-    queryKey: ["/api/bookings/pending", practiceId],
-    queryFn: () => apiRequest(`/api/bookings/pending/${practiceId}`),
+  const { data: availableAppointments = [], isLoading: appointmentsLoading } = useQuery<Appointment[]>({
+    queryKey: [`/api/practice/${practiceId}/available-appointments`],
+    queryFn: async () => {
+      const response = await fetch(`/api/practice/${practiceId}/available-appointments`);
+      if (!response.ok) throw new Error('Failed to fetch appointments');
+      return response.json();
+    }
   });
 
-  const approveBookingMutation = useMutation({
-    mutationFn: (data: { bookingId: number; approved: boolean; notes: string }) =>
-      apiRequest(`/api/bookings/approve`, {
-        method: "POST",
-        body: JSON.stringify(data),
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/bookings/pending"] });
-      setSelectedBooking(null);
-      setApprovalNotes("");
-    },
+  const { data: pendingBookings = [], isLoading: bookingsLoading } = useQuery<PendingBooking[]>({
+    queryKey: [`/api/practice/${practiceId}/pending-bookings`],
+    queryFn: async () => {
+      const response = await fetch(`/api/practice/${practiceId}/pending-bookings`);
+      if (!response.ok) throw new Error('Failed to fetch pending bookings');
+      return response.json();
+    }
   });
 
-  const getUrgencyColor = (urgency: string) => {
-    switch (urgency) {
-      case "emergency": return "bg-red-500 text-white";
-      case "high": return "bg-orange-500 text-white";
-      case "medium": return "bg-yellow-500 text-white";
-      default: return "bg-green-500 text-white";
+  // Group appointments by date
+  const appointmentsByDate = availableAppointments.reduce((acc, appointment) => {
+    const date = new Date(appointment.appointmentDate).toISOString().split('T')[0];
+    if (!acc[date]) {
+      acc[date] = [];
+    }
+    acc[date].push(appointment);
+    return acc;
+  }, {} as Record<string, Appointment[]>);
+
+  // Group pending bookings by appointment
+  const bookingsByAppointment = pendingBookings.reduce((acc, booking) => {
+    const appointmentId = booking.appointmentId;
+    if (!acc[appointmentId]) {
+      acc[appointmentId] = [];
+    }
+    acc[appointmentId].push(booking);
+    return acc;
+  }, {} as Record<number, PendingBooking[]>);
+
+  const handleApproveBooking = async (bookingId: number) => {
+    // TODO: Implement approval logic
+    console.log(`Approving booking ${bookingId}`);
+  };
+
+  const handleRejectBooking = async (bookingId: number) => {
+    // TODO: Implement rejection logic
+    console.log(`Rejecting booking ${bookingId}`);
+  };
+
+  const getUrgencyColor = (urgencyLevel: string) => {
+    switch (urgencyLevel) {
+      case 'urgent':
+        return 'bg-red-100 text-red-800 border-red-200';
+      case 'moderate':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'low':
+        return 'bg-green-100 text-green-800 border-green-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
-  const handleApprove = (approved: boolean) => {
-    if (!selectedBooking) return;
-    
-    approveBookingMutation.mutate({
-      bookingId: selectedBooking.id,
-      approved,
-      notes: approvalNotes,
-    });
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'available':
+        return 'bg-green-100 text-green-800';
+      case 'booked':
+        return 'bg-blue-100 text-blue-800';
+      case 'pending_approval':
+        return 'bg-yellow-100 text-yellow-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
   };
 
-  const urgentBookings = pendingBookings.filter((booking: PendingBooking) => 
-    booking.triageAssessment.urgencyLevel === "emergency" || booking.triageAssessment.urgencyLevel === "high"
-  );
-
-  const routineBookings = pendingBookings.filter((booking: PendingBooking) => 
-    booking.triageAssessment.urgencyLevel === "medium" || booking.triageAssessment.urgencyLevel === "low"
-  );
-
-  if (isLoading) {
+  if (appointmentsLoading || bookingsLoading) {
     return (
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <span className="ml-2">Loading pending approvals...</span>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading appointment data...</p>
+        </div>
+      </div>
     );
   }
 
+  const sortedDates = Object.keys(appointmentsByDate).sort();
+
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-              <i className="fas fa-clipboard-check text-white text-sm"></i>
-            </div>
-            <div>
-              <h3 className="text-lg font-bold">Appointment Approvals</h3>
-              <p className="text-sm text-gray-600">Clinical governance and patient safety review</p>
-            </div>
-          </CardTitle>
-          <div className="flex items-center space-x-4 mt-4">
-            <Badge className="bg-red-100 text-red-800">
-              {urgentBookings.length} Urgent
-            </Badge>
-            <Badge className="bg-blue-100 text-blue-800">
-              {routineBookings.length} Routine
-            </Badge>
-          </div>
-        </CardHeader>
-      </Card>
-
-      <Tabs defaultValue="urgent" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="urgent" className="flex items-center space-x-2">
-            <i className="fas fa-exclamation-triangle text-red-500"></i>
-            <span>Urgent ({urgentBookings.length})</span>
-          </TabsTrigger>
-          <TabsTrigger value="routine" className="flex items-center space-x-2">
-            <i className="fas fa-clock text-blue-500"></i>
-            <span>Routine ({routineBookings.length})</span>
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="urgent" className="space-y-4">
-          {urgentBookings.length === 0 ? (
-            <Card>
-              <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <i className="fas fa-check-circle text-green-600 text-2xl"></i>
-                </div>
-                <h3 className="text-lg font-medium text-gray-600">No urgent approvals pending</h3>
-                <p className="text-sm text-gray-500 mt-2">All urgent cases have been reviewed</p>
-              </CardContent>
-            </Card>
-          ) : (
-            urgentBookings.map((booking: PendingBooking) => (
-              <BookingCard
-                key={booking.id}
-                booking={booking}
-                onReview={() => setSelectedBooking(booking)}
-                urgent={true}
-              />
-            ))
-          )}
-        </TabsContent>
-
-        <TabsContent value="routine" className="space-y-4">
-          {routineBookings.length === 0 ? (
-            <Card>
-              <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <i className="fas fa-check-circle text-green-600 text-2xl"></i>
-                </div>
-                <h3 className="text-lg font-medium text-gray-600">No routine approvals pending</h3>
-                <p className="text-sm text-gray-500 mt-2">All routine cases have been reviewed</p>
-              </CardContent>
-            </Card>
-          ) : (
-            routineBookings.map((booking: PendingBooking) => (
-              <BookingCard
-                key={booking.id}
-                booking={booking}
-                onReview={() => setSelectedBooking(booking)}
-                urgent={false}
-              />
-            ))
-          )}
-        </TabsContent>
-      </Tabs>
-
-      {/* Approval Modal */}
-      <Dialog open={!!selectedBooking} onOpenChange={() => setSelectedBooking(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center space-x-2">
-              <i className="fas fa-user-md text-blue-600"></i>
-              <span>Clinical Review & Approval</span>
-            </DialogTitle>
-          </DialogHeader>
-          
-          {selectedBooking && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-base">Patient Information</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    <div>
-                      <p className="text-sm font-medium">Name</p>
-                      <p className="text-sm text-gray-600">
-                        {selectedBooking.user.firstName} {selectedBooking.user.lastName}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">Contact</p>
-                      <p className="text-sm text-gray-600">{selectedBooking.user.email}</p>
-                      <p className="text-sm text-gray-600">{selectedBooking.user.phone}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">Date of Birth</p>
-                      <p className="text-sm text-gray-600">{selectedBooking.user.dateOfBirth}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-base">Appointment Details</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    <div>
-                      <p className="text-sm font-medium">Date & Time</p>
-                      <p className="text-sm text-gray-600">
-                        {format(new Date(selectedBooking.appointment.appointmentDate), 'EEEE, MMMM d, yyyy')}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        {selectedBooking.appointment.appointmentTime} ({selectedBooking.appointment.duration} minutes)
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">Treatment Type</p>
-                      <p className="text-sm text-gray-600">{selectedBooking.appointment.treatmentType}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              <Card className="border-red-200 bg-red-50">
-                <CardHeader>
-                  <CardTitle className="text-base flex items-center space-x-2">
-                    <i className="fas fa-stethoscope text-red-600"></i>
-                    <span>Clinical Triage Assessment</span>
-                    <Badge className={cn("ml-2", getUrgencyColor(selectedBooking.triageAssessment.urgencyLevel))}>
-                      {selectedBooking.triageAssessment.urgencyLevel.toUpperCase()}
-                    </Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm font-medium">Pain Level</p>
-                      <div className="flex items-center space-x-2">
-                        <div className="flex space-x-1">
-                          {[...Array(10)].map((_, i) => (
-                            <div
-                              key={i}
-                              className={cn(
-                                "w-4 h-4 rounded-full",
-                                i < selectedBooking.triageAssessment.painLevel
-                                  ? "bg-red-500"
-                                  : "bg-gray-200"
-                              )}
-                            />
-                          ))}
-                        </div>
-                        <span className="text-sm font-medium">
-                          {selectedBooking.triageAssessment.painLevel}/10
-                        </span>
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">Duration</p>
-                      <p className="text-sm text-gray-600">{selectedBooking.triageAssessment.painDuration}</p>
-                    </div>
-                  </div>
-
-                  <div>
-                    <p className="text-sm font-medium">Symptoms</p>
-                    <p className="text-sm text-gray-600 mt-1">{selectedBooking.triageAssessment.symptoms}</p>
-                  </div>
-
-                  <div>
-                    <p className="text-sm font-medium">Clinical Indicators</p>
-                    <div className="flex flex-wrap gap-2 mt-1">
-                      {selectedBooking.triageAssessment.swelling && (
-                        <Badge className="bg-orange-100 text-orange-800">Swelling</Badge>
-                      )}
-                      {selectedBooking.triageAssessment.trauma && (
-                        <Badge className="bg-red-100 text-red-800">Trauma</Badge>
-                      )}
-                      {selectedBooking.triageAssessment.bleeding && (
-                        <Badge className="bg-red-100 text-red-800">Bleeding</Badge>
-                      )}
-                      {selectedBooking.triageAssessment.infection && (
-                        <Badge className="bg-yellow-100 text-yellow-800">Infection</Badge>
-                      )}
-                      {!selectedBooking.triageAssessment.swelling && 
-                       !selectedBooking.triageAssessment.trauma && 
-                       !selectedBooking.triageAssessment.bleeding && 
-                       !selectedBooking.triageAssessment.infection && (
-                        <Badge className="bg-green-100 text-green-800">No immediate concerns</Badge>
-                      )}
-                    </div>
-                  </div>
-
-                  {selectedBooking.triageAssessment.triageNotes && (
-                    <div>
-                      <p className="text-sm font-medium">Additional Notes</p>
-                      <p className="text-sm text-gray-600 mt-1">{selectedBooking.triageAssessment.triageNotes}</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">Clinical Decision</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <Label htmlFor="approvalNotes">Clinical Notes & Decision Rationale</Label>
-                    <Textarea
-                      id="approvalNotes"
-                      placeholder="Enter your clinical assessment, decision rationale, and any special instructions..."
-                      value={approvalNotes}
-                      onChange={(e) => setApprovalNotes(e.target.value)}
-                      className="mt-2 min-h-[100px]"
-                    />
-                  </div>
-
-                  <div className="flex justify-between items-center pt-4">
-                    <div className="flex space-x-2">
-                      <Button
-                        onClick={() => handleApprove(false)}
-                        disabled={approveBookingMutation.isPending}
-                        variant="outline"
-                        className="border-red-200 text-red-700 hover:bg-red-50"
-                      >
-                        <i className="fas fa-times mr-2"></i>
-                        Reject Booking
-                      </Button>
-                      <Button
-                        onClick={() => handleApprove(true)}
-                        disabled={approveBookingMutation.isPending}
-                        className="bg-green-600 hover:bg-green-700"
-                      >
-                        <i className="fas fa-check mr-2"></i>
-                        {approveBookingMutation.isPending ? "Processing..." : "Approve Booking"}
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-    </div>
-  );
-}
-
-function BookingCard({ booking, onReview, urgent }: { booking: PendingBooking; onReview: () => void; urgent: boolean }) {
-  const getUrgencyColor = (urgency: string) => {
-    switch (urgency) {
-      case "emergency": return "bg-red-500 text-white";
-      case "high": return "bg-orange-500 text-white";
-      case "medium": return "bg-yellow-500 text-white";
-      default: return "bg-green-500 text-white";
-    }
-  };
-
-  return (
-    <Card className={cn(urgent ? "border-red-200 bg-red-50" : "border-blue-200 bg-blue-50")}>
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div className={cn(
-              "w-12 h-12 rounded-full flex items-center justify-center",
-              urgent ? "bg-red-100" : "bg-blue-100"
-            )}>
-              <i className={cn(
-                "fas fa-user text-lg",
-                urgent ? "text-red-600" : "text-blue-600"
-              )}></i>
-            </div>
-            <div>
-              <p className="font-medium">
-                {booking.user.firstName} {booking.user.lastName}
-              </p>
-              <p className="text-sm text-gray-600">
-                {format(new Date(booking.appointment.appointmentDate), 'MMM d, yyyy')} at {booking.appointment.appointmentTime}
-              </p>
-              <div className="flex items-center space-x-2 mt-1">
-                <Badge className={cn("text-xs", getUrgencyColor(booking.triageAssessment.urgencyLevel))}>
-                  {booking.triageAssessment.urgencyLevel.toUpperCase()}
-                </Badge>
-                <span className="text-xs text-gray-500">
-                  Pain: {booking.triageAssessment.painLevel}/10
-                </span>
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Badge variant="outline" className="text-xs">
-              {booking.appointment.treatmentType}
-            </Badge>
-            <Button
-              size="sm"
-              onClick={onReview}
-              className={cn(
-                urgent ? "bg-red-600 hover:bg-red-700" : "bg-blue-600 hover:bg-blue-700"
-              )}
-            >
-              <i className="fas fa-clipboard-check mr-1"></i>
-              Review
-            </Button>
-          </div>
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Appointment Approvals</h2>
+          <p className="text-gray-600">Review and approve patient booking requests</p>
         </div>
-      </CardContent>
-    </Card>
+        <div className="flex items-center space-x-4">
+          <Badge variant="outline" className="bg-yellow-50 text-yellow-700">
+            {pendingBookings.length} Pending Approvals
+          </Badge>
+          <Badge variant="outline" className="bg-green-50 text-green-700">
+            {availableAppointments.length} Available Slots
+          </Badge>
+        </div>
+      </div>
+
+      {sortedDates.length === 0 ? (
+        <Card>
+          <CardContent className="p-8 text-center">
+            <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Available Appointments</h3>
+            <p className="text-gray-600">Create appointment slots to start receiving booking requests from patients.</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-6">
+          {sortedDates.map((date) => (
+            <Card key={date}>
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center space-x-2">
+                  <Calendar className="h-5 w-5 text-primary" />
+                  <span>{format(new Date(date), 'EEEE, MMMM d, yyyy')}</span>
+                </CardTitle>
+                <CardDescription>
+                  {appointmentsByDate[date].length} appointment slot{appointmentsByDate[date].length !== 1 ? 's' : ''} available
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {appointmentsByDate[date]
+                    .sort((a, b) => a.appointmentTime.localeCompare(b.appointmentTime))
+                    .map((appointment) => {
+                      const appointmentBookings = bookingsByAppointment[appointment.id] || [];
+                      
+                      return (
+                        <div key={appointment.id} className="border rounded-lg p-4 bg-gray-50">
+                          {/* Appointment Slot Header */}
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center space-x-3">
+                              <div className="flex items-center space-x-2">
+                                <Clock className="h-4 w-4 text-gray-600" />
+                                <span className="font-medium">{appointment.appointmentTime}</span>
+                                <Badge variant="outline" className={getStatusColor(appointment.status)}>
+                                  {appointment.status === 'available' ? 'Available' : 'Booked'}
+                                </Badge>
+                              </div>
+                              <div className="text-sm text-gray-600">
+                                {appointment.duration} min • {appointment.treatmentType}
+                              </div>
+                            </div>
+                            {appointmentBookings.length > 0 && (
+                              <Badge variant="outline" className="bg-blue-50 text-blue-700">
+                                {appointmentBookings.length} booking{appointmentBookings.length !== 1 ? 's' : ''}
+                              </Badge>
+                            )}
+                          </div>
+
+                          {/* Patient Bookings */}
+                          {appointmentBookings.length > 0 ? (
+                            <div className="space-y-3">
+                              {appointmentBookings.map((booking) => (
+                                <div key={booking.id} className="bg-white rounded-lg p-4 border">
+                                  <div className="flex items-start justify-between">
+                                    <div className="flex-1">
+                                      <div className="flex items-center space-x-3 mb-2">
+                                        <User className="h-4 w-4 text-gray-600" />
+                                        <span className="font-medium">
+                                          {booking.user.firstName} {booking.user.lastName}
+                                        </span>
+                                        <Badge className={getUrgencyColor(booking.triageAssessment.urgencyLevel)}>
+                                          {booking.triageAssessment.urgencyLevel} priority
+                                        </Badge>
+                                      </div>
+                                      
+                                      <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 mb-3">
+                                        <div className="flex items-center space-x-2">
+                                          <Mail className="h-4 w-4" />
+                                          <span>{booking.user.email}</span>
+                                        </div>
+                                        <div className="flex items-center space-x-2">
+                                          <Phone className="h-4 w-4" />
+                                          <span>{booking.user.phone}</span>
+                                        </div>
+                                      </div>
+
+                                      {/* Triage Assessment Summary */}
+                                      <div className="bg-gray-50 rounded-lg p-3 mb-3">
+                                        <div className="flex items-center space-x-2 mb-2">
+                                          <FileText className="h-4 w-4 text-gray-600" />
+                                          <span className="font-medium text-sm">Clinical Assessment</span>
+                                        </div>
+                                        <div className="text-sm space-y-1">
+                                          <div>
+                                            <span className="text-gray-600">Pain Level:</span> {booking.triageAssessment.painLevel}/10
+                                          </div>
+                                          <div>
+                                            <span className="text-gray-600">Duration:</span> {booking.triageAssessment.painDuration}
+                                          </div>
+                                          <div>
+                                            <span className="text-gray-600">Symptoms:</span> {booking.triageAssessment.symptoms}
+                                          </div>
+                                          {booking.triageAssessment.triageNotes && (
+                                            <div>
+                                              <span className="text-gray-600">Notes:</span> {booking.triageAssessment.triageNotes}
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+
+                                      {booking.specialRequests && (
+                                        <div className="text-sm">
+                                          <span className="text-gray-600">Special Requests:</span> {booking.specialRequests}
+                                        </div>
+                                      )}
+                                    </div>
+                                    
+                                    <div className="flex space-x-2 ml-4">
+                                      <Button
+                                        size="sm"
+                                        onClick={() => handleApproveBooking(booking.id)}
+                                        className="bg-green-600 hover:bg-green-700"
+                                      >
+                                        <CheckCircle className="h-4 w-4 mr-1" />
+                                        Approve
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => handleRejectBooking(booking.id)}
+                                        className="border-red-200 text-red-600 hover:bg-red-50"
+                                      >
+                                        <XCircle className="h-4 w-4 mr-1" />
+                                        Reject
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="text-center py-4 text-gray-500">
+                              <User className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                              <p>No bookings yet for this slot</p>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

@@ -74,21 +74,57 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate booking submission with all compliance data
-    const bookingData = {
-      ...formData,
-      consents: consentData,
-      triageAssessment: triageData,
-      appointmentId: appointment.id,
-      practiceId: practice.id
-    };
+    try {
+      // Create user first
+      const userResponse = await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          dateOfBirth: formData.dateOfBirth,
+          userType: 'patient',
+          emergencyContact: formData.emergencyContact,
+          medicalConditions: formData.medicalConditions,
+          medications: formData.medications,
+          allergies: formData.allergies
+        })
+      });
 
-    console.log('Booking data with compliance:', bookingData);
+      if (!userResponse.ok) {
+        throw new Error('Failed to create user');
+      }
 
-    setTimeout(() => {
+      const user = await userResponse.json();
+
+      // Create booking with all compliance data
+      const bookingResponse = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          appointmentId: appointment.id,
+          practiceId: practice.id,
+          triageAssessment: triageData,
+          gdprConsents: consentData,
+          specialRequests: formData.specialRequests,
+          status: 'pending_approval',
+          approvalStatus: 'pending'
+        })
+      });
+
+      if (!bookingResponse.ok) {
+        throw new Error('Failed to create booking');
+      }
+
       setCurrentStep("success");
+    } catch (error) {
+      console.error('Booking submission error:', error);
+    } finally {
       setIsSubmitting(false);
-    }, 2000);
+    }
   };
 
   const handleSuccess = () => {

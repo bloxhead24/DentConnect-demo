@@ -34,6 +34,7 @@ export interface IStorage {
   // Booking operations
   createBooking(booking: InsertBooking): Promise<Booking>;
   getUserBookings(userId: number): Promise<BookingWithDetails[]>;
+  getPendingBookings(practiceId: number): Promise<any[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -617,6 +618,43 @@ export class MemStorage implements IStorage {
     });
   }
 
+  async getPendingBookings(practiceId: number): Promise<any[]> {
+    const practiceBookings = Array.from(this.bookings.values())
+      .filter(booking => {
+        const appointment = this.appointments.get(booking.appointmentId);
+        return appointment && appointment.practiceId === practiceId && booking.status === 'pending_approval';
+      });
+    
+    return practiceBookings.map(booking => {
+      const user = this.users.get(booking.userId);
+      const appointment = this.appointments.get(booking.appointmentId);
+      
+      return {
+        id: booking.id,
+        userId: booking.userId,
+        appointmentId: booking.appointmentId,
+        user: user ? {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          phone: user.phone,
+          dateOfBirth: user.dateOfBirth
+        } : null,
+        appointment: appointment ? {
+          appointmentDate: appointment.appointmentDate,
+          appointmentTime: appointment.appointmentTime,
+          duration: appointment.duration,
+          treatmentType: appointment.treatmentType
+        } : null,
+        triageAssessment: booking.triageAssessment || {},
+        status: booking.status,
+        approvalStatus: booking.approvalStatus,
+        createdAt: booking.createdAt,
+        specialRequests: booking.specialRequests
+      };
+    });
+  }
+
   async createAppointment(insertAppointment: InsertAppointment): Promise<Appointment> {
     const appointment: Appointment = {
       id: this.currentAppointmentId++,
@@ -739,6 +777,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserBookings(userId: number): Promise<BookingWithDetails[]> {
+    // This would need a more complex query with joins in a real implementation
+    return [];
+  }
+
+  async getPendingBookings(practiceId: number): Promise<any[]> {
     // This would need a more complex query with joins in a real implementation
     return [];
   }

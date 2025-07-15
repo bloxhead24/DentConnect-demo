@@ -214,6 +214,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User routes
+  app.post("/api/users", async (req, res) => {
+    try {
+      const result = insertUserSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ error: "Invalid user data" });
+      }
+      
+      const user = await storage.createUser(result.data);
+      res.status(201).json(user);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to create user" });
+    }
+  });
+
   // Booking routes
   app.post("/api/bookings", async (req, res) => {
     try {
@@ -244,6 +259,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error creating booking:", error);
       res.status(500).json({ message: "Failed to create booking" });
+    }
+  });
+
+  // Get all bookings for a user
+  app.get("/api/bookings/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const bookings = await storage.getUserBookings(userId);
+      res.json(bookings);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch bookings" });
+    }
+  });
+
+  // Get pending bookings for approval dashboard
+  app.get("/api/practice/:practiceId/pending-bookings", async (req, res) => {
+    try {
+      const practiceId = parseInt(req.params.practiceId);
+      const pendingBookings = await storage.getPendingBookings(practiceId);
+      res.json(pendingBookings);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch pending bookings" });
+    }
+  });
+
+  // Get available appointments for approval dashboard
+  app.get("/api/practice/:practiceId/available-appointments", async (req, res) => {
+    try {
+      const practiceId = parseInt(req.params.practiceId);
+      const appointments = await storage.getAvailableAppointments(practiceId);
+      res.json(appointments);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch available appointments" });
     }
   });
 
