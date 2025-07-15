@@ -296,7 +296,7 @@ export function PracticeBottomSheet({ practice, isOpen, onClose, onBookAppointme
               <CallbackRequestModal practiceId={practice.id} practiceName={practice.name}>
                 <Button className="bg-orange-600 hover:bg-orange-700 text-white">
                   <PhoneCall className="w-4 h-4 mr-2" />
-                  Callback When Available
+                  Alert Me of Cancellations
                 </Button>
               </CallbackRequestModal>
             </div>
