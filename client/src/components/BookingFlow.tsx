@@ -31,9 +31,6 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
     phone: "",
     dateOfBirth: "",
     emergencyContact: "",
-    medicalConditions: "",
-    medications: "",
-    allergies: "",
     specialRequests: ""
   });
   const [consentData, setConsentData] = useState<ConsentData>({
@@ -96,49 +93,62 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
     setIsSubmitting(true);
 
     try {
+      console.log('Starting booking submission...');
+      
       // Create user first
+      const userPayload = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        dateOfBirth: formData.dateOfBirth || null,
+        userType: 'patient',
+        emergencyContact: formData.emergencyContact || null
+      };
+      
+      console.log('User payload:', userPayload);
+      
       const userResponse = await fetch('/api/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          phone: formData.phone,
-          dateOfBirth: formData.dateOfBirth,
-          userType: 'patient',
-          emergencyContact: formData.emergencyContact,
-          medicalConditions: formData.medicalConditions,
-          medications: formData.medications,
-          allergies: formData.allergies
-        })
+        body: JSON.stringify(userPayload)
       });
 
       if (!userResponse.ok) {
+        const errorData = await userResponse.json();
+        console.error('User creation failed:', errorData);
         throw new Error('Failed to create user');
       }
 
       const user = await userResponse.json();
+      console.log('User created:', user);
 
       // Create booking with all compliance data
+      const bookingPayload = {
+        userId: user.id,
+        appointmentId: appointment.id,
+        treatmentCategory: appointment.treatmentType,
+        specialRequests: formData.specialRequests || null,
+        status: 'pending_approval',
+        approvalStatus: 'pending'
+      };
+      
+      console.log('Booking payload:', bookingPayload);
+      
       const bookingResponse = await fetch('/api/bookings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: user.id,
-          appointmentId: appointment.id,
-          practiceId: practice.id,
-          triageAssessment: triageData,
-          gdprConsents: consentData,
-          specialRequests: formData.specialRequests,
-          status: 'pending_approval',
-          approvalStatus: 'pending'
-        })
+        body: JSON.stringify(bookingPayload)
       });
 
       if (!bookingResponse.ok) {
+        const errorData = await bookingResponse.json();
+        console.error('Booking creation failed:', errorData);
         throw new Error('Failed to create booking');
       }
+
+      const booking = await bookingResponse.json();
+      console.log('Booking created:', booking);
 
       setCurrentStep("success");
     } catch (error) {
@@ -337,39 +347,9 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Medical Information</CardTitle>
+                  <CardTitle>Additional Information</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div>
-                    <Label htmlFor="medicalConditions">Medical Conditions</Label>
-                    <Textarea
-                      id="medicalConditions"
-                      placeholder="List any medical conditions, heart problems, diabetes, etc."
-                      value={formData.medicalConditions}
-                      onChange={(e) => handleInputChange("medicalConditions", e.target.value)}
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="medications">Current Medications</Label>
-                    <Textarea
-                      id="medications"
-                      placeholder="List all medications you're currently taking"
-                      value={formData.medications}
-                      onChange={(e) => handleInputChange("medications", e.target.value)}
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="allergies">Allergies</Label>
-                    <Textarea
-                      id="allergies"
-                      placeholder="Drug allergies, latex, etc."
-                      value={formData.allergies}
-                      onChange={(e) => handleInputChange("allergies", e.target.value)}
-                    />
-                  </div>
-                  
                   <div>
                     <Label htmlFor="specialRequests">Special Requests</Label>
                     <Textarea

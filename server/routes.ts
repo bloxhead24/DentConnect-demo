@@ -217,14 +217,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User routes
   app.post("/api/users", async (req, res) => {
     try {
+      console.log("User creation request body:", req.body);
+      
       const result = insertUserSchema.safeParse(req.body);
       if (!result.success) {
-        return res.status(400).json({ error: "Invalid user data" });
+        console.error("User validation failed:", result.error);
+        return res.status(400).json({ error: "Invalid user data", details: result.error.issues });
       }
       
       const user = await storage.createUser(result.data);
+      console.log("User created successfully:", user);
       res.status(201).json(user);
     } catch (error) {
+      console.error("User creation error:", error);
       res.status(500).json({ error: "Failed to create user" });
     }
   });
@@ -232,28 +237,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Booking routes
   app.post("/api/bookings", async (req, res) => {
     try {
-      const bookingData = insertBookingSchema.parse(req.body);
+      console.log("Booking request body:", req.body);
       
-      // Create user if doesn't exist
-      let userId = bookingData.userId;
-      if (!userId) {
-        const user = await storage.createUser({
-          email: req.body.email || "guest@example.com",
-          firstName: req.body.firstName || "Guest",
-          lastName: req.body.lastName || "User",
-          userType: "patient",
-        });
-        userId = user.id;
-      }
-
+      // Extract the booking data we need
+      const bookingData = {
+        userId: req.body.userId,
+        appointmentId: req.body.appointmentId,
+        treatmentCategory: req.body.treatmentCategory,
+        specialRequests: req.body.specialRequests,
+        status: req.body.status || "pending_approval",
+        approvalStatus: req.body.approvalStatus || "pending"
+      };
+      
+      console.log("Parsed booking data:", bookingData);
+      
+      // Validate with schema
+      const validatedData = insertBookingSchema.parse(bookingData);
+      
       // Book the appointment
-      await storage.bookAppointment(bookingData.appointmentId, userId);
+      await storage.bookAppointment(validatedData.appointmentId, validatedData.userId);
       
       // Create booking record
-      const booking = await storage.createBooking({
-        ...bookingData,
-        userId,
-      });
+      const booking = await storage.createBooking(validatedData);
       
       res.json(booking);
     } catch (error) {
