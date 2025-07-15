@@ -1,5 +1,5 @@
 import { 
-  users, practices, treatments, dentists, appointments, bookings,
+  users, practices, treatments, dentists, appointments, bookings, triageAssessments,
   type User, type InsertUser, type Practice, type InsertPractice,
   type Treatment, type InsertTreatment, type Dentist, type InsertDentist,
   type Appointment, type InsertAppointment,

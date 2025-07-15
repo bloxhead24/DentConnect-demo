@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
-import { Calendar, Clock, User, AlertCircle, CheckCircle, XCircle, FileText, Phone, Mail } from "lucide-react";
+import { Calendar, Clock, User, AlertCircle, CheckCircle, XCircle, FileText, Phone, Mail, Activity, Heart, TrendingUp } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "../lib/utils";
 
@@ -24,7 +24,8 @@ interface PendingBooking {
     duration: number;
     treatmentType: string;
   };
-  triageAssessment: {
+  triageAssessment?: {
+    id: number;
     painLevel: number;
     painDuration: string;
     symptoms: string;
@@ -38,7 +39,13 @@ interface PendingBooking {
   status: string;
   approvalStatus: string;
   createdAt: string;
+  treatmentCategory: string;
   specialRequests?: string;
+  accessibilityNeeds?: string;
+  medications: boolean;
+  allergies: boolean;
+  lastDentalVisit?: string;
+  anxietyLevel: string;
 }
 
 interface Appointment {
@@ -274,16 +281,22 @@ export function AppointmentApprovalDashboard({ practiceId }: AppointmentApproval
                                 <div key={booking.id} className="bg-white rounded-lg p-4 border">
                                   <div className="flex items-start justify-between">
                                     <div className="flex-1">
-                                      <div className="flex items-center space-x-3 mb-2">
+                                      <div className="flex items-center space-x-3 mb-3">
                                         <User className="h-4 w-4 text-gray-600" />
                                         <span className="font-medium">
                                           {booking.user.firstName} {booking.user.lastName}
                                         </span>
-                                        <Badge className={getUrgencyColor(booking.triageAssessment.urgencyLevel)}>
-                                          {booking.triageAssessment.urgencyLevel} priority
+                                        <Badge className={`${booking.anxietyLevel === 'anxious' ? 'bg-red-100 text-red-800' : 
+                                          booking.anxietyLevel === 'nervous' ? 'bg-yellow-100 text-yellow-800' : 
+                                          'bg-green-100 text-green-800'}`}>
+                                          {booking.anxietyLevel}
+                                        </Badge>
+                                        <Badge className="bg-blue-100 text-blue-800">
+                                          {booking.treatmentCategory}
                                         </Badge>
                                       </div>
-                                      
+
+                                      {/* Patient Contact Info */}
                                       <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 mb-3">
                                         <div className="flex items-center space-x-2">
                                           <Mail className="h-4 w-4" />
@@ -294,10 +307,106 @@ export function AppointmentApprovalDashboard({ practiceId }: AppointmentApproval
                                           <span>{booking.user.phone}</span>
                                         </div>
                                       </div>
-                                      
+
+                                      {/* Clinical Information */}
+                                      <div className="bg-blue-50 rounded-lg p-3 mb-3">
+                                        <h4 className="font-semibold text-blue-900 mb-2 flex items-center">
+                                          <Activity className="h-4 w-4 mr-2" />
+                                          Clinical Information
+                                        </h4>
+                                        <div className="grid grid-cols-2 gap-3 text-sm">
+                                          <div>
+                                            <span className="text-gray-600">Medical History:</span>
+                                            <div className="mt-1 space-y-1">
+                                              <div className="flex items-center space-x-2">
+                                                <span className={`w-2 h-2 rounded-full ${booking.medications ? 'bg-orange-500' : 'bg-green-500'}`}></span>
+                                                <span>{booking.medications ? 'Takes medications' : 'No medications'}</span>
+                                              </div>
+                                              <div className="flex items-center space-x-2">
+                                                <span className={`w-2 h-2 rounded-full ${booking.allergies ? 'bg-red-500' : 'bg-green-500'}`}></span>
+                                                <span>{booking.allergies ? 'Has allergies' : 'No allergies'}</span>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <div>
+                                            <span className="text-gray-600">Last Dental Visit:</span>
+                                            <p className="font-medium">{booking.lastDentalVisit || 'Not specified'}</p>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      {/* Triage Assessment */}
+                                      {booking.triageAssessment && (
+                                        <div className="bg-yellow-50 rounded-lg p-3 mb-3">
+                                          <h4 className="font-semibold text-yellow-900 mb-2 flex items-center">
+                                            <Heart className="h-4 w-4 mr-2" />
+                                            Triage Assessment
+                                          </h4>
+                                          <div className="grid grid-cols-2 gap-3 text-sm">
+                                            <div>
+                                              <span className="text-gray-600">Pain Level:</span>
+                                              <div className="flex items-center space-x-2 mt-1">
+                                                <TrendingUp className="h-3 w-3 text-red-500" />
+                                                <span className="font-medium">{booking.triageAssessment.painLevel}/10</span>
+                                              </div>
+                                            </div>
+                                            <div>
+                                              <span className="text-gray-600">Duration:</span>
+                                              <p className="font-medium">{booking.triageAssessment.painDuration}</p>
+                                            </div>
+                                            <div className="col-span-2">
+                                              <span className="text-gray-600">Symptoms:</span>
+                                              <p className="font-medium">{booking.triageAssessment.symptoms}</p>
+                                            </div>
+                                            <div className="col-span-2">
+                                              <span className="text-gray-600">Clinical Indicators:</span>
+                                              <div className="flex flex-wrap gap-2 mt-1">
+                                                {booking.triageAssessment.swelling && (
+                                                  <Badge variant="outline" className="bg-red-50 text-red-700">Swelling</Badge>
+                                                )}
+                                                {booking.triageAssessment.trauma && (
+                                                  <Badge variant="outline" className="bg-red-50 text-red-700">Trauma</Badge>
+                                                )}
+                                                {booking.triageAssessment.bleeding && (
+                                                  <Badge variant="outline" className="bg-red-50 text-red-700">Bleeding</Badge>
+                                                )}
+                                                {booking.triageAssessment.infection && (
+                                                  <Badge variant="outline" className="bg-red-50 text-red-700">Infection</Badge>
+                                                )}
+                                                {(!booking.triageAssessment.swelling && !booking.triageAssessment.trauma && 
+                                                  !booking.triageAssessment.bleeding && !booking.triageAssessment.infection) && (
+                                                  <Badge variant="outline" className="bg-green-50 text-green-700">No acute symptoms</Badge>
+                                                )}
+                                              </div>
+                                            </div>
+                                            <div className="col-span-2">
+                                              <span className="text-gray-600">Urgency:</span>
+                                              <Badge className={getUrgencyColor(booking.triageAssessment.urgencyLevel)}>
+                                                {booking.triageAssessment.urgencyLevel} priority
+                                              </Badge>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
+
+                                      {/* Special Requests */}
                                       {booking.specialRequests && (
-                                        <div className="text-sm text-gray-600 mb-3">
-                                          <strong>Special Requests:</strong> {booking.specialRequests}
+                                        <div className="bg-gray-50 rounded-lg p-3 mb-3">
+                                          <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
+                                            <FileText className="h-4 w-4 mr-2" />
+                                            Special Requests
+                                          </h4>
+                                          <p className="text-sm text-gray-700">{booking.specialRequests}</p>
+                                        </div>
+                                      )}
+
+                                      {/* Accessibility Needs */}
+                                      {booking.accessibilityNeeds && (
+                                        <div className="bg-purple-50 rounded-lg p-3 mb-3">
+                                          <h4 className="font-semibold text-purple-900 mb-2">
+                                            Accessibility Requirements
+                                          </h4>
+                                          <p className="text-sm text-purple-700">{booking.accessibilityNeeds}</p>
                                         </div>
                                       )}
                                       

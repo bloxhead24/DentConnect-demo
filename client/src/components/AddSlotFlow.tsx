@@ -16,7 +16,6 @@ interface SlotData {
   date: Date | null;
   time: string;
   duration: number;
-  treatmentType: string;
 }
 
 export function AddSlotFlow({ isOpen, onClose, onSuccess }: AddSlotFlowProps) {
@@ -24,12 +23,11 @@ export function AddSlotFlow({ isOpen, onClose, onSuccess }: AddSlotFlowProps) {
   const [slotData, setSlotData] = useState<SlotData>({
     date: null,
     time: "",
-    duration: 30,
-    treatmentType: ""
+    duration: 30
   });
   const queryClient = useQueryClient();
 
-  const totalSteps = 4;
+  const totalSteps = 3;
 
   const createAppointmentMutation = useMutation({
     mutationFn: async (appointmentData: any) => {
@@ -55,8 +53,7 @@ export function AddSlotFlow({ isOpen, onClose, onSuccess }: AddSlotFlowProps) {
       setSlotData({
         date: null,
         time: "",
-        duration: 30,
-        treatmentType: ""
+        duration: 30
       });
     },
     onError: (error) => {
@@ -79,7 +76,7 @@ export function AddSlotFlow({ isOpen, onClose, onSuccess }: AddSlotFlowProps) {
   };
 
   const handleComplete = () => {
-    if (!slotData.date || !slotData.time || !slotData.treatmentType) {
+    if (!slotData.date || !slotData.time) {
       alert('Please fill in all required fields');
       return;
     }
@@ -97,7 +94,7 @@ export function AddSlotFlow({ isOpen, onClose, onSuccess }: AddSlotFlowProps) {
       appointmentDate: appointmentDateTime.toISOString(),
       appointmentTime: slotData.time,
       duration: slotData.duration,
-      treatmentType: slotData.treatmentType,
+      treatmentType: 'general', // Default treatment type
       status: 'available'
     };
 
@@ -110,7 +107,6 @@ export function AddSlotFlow({ isOpen, onClose, onSuccess }: AddSlotFlowProps) {
       case 1: return "Select Date";
       case 2: return "Choose Time";
       case 3: return "Set Duration";
-      case 4: return "Treatment Type";
       default: return "";
     }
   };
@@ -120,7 +116,6 @@ export function AddSlotFlow({ isOpen, onClose, onSuccess }: AddSlotFlowProps) {
       case 1: return slotData.date !== null;
       case 2: return slotData.time !== "";
       case 3: return slotData.duration > 0;
-      case 4: return slotData.treatmentType !== "";
       default: return false;
     }
   };
@@ -174,13 +169,7 @@ export function AddSlotFlow({ isOpen, onClose, onSuccess }: AddSlotFlowProps) {
             />
           )}
 
-          {/* Step 4: Treatment Type */}
-          {currentStep === 4 && (
-            <TreatmentTypeStep 
-              selectedTreatment={slotData.treatmentType} 
-              onTreatmentSelect={(treatmentType) => setSlotData({...slotData, treatmentType})} 
-            />
-          )}
+
 
           {/* Navigation Buttons */}
           <div className="flex justify-between pt-4">
@@ -380,47 +369,3 @@ function DurationSelectionStep({ selectedDuration, onDurationSelect }: {
   );
 }
 
-function TreatmentTypeStep({ selectedTreatment, onTreatmentSelect }: { 
-  selectedTreatment: string; 
-  onTreatmentSelect: (treatment: string) => void 
-}) {
-  const treatments = [
-    { value: "routine", label: "Routine Cleaning", color: "bg-green-100 text-green-800" },
-    { value: "filling", label: "Filling", color: "bg-blue-100 text-blue-800" },
-    { value: "crown", label: "Crown/Bridge", color: "bg-purple-100 text-purple-800" },
-    { value: "root-canal", label: "Root Canal", color: "bg-orange-100 text-orange-800" },
-    { value: "extraction", label: "Extraction", color: "bg-red-100 text-red-800" },
-    { value: "emergency", label: "Emergency", color: "bg-red-100 text-red-800" },
-    { value: "consultation", label: "Consultation", color: "bg-gray-100 text-gray-800" },
-    { value: "whitening", label: "Teeth Whitening", color: "bg-yellow-100 text-yellow-800" }
-  ];
-
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center space-x-2 mb-4">
-        <Check className="h-5 w-5 text-blue-600" />
-        <h3 className="font-semibold">What type of treatment is this slot for?</h3>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {treatments.map((treatment) => (
-          <Button
-            key={treatment.value}
-            variant={selectedTreatment === treatment.value ? "default" : "outline"}
-            className={`h-12 flex items-center justify-center ${
-              selectedTreatment === treatment.value 
-                ? "bg-blue-600 text-white" 
-                : "hover:bg-blue-50"
-            }`}
-            onClick={() => onTreatmentSelect(treatment.value)}
-          >
-            <span className="font-medium">{treatment.label}</span>
-            {selectedTreatment === treatment.value && (
-              <Check className="h-4 w-4 ml-2" />
-            )}
-          </Button>
-        ))}
-      </div>
-    </div>
-  );
-}
