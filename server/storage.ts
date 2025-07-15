@@ -36,6 +36,7 @@ export interface IStorage {
   createBooking(booking: InsertBooking): Promise<Booking>;
   getUserBookings(userId: number): Promise<BookingWithDetails[]>;
   getPendingBookings(practiceId: number): Promise<any[]>;
+  getApprovedBookings(practiceId: number): Promise<any[]>;
   approveBooking(bookingId: number, approvedBy: string): Promise<Booking>;
   rejectBooking(bookingId: number, rejectedBy: string): Promise<Booking>;
 }
@@ -658,6 +659,49 @@ export class MemStorage implements IStorage {
     });
   }
 
+  async getApprovedBookings(practiceId: number): Promise<any[]> {
+    const practiceBookings = Array.from(this.bookings.values())
+      .filter(booking => {
+        const appointment = this.appointments.get(booking.appointmentId);
+        return appointment && appointment.practiceId === practiceId && booking.approvalStatus === 'approved';
+      });
+    
+    return practiceBookings.map(booking => {
+      const user = this.users.get(booking.userId);
+      const appointment = this.appointments.get(booking.appointmentId);
+      
+      return {
+        id: booking.id,
+        userId: booking.userId,
+        appointmentId: booking.appointmentId,
+        user: user ? {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          phone: user.phone,
+          dateOfBirth: user.dateOfBirth
+        } : null,
+        appointment: appointment ? {
+          appointmentDate: appointment.appointmentDate,
+          appointmentTime: appointment.appointmentTime,
+          duration: appointment.duration,
+          treatmentType: appointment.treatmentType
+        } : null,
+        status: booking.status,
+        approvalStatus: booking.approvalStatus,
+        approvedAt: booking.approvedAt,
+        createdAt: booking.createdAt,
+        specialRequests: booking.specialRequests,
+        treatmentCategory: booking.treatmentCategory,
+        accessibilityNeeds: booking.accessibilityNeeds,
+        medications: booking.medications,
+        allergies: booking.allergies,
+        lastDentalVisit: booking.lastDentalVisit,
+        anxietyLevel: booking.anxietyLevel
+      };
+    });
+  }
+
   async createAppointment(insertAppointment: InsertAppointment): Promise<Appointment> {
     const appointment: Appointment = {
       id: this.currentAppointmentId++,
@@ -785,6 +829,73 @@ export class DatabaseStorage implements IStorage {
   async getUserBookings(userId: number): Promise<BookingWithDetails[]> {
     // This would need a more complex query with joins in a real implementation
     return [];
+  }
+
+  async getApprovedBookings(practiceId: number): Promise<any[]> {
+    const bookingsQuery = await db
+      .select({
+        id: bookings.id,
+        userId: bookings.userId,
+        appointmentId: bookings.appointmentId,
+        userFirstName: users.firstName,
+        userLastName: users.lastName,
+        userEmail: users.email,
+        userPhone: users.phone,
+        userDateOfBirth: users.dateOfBirth,
+        appointmentDate: appointments.appointmentDate,
+        appointmentTime: appointments.appointmentTime,
+        duration: appointments.duration,
+        treatmentType: appointments.treatmentType,
+        status: bookings.status,
+        approvalStatus: bookings.approvalStatus,
+        approvedAt: bookings.approvedAt,
+        createdAt: bookings.createdAt,
+        specialRequests: bookings.specialRequests,
+        treatmentCategory: bookings.treatmentCategory,
+        accessibilityNeeds: bookings.accessibilityNeeds,
+        medications: bookings.medications,
+        allergies: bookings.allergies,
+        lastDentalVisit: bookings.lastDentalVisit,
+        anxietyLevel: bookings.anxietyLevel
+      })
+      .from(bookings)
+      .innerJoin(users, eq(bookings.userId, users.id))
+      .innerJoin(appointments, eq(bookings.appointmentId, appointments.id))
+      .where(and(
+        eq(appointments.practiceId, practiceId),
+        eq(bookings.approvalStatus, 'approved')
+      ))
+      .orderBy(appointments.appointmentDate, appointments.appointmentTime);
+
+    return bookingsQuery.map(row => ({
+      id: row.id,
+      userId: row.userId,
+      appointmentId: row.appointmentId,
+      user: {
+        firstName: row.userFirstName,
+        lastName: row.userLastName,
+        email: row.userEmail,
+        phone: row.userPhone,
+        dateOfBirth: row.userDateOfBirth
+      },
+      appointment: {
+        appointmentDate: row.appointmentDate,
+        appointmentTime: row.appointmentTime,
+        duration: row.duration,
+        treatmentType: row.treatmentType
+      },
+      status: row.status,
+      approvalStatus: row.approvalStatus,
+      approvedAt: row.approvedAt,
+      createdAt: row.createdAt,
+      specialRequests: row.specialRequests,
+      treatmentCategory: row.treatmentCategory,
+      accessibilityNeeds: row.accessibilityNeeds,
+      medications: row.medications,
+      allergies: row.allergies,
+      lastDentalVisit: row.lastDentalVisit,
+      anxietyLevel: row.anxietyLevel
+    }));
   }
 
   async getPendingBookings(practiceId: number): Promise<any[]> {

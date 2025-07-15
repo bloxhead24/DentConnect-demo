@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { AppointmentApprovalDashboard } from "../components/AppointmentApprovalDashboard";
+import { ApprovedAppointmentsOverview } from "../components/ApprovedAppointmentsOverview";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
@@ -292,41 +293,10 @@ export default function DentistDashboard() {
           </TabsContent>
 
           <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Recent Appointments */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Today's Appointments</CardTitle>
-                  <CardDescription>Your scheduled appointments for today</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {recentAppointments?.map((appointment) => (
-                      <div key={appointment.id} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <div className="flex items-center justify-center w-10 h-10 bg-primary/10 rounded-full">
-                            <Clock className="h-5 w-5 text-primary" />
-                          </div>
-                          <div>
-                            <p className="font-medium text-gray-900">{appointment.patientName}</p>
-                            <p className="text-sm text-gray-600">{appointment.treatmentType}</p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-medium text-gray-900">{appointment.appointmentTime}</p>
-                          <Badge className={getStatusColor(appointment.status)}>
-                            {appointment.status}
-                          </Badge>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <Button variant="outline" className="w-full mt-4">
-                    View All Appointments
-                  </Button>
-                </CardContent>
-              </Card>
+            {/* Approved Appointments Overview */}
+            <ApprovedAppointmentsOverview practiceId={1} />
 
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Quick Actions */}
               <Card>
                 <CardHeader>
@@ -368,6 +338,34 @@ export default function DentistDashboard() {
                       You earn £20 per 30-minute session
                       <br />
                       <span className="text-green-600">Patients pay £24.99 • Instant payment processing</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Practice Summary */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Practice Summary</CardTitle>
+                  <CardDescription>Your practice performance at a glance</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Total Approved Appointments</span>
+                      <span className="font-semibold">{stats.completedAppointments}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Pending Approvals</span>
+                      <span className="font-semibold">{stats.pendingBookings}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Available Slots</span>
+                      <span className="font-semibold">{stats.availableSlots}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Monthly Revenue</span>
+                      <span className="font-semibold">£{stats.monthlyRevenue.toLocaleString()}</span>
                     </div>
                   </div>
                 </CardContent>

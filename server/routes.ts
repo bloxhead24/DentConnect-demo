@@ -315,6 +315,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get approved bookings for overview dashboard
+  app.get("/api/practice/:practiceId/approved-bookings", async (req, res) => {
+    try {
+      const practiceId = parseInt(req.params.practiceId);
+      const approvedBookings = await storage.getApprovedBookings(practiceId);
+      res.json(approvedBookings);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch approved bookings" });
+    }
+  });
+
   // Approve a booking
   app.post("/api/bookings/:bookingId/approve", async (req, res) => {
     try {
