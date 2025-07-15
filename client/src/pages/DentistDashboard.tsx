@@ -23,6 +23,7 @@ import {
   Video
 } from "lucide-react";
 import PricingManagement from "../components/PricingManagement";
+import { AddSlotFlow } from "../components/AddSlotFlow";
 
 interface DashboardStats {
   totalPatients: number;
@@ -47,6 +48,7 @@ interface RecentAppointment {
 export default function DentistDashboard() {
   const [selectedPeriod, setSelectedPeriod] = useState<"week" | "month" | "year">("month");
   const [showVirtualConsultation, setShowVirtualConsultation] = useState(false);
+  const [showAddSlotFlow, setShowAddSlotFlow] = useState(false);
 
   // Mock data - in real app, these would come from API
   const { data: stats } = useQuery<DashboardStats>({
@@ -328,7 +330,11 @@ export default function DentistDashboard() {
                       <Video className="h-6 w-6" />
                       <span className="text-sm font-medium">Virtual Consult</span>
                     </Button>
-                    <Button variant="outline" className="h-20 flex flex-col items-center space-y-2">
+                    <Button 
+                      onClick={() => setShowAddSlotFlow(true)}
+                      variant="outline" 
+                      className="h-20 flex flex-col items-center space-y-2 hover:bg-blue-50 hover:border-blue-300"
+                    >
                       <Calendar className="h-6 w-6" />
                       <span className="text-sm">Add Slot</span>
                     </Button>
@@ -468,6 +474,16 @@ export default function DentistDashboard() {
         onClose={() => setShowVirtualConsultation(false)}
         userType="dentist"
         onSuccess={() => setShowVirtualConsultation(false)}
+      />
+
+      {/* Add Slot Flow Modal */}
+      <AddSlotFlow
+        isOpen={showAddSlotFlow}
+        onClose={() => setShowAddSlotFlow(false)}
+        onSuccess={() => {
+          setShowAddSlotFlow(false);
+          // You could add a success toast here
+        }}
       />
     </div>
   );
