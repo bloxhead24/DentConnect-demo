@@ -131,14 +131,15 @@ export default function SearchModeSelection({
           <Card 
             key={option.id}
             className={cn(
-              "relative overflow-hidden transition-all duration-300 cursor-pointer",
+              "relative overflow-hidden transition-all duration-300",
+              option.id === "open" ? "cursor-not-allowed opacity-75" : "cursor-pointer",
               selectedMode === option.id
                 ? "ring-2 ring-teal-500 shadow-lg scale-[1.02]"
-                : "hover:shadow-md hover:scale-[1.01]",
+                : option.id === "open" ? "" : "hover:shadow-md hover:scale-[1.01]",
               option.bgColor,
               option.borderColor
             )}
-            onClick={() => handleModeSelect(option.id)}
+            onClick={() => option.id !== "open" && handleModeSelect(option.id)}
           >
             {option.recommended && (
               <div className="absolute top-4 right-4 z-10">
@@ -146,6 +147,20 @@ export default function SearchModeSelection({
                   <i className="fas fa-star mr-1"></i>
                   Recommended
                 </Badge>
+              </div>
+            )}
+            
+            {/* Coming Soon Overlay for Open Search */}
+            {option.id === "open" && (
+              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
+                <div className="bg-white rounded-lg p-6 text-center shadow-xl">
+                  <div className="text-4xl mb-3">🚧</div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Coming Soon</h3>
+                  <p className="text-gray-600 text-sm">
+                    Open search is being enhanced with<br />
+                    advanced AI matching capabilities
+                  </p>
+                </div>
               </div>
             )}
             
