@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
-import { Calendar, Clock, User, Phone, Mail, FileText, AlertCircle, MapPin } from "lucide-react";
+import { Calendar, Clock, User, Phone, Mail, FileText, AlertCircle, MapPin, ChevronDown, ChevronUp, Activity, Heart, TrendingUp } from "lucide-react";
 import { format } from "date-fns";
 import { useState } from "react";
 
@@ -23,6 +23,18 @@ interface ApprovedBooking {
     duration: number;
     treatmentType: string;
   };
+  triageAssessment?: {
+    id: number;
+    painLevel: number;
+    painDuration: string;
+    symptoms: string;
+    swelling: boolean;
+    trauma: boolean;
+    bleeding: boolean;
+    infection: boolean;
+    urgencyLevel: string;
+    triageNotes: string;
+  };
   status: string;
   approvalStatus: string;
   approvedAt: string;
@@ -42,6 +54,7 @@ interface ApprovedAppointmentsOverviewProps {
 
 export function ApprovedAppointmentsOverview({ practiceId }: ApprovedAppointmentsOverviewProps) {
   const [selectedBooking, setSelectedBooking] = useState<ApprovedBooking | null>(null);
+  const [expandedTriage, setExpandedTriage] = useState<Set<number>>(new Set());
 
   const { data: approvedBookings = [], isLoading } = useQuery<ApprovedBooking[]>({
     queryKey: [`/api/practice/${practiceId}/approved-bookings`],
@@ -90,6 +103,31 @@ export function ApprovedAppointmentsOverview({ practiceId }: ApprovedAppointment
       default:
         return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  const getUrgencyColor = (urgencyLevel: string) => {
+    switch (urgencyLevel) {
+      case 'urgent':
+        return 'bg-red-100 text-red-800 border-red-200';
+      case 'moderate':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'low':
+        return 'bg-green-100 text-green-800 border-green-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const toggleTriageExpansion = (bookingId: number) => {
+    setExpandedTriage(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(bookingId)) {
+        newSet.delete(bookingId);
+      } else {
+        newSet.add(bookingId);
+      }
+      return newSet;
+    });
   };
 
   const todaysAppointments = getTodaysAppointments();
@@ -151,16 +189,139 @@ export function ApprovedAppointmentsOverview({ practiceId }: ApprovedAppointment
                       </div>
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-4 text-sm mb-3">
-                      <div className="flex items-center space-x-2">
-                        <Phone className="h-4 w-4 text-gray-500" />
-                        <span>{booking.user.phone}</span>
+                    {/* Patient Summary */}
+                    <div className="bg-blue-50 rounded-lg p-3 mb-3">
+                      <div className="grid grid-cols-2 gap-4 text-sm mb-2">
+                        <div className="flex items-center space-x-2">
+                          <Phone className="h-4 w-4 text-gray-500" />
+                          <span>{booking.user.phone}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Mail className="h-4 w-4 text-gray-500" />
+                          <span className="truncate">{booking.user.email}</span>
+                        </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <Mail className="h-4 w-4 text-gray-500" />
-                        <span className="truncate">{booking.user.email}</span>
+                      <div className="grid grid-cols-3 gap-2 text-sm">
+                        <div className="flex items-center space-x-2">
+                          <span className={`w-2 h-2 rounded-full ${booking.medications ? 'bg-orange-500' : 'bg-green-500'}`}></span>
+                          <span>{booking.medications ? 'Has medications' : 'No medications'}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className={`w-2 h-2 rounded-full ${booking.allergies ? 'bg-red-500' : 'bg-green-500'}`}></span>
+                          <span>{booking.allergies ? 'Has allergies' : 'No allergies'}</span>
+                        </div>
+                        <div className="text-gray-600">
+                          <span>Last visit: {booking.lastDentalVisit || 'Not specified'}</span>
+                        </div>
                       </div>
                     </div>
+
+                    {/* Triage Information */}
+                    {booking.triageAssessment && (
+                      <div className="bg-yellow-50 rounded-lg p-3 mb-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-semibold text-yellow-900 flex items-center text-sm">
+                            <Heart className="h-4 w-4 mr-2" />
+                            Triage Summary
+                          </h4>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => toggleTriageExpansion(booking.id)}
+                            className="h-6 px-2 text-xs"
+                          >
+                            {expandedTriage.has(booking.id) ? (
+                              <>
+                                <ChevronUp className="h-3 w-3 mr-1" />
+                                Less
+                              </>
+                            ) : (
+                              <>
+                                <ChevronDown className="h-3 w-3 mr-1" />
+                                More
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                        
+                        {/* Always visible summary */}
+                        <div className="grid grid-cols-2 gap-3 text-sm">
+                          <div className="flex items-center space-x-2">
+                            <TrendingUp className="h-3 w-3 text-red-500" />
+                            <span>Pain: {booking.triageAssessment.painLevel}/10</span>
+                          </div>
+                          <div>
+                            <Badge className={getUrgencyColor(booking.triageAssessment.urgencyLevel)}>
+                              {booking.triageAssessment.urgencyLevel} priority
+                            </Badge>
+                          </div>
+                        </div>
+
+                        {/* Expandable detailed triage */}
+                        {expandedTriage.has(booking.id) && (
+                          <div className="mt-3 pt-3 border-t border-yellow-200">
+                            <div className="space-y-2 text-sm">
+                              <div>
+                                <span className="text-gray-600">Duration:</span>
+                                <span className="ml-2 font-medium">{booking.triageAssessment.painDuration}</span>
+                              </div>
+                              <div>
+                                <span className="text-gray-600">Symptoms:</span>
+                                <p className="mt-1 font-medium">{booking.triageAssessment.symptoms}</p>
+                              </div>
+                              <div>
+                                <span className="text-gray-600">Clinical Indicators:</span>
+                                <div className="flex flex-wrap gap-1 mt-1">
+                                  {booking.triageAssessment.swelling && (
+                                    <Badge variant="outline" className="bg-red-50 text-red-700 text-xs">Swelling</Badge>
+                                  )}
+                                  {booking.triageAssessment.trauma && (
+                                    <Badge variant="outline" className="bg-red-50 text-red-700 text-xs">Trauma</Badge>
+                                  )}
+                                  {booking.triageAssessment.bleeding && (
+                                    <Badge variant="outline" className="bg-red-50 text-red-700 text-xs">Bleeding</Badge>
+                                  )}
+                                  {booking.triageAssessment.infection && (
+                                    <Badge variant="outline" className="bg-red-50 text-red-700 text-xs">Infection</Badge>
+                                  )}
+                                  {(!booking.triageAssessment.swelling && !booking.triageAssessment.trauma && 
+                                    !booking.triageAssessment.bleeding && !booking.triageAssessment.infection) && (
+                                    <Badge variant="outline" className="bg-green-50 text-green-700 text-xs">No acute symptoms</Badge>
+                                  )}
+                                </div>
+                              </div>
+                              {booking.triageAssessment.triageNotes && (
+                                <div>
+                                  <span className="text-gray-600">Notes:</span>
+                                  <p className="mt-1 font-medium">{booking.triageAssessment.triageNotes}</p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Special Requests */}
+                    {booking.specialRequests && (
+                      <div className="bg-gray-50 rounded-lg p-3 mb-3">
+                        <h4 className="font-semibold text-gray-900 mb-2 flex items-center text-sm">
+                          <FileText className="h-4 w-4 mr-2" />
+                          Special Requests
+                        </h4>
+                        <p className="text-sm text-gray-700">{booking.specialRequests}</p>
+                      </div>
+                    )}
+
+                    {/* Accessibility Needs */}
+                    {booking.accessibilityNeeds && (
+                      <div className="bg-purple-50 rounded-lg p-3 mb-3">
+                        <h4 className="font-semibold text-purple-900 mb-2 text-sm">
+                          Accessibility Requirements
+                        </h4>
+                        <p className="text-sm text-purple-700">{booking.accessibilityNeeds}</p>
+                      </div>
+                    )}
 
                     {(booking.specialRequests || booking.medications || booking.allergies) && (
                       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-3">
@@ -218,23 +379,180 @@ export function ApprovedAppointmentsOverview({ practiceId }: ApprovedAppointment
                 .sort((a, b) => new Date(a.appointment.appointmentDate).getTime() - new Date(b.appointment.appointmentDate).getTime())
                 .slice(0, 5)
                 .map((booking) => (
-                  <div key={booking.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
-                    <div className="flex items-center space-x-3">
-                      <div className="flex items-center justify-center w-10 h-10 bg-blue-50 rounded-full">
-                        <User className="h-5 w-5 text-blue-600" />
+                  <div key={booking.id} className="border rounded-lg p-4 hover:bg-gray-50">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center space-x-3">
+                        <div className="flex items-center justify-center w-10 h-10 bg-blue-50 rounded-full">
+                          <User className="h-5 w-5 text-blue-600" />
+                        </div>
+                        <div>
+                          <div className="flex items-center space-x-2">
+                            <span className="font-semibold text-gray-900">
+                              {booking.user.firstName} {booking.user.lastName}
+                            </span>
+                            <Badge className={getAnxietyColor(booking.anxietyLevel)}>
+                              {booking.anxietyLevel}
+                            </Badge>
+                            <Badge className="bg-blue-100 text-blue-800">
+                              {booking.treatmentCategory}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-gray-600">{booking.appointment.treatmentType}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium text-gray-900">
-                          {booking.user.firstName} {booking.user.lastName}
+                      <div className="text-right">
+                        <p className="font-medium text-lg">
+                          {format(new Date(booking.appointment.appointmentDate), 'MMM d')}
                         </p>
-                        <p className="text-sm text-gray-600">{booking.appointment.treatmentType}</p>
+                        <p className="text-sm text-gray-600">{booking.appointment.appointmentTime}</p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-medium text-gray-900">
-                        {format(new Date(booking.appointment.appointmentDate), 'MMM d')}
-                      </p>
-                      <p className="text-sm text-gray-600">{booking.appointment.appointmentTime}</p>
+                    
+                    {/* Patient Summary */}
+                    <div className="bg-blue-50 rounded-lg p-3 mb-3">
+                      <div className="grid grid-cols-2 gap-4 text-sm mb-2">
+                        <div className="flex items-center space-x-2">
+                          <Phone className="h-4 w-4 text-gray-500" />
+                          <span>{booking.user.phone}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Mail className="h-4 w-4 text-gray-500" />
+                          <span className="truncate">{booking.user.email}</span>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 text-sm">
+                        <div className="flex items-center space-x-2">
+                          <span className={`w-2 h-2 rounded-full ${booking.medications ? 'bg-orange-500' : 'bg-green-500'}`}></span>
+                          <span>{booking.medications ? 'Has medications' : 'No medications'}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className={`w-2 h-2 rounded-full ${booking.allergies ? 'bg-red-500' : 'bg-green-500'}`}></span>
+                          <span>{booking.allergies ? 'Has allergies' : 'No allergies'}</span>
+                        </div>
+                        <div className="text-gray-600">
+                          <span>Last visit: {booking.lastDentalVisit || 'Not specified'}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Triage Information */}
+                    {booking.triageAssessment && (
+                      <div className="bg-yellow-50 rounded-lg p-3 mb-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-semibold text-yellow-900 flex items-center text-sm">
+                            <Heart className="h-4 w-4 mr-2" />
+                            Triage Summary
+                          </h4>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => toggleTriageExpansion(booking.id)}
+                            className="h-6 px-2 text-xs"
+                          >
+                            {expandedTriage.has(booking.id) ? (
+                              <>
+                                <ChevronUp className="h-3 w-3 mr-1" />
+                                Less
+                              </>
+                            ) : (
+                              <>
+                                <ChevronDown className="h-3 w-3 mr-1" />
+                                More
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                        
+                        {/* Always visible summary */}
+                        <div className="grid grid-cols-2 gap-3 text-sm">
+                          <div className="flex items-center space-x-2">
+                            <TrendingUp className="h-3 w-3 text-red-500" />
+                            <span>Pain: {booking.triageAssessment.painLevel}/10</span>
+                          </div>
+                          <div>
+                            <Badge className={getUrgencyColor(booking.triageAssessment.urgencyLevel)}>
+                              {booking.triageAssessment.urgencyLevel} priority
+                            </Badge>
+                          </div>
+                        </div>
+
+                        {/* Expandable detailed triage */}
+                        {expandedTriage.has(booking.id) && (
+                          <div className="mt-3 pt-3 border-t border-yellow-200">
+                            <div className="space-y-2 text-sm">
+                              <div>
+                                <span className="text-gray-600">Duration:</span>
+                                <span className="ml-2 font-medium">{booking.triageAssessment.painDuration}</span>
+                              </div>
+                              <div>
+                                <span className="text-gray-600">Symptoms:</span>
+                                <p className="mt-1 font-medium">{booking.triageAssessment.symptoms}</p>
+                              </div>
+                              <div>
+                                <span className="text-gray-600">Clinical Indicators:</span>
+                                <div className="flex flex-wrap gap-1 mt-1">
+                                  {booking.triageAssessment.swelling && (
+                                    <Badge variant="outline" className="bg-red-50 text-red-700 text-xs">Swelling</Badge>
+                                  )}
+                                  {booking.triageAssessment.trauma && (
+                                    <Badge variant="outline" className="bg-red-50 text-red-700 text-xs">Trauma</Badge>
+                                  )}
+                                  {booking.triageAssessment.bleeding && (
+                                    <Badge variant="outline" className="bg-red-50 text-red-700 text-xs">Bleeding</Badge>
+                                  )}
+                                  {booking.triageAssessment.infection && (
+                                    <Badge variant="outline" className="bg-red-50 text-red-700 text-xs">Infection</Badge>
+                                  )}
+                                  {(!booking.triageAssessment.swelling && !booking.triageAssessment.trauma && 
+                                    !booking.triageAssessment.bleeding && !booking.triageAssessment.infection) && (
+                                    <Badge variant="outline" className="bg-green-50 text-green-700 text-xs">No acute symptoms</Badge>
+                                  )}
+                                </div>
+                              </div>
+                              {booking.triageAssessment.triageNotes && (
+                                <div>
+                                  <span className="text-gray-600">Notes:</span>
+                                  <p className="mt-1 font-medium">{booking.triageAssessment.triageNotes}</p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Special Requests */}
+                    {booking.specialRequests && (
+                      <div className="bg-gray-50 rounded-lg p-3 mb-3">
+                        <h4 className="font-semibold text-gray-900 mb-2 flex items-center text-sm">
+                          <FileText className="h-4 w-4 mr-2" />
+                          Special Requests
+                        </h4>
+                        <p className="text-sm text-gray-700">{booking.specialRequests}</p>
+                      </div>
+                    )}
+
+                    {/* Accessibility Needs */}
+                    {booking.accessibilityNeeds && (
+                      <div className="bg-purple-50 rounded-lg p-3 mb-3">
+                        <h4 className="font-semibold text-purple-900 mb-2 text-sm">
+                          Accessibility Requirements
+                        </h4>
+                        <p className="text-sm text-purple-700">{booking.accessibilityNeeds}</p>
+                      </div>
+                    )}
+
+                    <div className="flex justify-between items-center">
+                      <Badge className={getStatusColor(booking.status)}>
+                        {booking.status}
+                      </Badge>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedBooking(booking)}
+                      >
+                        View Details
+                      </Button>
                     </div>
                   </div>
                 ))}

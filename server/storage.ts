@@ -837,6 +837,7 @@ export class DatabaseStorage implements IStorage {
         id: bookings.id,
         userId: bookings.userId,
         appointmentId: bookings.appointmentId,
+        triageAssessmentId: bookings.triageAssessmentId,
         userFirstName: users.firstName,
         userLastName: users.lastName,
         userEmail: users.email,
@@ -856,11 +857,22 @@ export class DatabaseStorage implements IStorage {
         medications: bookings.medications,
         allergies: bookings.allergies,
         lastDentalVisit: bookings.lastDentalVisit,
-        anxietyLevel: bookings.anxietyLevel
+        anxietyLevel: bookings.anxietyLevel,
+        // Triage assessment details
+        triagePainLevel: triageAssessments.painLevel,
+        triagePainDuration: triageAssessments.painDuration,
+        triageSymptoms: triageAssessments.symptoms,
+        triageSwelling: triageAssessments.swelling,
+        triageTrauma: triageAssessments.trauma,
+        triageBleeding: triageAssessments.bleeding,
+        triageInfection: triageAssessments.infection,
+        triageUrgencyLevel: triageAssessments.urgencyLevel,
+        triageNotes: triageAssessments.triageNotes
       })
       .from(bookings)
       .innerJoin(users, eq(bookings.userId, users.id))
       .innerJoin(appointments, eq(bookings.appointmentId, appointments.id))
+      .leftJoin(triageAssessments, eq(bookings.triageAssessmentId, triageAssessments.id))
       .where(and(
         eq(appointments.practiceId, practiceId),
         eq(bookings.approvalStatus, 'approved')
@@ -894,7 +906,19 @@ export class DatabaseStorage implements IStorage {
       medications: row.medications,
       allergies: row.allergies,
       lastDentalVisit: row.lastDentalVisit,
-      anxietyLevel: row.anxietyLevel
+      anxietyLevel: row.anxietyLevel,
+      triageAssessment: row.triageAssessmentId ? {
+        id: row.triageAssessmentId,
+        painLevel: row.triagePainLevel,
+        painDuration: row.triagePainDuration,
+        symptoms: row.triageSymptoms,
+        swelling: row.triageSwelling,
+        trauma: row.triageTrauma,
+        bleeding: row.triageBleeding,
+        infection: row.triageInfection,
+        urgencyLevel: row.triageUrgencyLevel,
+        triageNotes: row.triageNotes
+      } : null
     }));
   }
 
