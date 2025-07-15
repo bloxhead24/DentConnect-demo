@@ -282,6 +282,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update booking with triage assessment
+  app.patch("/api/bookings/:bookingId", async (req, res) => {
+    try {
+      const bookingId = parseInt(req.params.bookingId);
+      const updateData = req.body;
+      
+      console.log("Updating booking:", bookingId, "with data:", updateData);
+      
+      const updatedBooking = await storage.updateBooking(bookingId, updateData);
+      res.json(updatedBooking);
+    } catch (error) {
+      console.error("Error updating booking:", error);
+      res.status(500).json({ error: "Failed to update booking" });
+    }
+  });
+
   // Get all bookings for a user
   app.get("/api/bookings/:userId", async (req, res) => {
     try {

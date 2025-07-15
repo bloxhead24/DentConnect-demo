@@ -31,10 +31,10 @@ export function CallbackRequestModal({ practiceId, practiceName, children }: Cal
     dateOfBirth: "",
     
     // Callback request details
-    requestType: "cancellation",
+    requestType: "cancelled_appointment",
     requestReason: "",
-    preferredCallTime: "",
-    urgency: "low",
+    preferredCallTime: "anytime",
+    urgency: "medium",
     
     // Triage assessment
     painLevel: 0,
@@ -109,18 +109,24 @@ export function CallbackRequestModal({ practiceId, practiceName, children }: Cal
       const triage = await triageResponse.json();
 
       // Create callback request
+      const callbackData = {
+        userId: user.id,
+        practiceId: practiceId,
+        requestType: data.requestType,
+        requestReason: data.requestReason,
+        preferredCallTime: data.preferredCallTime,
+        urgency: data.urgency,
+        status: "pending"
+      };
+      
+      // Only include triage assessment if it exists
+      if (triage && triage.id) {
+        callbackData.triageAssessmentId = triage.id;
+      }
+      
       return apiRequest("/api/callback-requests", {
         method: "POST",
-        body: JSON.stringify({
-          userId: user.id,
-          practiceId: practiceId,
-          triageAssessmentId: triage.id,
-          requestType: data.requestType,
-          requestReason: data.requestReason,
-          preferredCallTime: data.preferredCallTime,
-          urgency: data.urgency,
-          status: "pending"
-        }),
+        body: JSON.stringify(callbackData),
         headers: {
           "Content-Type": "application/json"
         }
@@ -129,7 +135,7 @@ export function CallbackRequestModal({ practiceId, practiceName, children }: Cal
     onSuccess: () => {
       toast({
         title: "Callback request submitted",
-        description: "Your callback request has been sent to the practice. They will contact you soon.",
+        description: "You will receive a call the moment that an appointment is available. Please try to make it quick so that you can be seen in time.",
       });
       setIsOpen(false);
       setStep(1);
@@ -139,10 +145,10 @@ export function CallbackRequestModal({ practiceId, practiceName, children }: Cal
         email: "",
         phone: "",
         dateOfBirth: "",
-        requestType: "cancellation",
+        requestType: "cancelled_appointment",
         requestReason: "",
-        preferredCallTime: "",
-        urgency: "low",
+        preferredCallTime: "anytime",
+        urgency: "medium",
         painLevel: 0,
         painDuration: "",
         symptoms: "",

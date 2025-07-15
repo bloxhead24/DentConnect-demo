@@ -163,6 +163,66 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
       const booking = await bookingResponse.json();
       console.log('Booking created:', booking);
 
+      // Create triage assessment if we have triage data
+      if (triageData && triageData.painLevel !== undefined) {
+        const triagePayload = {
+          userId: user.id,
+          painLevel: triageData.painLevel,
+          painDuration: triageData.painDuration,
+          symptoms: triageData.symptoms,
+          swelling: triageData.swelling,
+          trauma: triageData.trauma,
+          bleeding: triageData.bleeding,
+          infection: triageData.infection,
+          urgencyLevel: triageData.urgencyLevel,
+          triageNotes: triageData.triageNotes,
+          anxietyLevel: triageData.anxietyLevel,
+          medicalHistory: triageData.medicalHistory,
+          currentMedications: triageData.currentMedications,
+          allergies: triageData.allergies,
+          previousDentalTreatment: triageData.previousDentalTreatment,
+          smokingStatus: triageData.smokingStatus,
+          alcoholConsumption: triageData.alcoholConsumption,
+          pregnancyStatus: triageData.pregnancyStatus
+        };
+        
+        console.log('Triage payload:', triagePayload);
+        
+        const triageResponse = await fetch('/api/triage-assessments', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(triagePayload)
+        });
+
+        if (triageResponse.ok) {
+          const triageAssessment = await triageResponse.json();
+          console.log('Triage assessment created:', triageAssessment);
+          
+          // Update booking with triage assessment ID
+          const updateBookingPayload = {
+            triageAssessmentId: triageAssessment.id,
+            accessibilityNeeds: formData.specialRequests || null,
+            medications: triageData.currentMedications ? true : false,
+            allergies: triageData.allergies ? true : false,
+            anxietyLevel: triageData.anxietyLevel
+          };
+          
+          const updateResponse = await fetch(`/api/bookings/${booking.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updateBookingPayload)
+          });
+
+          if (updateResponse.ok) {
+            console.log('Booking updated with triage assessment');
+          } else {
+            console.error('Failed to update booking with triage assessment');
+          }
+        } else {
+          console.error('Failed to create triage assessment');
+        }
+      }
+
       setCurrentStep("success");
     } catch (error) {
       console.error('Booking submission error:', error);

@@ -36,6 +36,7 @@ export interface IStorage {
   
   // Booking operations
   createBooking(booking: InsertBooking): Promise<Booking>;
+  updateBooking(bookingId: number, updateData: any): Promise<Booking>;
   getUserBookings(userId: number): Promise<BookingWithDetails[]>;
   getPendingBookings(practiceId: number): Promise<any[]>;
   getApprovedBookings(practiceId: number): Promise<any[]>;
@@ -617,6 +618,22 @@ export class MemStorage implements IStorage {
     return booking;
   }
 
+  async updateBooking(bookingId: number, updateData: any): Promise<Booking> {
+    const existingBooking = this.bookings.get(bookingId);
+    if (!existingBooking) {
+      throw new Error(`Booking with ID ${bookingId} not found`);
+    }
+    
+    const updatedBooking: Booking = {
+      ...existingBooking,
+      ...updateData,
+      updatedAt: new Date(),
+    };
+    
+    this.bookings.set(bookingId, updatedBooking);
+    return updatedBooking;
+  }
+
   async getUserBookings(userId: number): Promise<BookingWithDetails[]> {
     const userBookings = Array.from(this.bookings.values()).filter(booking => booking.userId === userId);
     
@@ -846,6 +863,15 @@ export class DatabaseStorage implements IStorage {
     const [booking] = await db
       .insert(bookings)
       .values(insertBooking)
+      .returning();
+    return booking;
+  }
+
+  async updateBooking(bookingId: number, updateData: any): Promise<Booking> {
+    const [booking] = await db
+      .update(bookings)
+      .set({ ...updateData, updatedAt: new Date() })
+      .where(eq(bookings.id, bookingId))
       .returning();
     return booking;
   }
