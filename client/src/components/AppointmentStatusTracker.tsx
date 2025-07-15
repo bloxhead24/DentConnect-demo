@@ -289,17 +289,19 @@ export function AppointmentStatusTracker({ userId, practice, onBack }: Appointme
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center space-x-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-teal-400 to-blue-600 rounded-full flex items-center justify-center">
+              <div className="flex items-start space-x-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-teal-400 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
                   <User className="h-8 w-8 text-white" />
                 </div>
-                <div>
-                  <h3 className="font-bold text-lg">Dr. Richard Thompson</h3>
-                  <p className="text-gray-600">General & Cosmetic Dentistry</p>
+                <div className="flex-1">
+                  <div className="flex items-center space-x-2 mb-1">
+                    <h3 className="font-bold text-lg">Dr. Richard Thompson</h3>
+                    <Badge className="bg-yellow-100 text-yellow-800 text-xs">
+                      RCS Excellence 2025
+                    </Badge>
+                  </div>
+                  <p className="text-gray-600 mb-1">General & Cosmetic Dentistry</p>
                   <p className="text-sm text-gray-500">25+ years experience</p>
-                  <Badge className="mt-1 bg-yellow-100 text-yellow-800">
-                    Royal College of Surgeons Excellence Award 2025
-                  </Badge>
                 </div>
               </div>
             </CardContent>
