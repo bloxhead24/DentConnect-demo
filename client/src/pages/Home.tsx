@@ -156,19 +156,21 @@ export default function Home() {
           {/* Royal College of Surgeons Badge */}
           <div className="flex items-center justify-center">
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl px-4 py-2 animate-in fade-in-50 slide-in-from-bottom-4 duration-500">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
                   <i className="fas fa-award text-white text-sm"></i>
                 </div>
-                <div>
-                  <p className="text-sm font-semibold text-blue-800">
-                    🏆 Nominated for Innovation Award
-                  </p>
+                <div className="flex-1">
+                  <div className="flex items-center space-x-2 mb-1">
+                    <p className="text-sm font-semibold text-blue-800">
+                      🏆 Nominated for Innovation Award
+                    </p>
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                  </div>
                   <p className="text-xs text-blue-600">
                     Royal College of Surgeons - National Contribution to Dentistry 2025
                   </p>
                 </div>
-                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
               </div>
             </div>
           </div>
