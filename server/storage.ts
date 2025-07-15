@@ -677,7 +677,7 @@ export class MemStorage implements IStorage {
 }
 
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 export class DatabaseStorage implements IStorage {
   async getUser(id: number): Promise<User | undefined> {
@@ -783,8 +783,73 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getPendingBookings(practiceId: number): Promise<any[]> {
-    // This would need a more complex query with joins in a real implementation
-    return [];
+    // Get all bookings with pending approval status for this practice
+    const bookingsQuery = await db
+      .select({
+        id: bookings.id,
+        userId: bookings.userId,
+        appointmentId: bookings.appointmentId,
+        treatmentCategory: bookings.treatmentCategory,
+        specialRequests: bookings.specialRequests,
+        status: bookings.status,
+        approvalStatus: bookings.approvalStatus,
+        createdAt: bookings.createdAt,
+        // User details
+        userFirstName: users.firstName,
+        userLastName: users.lastName,
+        userEmail: users.email,
+        userPhone: users.phone,
+        userDateOfBirth: users.dateOfBirth,
+        // Appointment details  
+        appointmentDate: appointments.appointmentDate,
+        appointmentTime: appointments.appointmentTime,
+        duration: appointments.duration,
+        treatmentType: appointments.treatmentType
+      })
+      .from(bookings)
+      .innerJoin(users, eq(bookings.userId, users.id))
+      .innerJoin(appointments, eq(bookings.appointmentId, appointments.id))
+      .where(
+        and(
+          eq(appointments.practiceId, practiceId),
+          eq(bookings.status, 'pending_approval')
+        )
+      );
+
+    // Transform the flat result into the expected nested structure
+    return bookingsQuery.map(row => ({
+      id: row.id,
+      userId: row.userId,
+      appointmentId: row.appointmentId,
+      user: {
+        firstName: row.userFirstName,
+        lastName: row.userLastName,
+        email: row.userEmail,
+        phone: row.userPhone,
+        dateOfBirth: row.userDateOfBirth
+      },
+      appointment: {
+        appointmentDate: row.appointmentDate,
+        appointmentTime: row.appointmentTime,
+        duration: row.duration,
+        treatmentType: row.treatmentType
+      },
+      triageAssessment: {
+        painLevel: 0,
+        painDuration: '',
+        symptoms: '',
+        swelling: false,
+        trauma: false,
+        bleeding: false,
+        infection: false,
+        urgencyLevel: 'routine',
+        triageNotes: ''
+      },
+      status: row.status,
+      approvalStatus: row.approvalStatus,
+      createdAt: row.createdAt,
+      specialRequests: row.specialRequests
+    }));
   }
 
   async createAppointment(insertAppointment: InsertAppointment): Promise<Appointment> {
