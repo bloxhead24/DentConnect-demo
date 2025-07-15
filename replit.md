@@ -118,6 +118,15 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+✓ **COMPREHENSIVE PATIENT DETAILS MODAL WITH STEP-BY-STEP TRIAGE DISPLAY** (July 15, 2025)
+→ **RESTRUCTURED APPOINTMENT OVERVIEW**: Replaced expandable sections with clean summary view and detailed modal access
+→ **STEP-BY-STEP TRIAGE PRESENTATION**: Patient details modal now shows triage assessment in 4 organized steps matching the collection flow
+→ **ENHANCED CLINICAL INFORMATION**: All triage data displayed with proper categorization and visual hierarchy
+→ **IMPROVED DENTIST WORKFLOW**: Summary view prevents information overload while detailed view provides comprehensive clinical data
+→ **PROFESSIONAL MEDICAL DOCUMENTATION**: Structured display of pain assessment, clinical indicators, medical history, and lifestyle factors
+→ **ACCESSIBLE DESIGN**: Modal-based detailed view with proper sections for each step of the triage process
+→ **CLINICAL DECISION SUPPORT**: Complete patient profile accessible via single button click for informed treatment decisions
+
 ✓ **WORKING BOOKING FLOW FOR PATIENT & DENTIST SEARCH** (July 15, 2025)
 → **DEMO POPUP REMOVAL**: Replaced demo completion popups with actual booking forms in practice and dentist search modes
 → **COMPLETE BOOKING INTEGRATION**: Patient and dentist search now trigger full BookingFlow component with GDPR consent and triage
