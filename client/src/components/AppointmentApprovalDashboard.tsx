@@ -342,23 +342,37 @@ export function AppointmentApprovalDashboard({ practiceId }: AppointmentApproval
                                             <Heart className="h-4 w-4 mr-2" />
                                             Triage Assessment
                                           </h4>
-                                          <div className="grid grid-cols-2 gap-3 text-sm">
-                                            <div>
-                                              <span className="text-gray-600">Pain Level:</span>
-                                              <div className="flex items-center space-x-2 mt-1">
-                                                <TrendingUp className="h-3 w-3 text-red-500" />
-                                                <span className="font-medium">{booking.triageAssessment.painLevel}/10</span>
+                                          <div className="space-y-3 text-sm">
+                                            {/* Pain and Symptoms */}
+                                            <div className="grid grid-cols-2 gap-3">
+                                              <div>
+                                                <span className="text-gray-600">Pain Level:</span>
+                                                <div className="flex items-center space-x-2 mt-1">
+                                                  <TrendingUp className="h-3 w-3 text-red-500" />
+                                                  <span className="font-medium">{booking.triageAssessment.painLevel}/10</span>
+                                                </div>
+                                              </div>
+                                              <div>
+                                                <span className="text-gray-600">Duration:</span>
+                                                <p className="font-medium">{booking.triageAssessment.painDuration}</p>
                                               </div>
                                             </div>
+                                            
+                                            {/* Anxiety Level */}
                                             <div>
-                                              <span className="text-gray-600">Duration:</span>
-                                              <p className="font-medium">{booking.triageAssessment.painDuration}</p>
+                                              <span className="text-gray-600">Anxiety Level:</span>
+                                              <Badge className={getAnxietyColor(booking.triageAssessment.anxietyLevel || 'none')}>
+                                                {booking.triageAssessment.anxietyLevel || 'none'}
+                                              </Badge>
                                             </div>
-                                            <div className="col-span-2">
+
+                                            <div>
                                               <span className="text-gray-600">Symptoms:</span>
                                               <p className="font-medium">{booking.triageAssessment.symptoms}</p>
                                             </div>
-                                            <div className="col-span-2">
+                                            
+                                            {/* Clinical Indicators */}
+                                            <div>
                                               <span className="text-gray-600">Clinical Indicators:</span>
                                               <div className="flex flex-wrap gap-2 mt-1">
                                                 {booking.triageAssessment.swelling && (
@@ -379,12 +393,74 @@ export function AppointmentApprovalDashboard({ practiceId }: AppointmentApproval
                                                 )}
                                               </div>
                                             </div>
-                                            <div className="col-span-2">
+
+                                            {/* Medical History */}
+                                            {booking.triageAssessment.medicalHistory && (
+                                              <div>
+                                                <span className="text-gray-600">Medical History:</span>
+                                                <p className="font-medium">{booking.triageAssessment.medicalHistory}</p>
+                                              </div>
+                                            )}
+
+                                            {/* Current Medications */}
+                                            {booking.triageAssessment.currentMedications && (
+                                              <div>
+                                                <span className="text-gray-600">Current Medications:</span>
+                                                <p className="font-medium">{booking.triageAssessment.currentMedications}</p>
+                                              </div>
+                                            )}
+
+                                            {/* Allergies */}
+                                            {booking.triageAssessment.allergies && (
+                                              <div>
+                                                <span className="text-gray-600">Allergies:</span>
+                                                <p className="font-medium text-red-700">{booking.triageAssessment.allergies}</p>
+                                              </div>
+                                            )}
+
+                                            {/* Previous Dental Treatment */}
+                                            {booking.triageAssessment.previousDentalTreatment && (
+                                              <div>
+                                                <span className="text-gray-600">Previous Dental Experience:</span>
+                                                <p className="font-medium">{booking.triageAssessment.previousDentalTreatment}</p>
+                                              </div>
+                                            )}
+
+                                            {/* Lifestyle Factors */}
+                                            <div className="grid grid-cols-2 gap-3">
+                                              <div>
+                                                <span className="text-gray-600">Smoking Status:</span>
+                                                <p className="font-medium">{booking.triageAssessment.smokingStatus || 'never'}</p>
+                                              </div>
+                                              <div>
+                                                <span className="text-gray-600">Alcohol:</span>
+                                                <p className="font-medium">{booking.triageAssessment.alcoholConsumption || 'none'}</p>
+                                              </div>
+                                            </div>
+
+                                            {/* Pregnancy Status */}
+                                            {booking.triageAssessment.pregnancyStatus && booking.triageAssessment.pregnancyStatus !== 'not-applicable' && (
+                                              <div>
+                                                <span className="text-gray-600">Pregnancy Status:</span>
+                                                <p className="font-medium">{booking.triageAssessment.pregnancyStatus}</p>
+                                              </div>
+                                            )}
+
+                                            {/* Urgency */}
+                                            <div>
                                               <span className="text-gray-600">Urgency:</span>
                                               <Badge className={getUrgencyColor(booking.triageAssessment.urgencyLevel)}>
                                                 {booking.triageAssessment.urgencyLevel} priority
                                               </Badge>
                                             </div>
+
+                                            {/* Triage Notes */}
+                                            {booking.triageAssessment.triageNotes && (
+                                              <div>
+                                                <span className="text-gray-600">Additional Notes:</span>
+                                                <p className="font-medium">{booking.triageAssessment.triageNotes}</p>
+                                              </div>
+                                            )}
                                           </div>
                                         </div>
                                       )}

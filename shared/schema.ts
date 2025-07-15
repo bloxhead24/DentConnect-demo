@@ -98,6 +98,15 @@ export const triageAssessments = pgTable("triage_assessments", {
   infection: boolean("infection").default(false),
   urgencyLevel: varchar("urgency_level", { length: 20 }).notNull(), // low, medium, high, emergency
   triageNotes: text("triage_notes"),
+  // Enhanced triage fields
+  anxietyLevel: varchar("anxiety_level", { length: 20 }).default("none"), // none, mild, moderate, severe
+  medicalHistory: text("medical_history"),
+  currentMedications: text("current_medications"),
+  allergies: text("allergies"),
+  previousDentalTreatment: text("previous_dental_treatment"),
+  smokingStatus: varchar("smoking_status", { length: 20 }).default("never"), // never, former, current
+  alcoholConsumption: varchar("alcohol_consumption", { length: 20 }).default("none"), // none, occasional, regular, excessive
+  pregnancyStatus: varchar("pregnancy_status", { length: 20 }).default("not-applicable"), // not-applicable, not-pregnant, pregnant, trying
   requiresApproval: boolean("requires_approval").default(false),
   approvedBy: integer("approved_by").references(() => users.id),
   approvedAt: timestamp("approved_at"),

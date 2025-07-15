@@ -867,7 +867,23 @@ export class DatabaseStorage implements IStorage {
         triageBleeding: triageAssessments.bleeding,
         triageInfection: triageAssessments.infection,
         triageUrgencyLevel: triageAssessments.urgencyLevel,
-        triageNotes: triageAssessments.triageNotes
+        triageNotes: triageAssessments.triageNotes,
+        triageAnxietyLevel: triageAssessments.anxietyLevel,
+        triageMedicalHistory: triageAssessments.medicalHistory,
+        triageCurrentMedications: triageAssessments.currentMedications,
+        triageAllergies: triageAssessments.allergies,
+        triagePreviousDentalTreatment: triageAssessments.previousDentalTreatment,
+        triageSmokingStatus: triageAssessments.smokingStatus,
+        triageAlcoholConsumption: triageAssessments.alcoholConsumption,
+        triagePregnancyStatus: triageAssessments.pregnancyStatus,
+        triageAnxietyLevel: triageAssessments.anxietyLevel,
+        triageMedicalHistory: triageAssessments.medicalHistory,
+        triageCurrentMedications: triageAssessments.currentMedications,
+        triageAllergies: triageAssessments.allergies,
+        triagePreviousDentalTreatment: triageAssessments.previousDentalTreatment,
+        triageSmokingStatus: triageAssessments.smokingStatus,
+        triageAlcoholConsumption: triageAssessments.alcoholConsumption,
+        triagePregnancyStatus: triageAssessments.pregnancyStatus
       })
       .from(bookings)
       .innerJoin(users, eq(bookings.userId, users.id))
@@ -917,7 +933,15 @@ export class DatabaseStorage implements IStorage {
         bleeding: row.triageBleeding,
         infection: row.triageInfection,
         urgencyLevel: row.triageUrgencyLevel,
-        triageNotes: row.triageNotes
+        triageNotes: row.triageNotes,
+        anxietyLevel: row.triageAnxietyLevel,
+        medicalHistory: row.triageMedicalHistory,
+        currentMedications: row.triageCurrentMedications,
+        allergies: row.triageAllergies,
+        previousDentalTreatment: row.triagePreviousDentalTreatment,
+        smokingStatus: row.triageSmokingStatus,
+        alcoholConsumption: row.triageAlcoholConsumption,
+        pregnancyStatus: row.triagePregnancyStatus
       } : null
     }));
   }

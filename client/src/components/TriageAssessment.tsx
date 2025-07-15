@@ -25,6 +25,14 @@ export interface TriageAssessmentData {
   infection: boolean;
   urgencyLevel: "low" | "medium" | "high" | "emergency";
   triageNotes: string;
+  anxietyLevel: "none" | "mild" | "moderate" | "severe";
+  medicalHistory: string;
+  currentMedications: string;
+  allergies: string;
+  previousDentalTreatment: string;
+  smokingStatus: "never" | "former" | "current";
+  alcoholConsumption: "none" | "occasional" | "regular" | "excessive";
+  pregnancyStatus: "not-applicable" | "not-pregnant" | "pregnant" | "trying";
 }
 
 export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps) {
@@ -37,7 +45,15 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
     bleeding: false,
     infection: false,
     urgencyLevel: "low",
-    triageNotes: ""
+    triageNotes: "",
+    anxietyLevel: "none",
+    medicalHistory: "",
+    currentMedications: "",
+    allergies: "",
+    previousDentalTreatment: "",
+    smokingStatus: "never",
+    alcoholConsumption: "none",
+    pregnancyStatus: "not-applicable"
   });
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -253,6 +269,199 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
 
             <div className="flex justify-between">
               <Button variant="outline" onClick={() => setCurrentStep(1)}>
+                Back
+              </Button>
+              <Button onClick={() => setCurrentStep(3)}>
+                Continue to Medical History
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {currentStep === 3 && (
+          <div className="space-y-6">
+            <div>
+              <Label className="text-base font-medium">Anxiety Level Assessment</Label>
+              <p className="text-sm text-gray-600 mb-4">How anxious do you feel about dental treatment?</p>
+              <RadioGroup
+                value={formData.anxietyLevel}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, anxietyLevel: value as any }))}
+                className="grid grid-cols-2 gap-4"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="none" id="anxiety-none" />
+                  <Label htmlFor="anxiety-none" className="text-sm">No anxiety</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="mild" id="anxiety-mild" />
+                  <Label htmlFor="anxiety-mild" className="text-sm">Mild anxiety</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="moderate" id="anxiety-moderate" />
+                  <Label htmlFor="anxiety-moderate" className="text-sm">Moderate anxiety</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="severe" id="anxiety-severe" />
+                  <Label htmlFor="anxiety-severe" className="text-sm">Severe anxiety</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            <div>
+              <Label htmlFor="medicalHistory">Medical History</Label>
+              <p className="text-sm text-gray-600 mb-2">Please list any significant medical conditions</p>
+              <Textarea
+                id="medicalHistory"
+                placeholder="e.g., Diabetes, heart condition, high blood pressure, or 'None'"
+                value={formData.medicalHistory}
+                onChange={(e) => setFormData(prev => ({ ...prev, medicalHistory: e.target.value }))}
+                className="mt-2"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="currentMedications">Current Medications</Label>
+              <p className="text-sm text-gray-600 mb-2">List all medications you're currently taking</p>
+              <Textarea
+                id="currentMedications"
+                placeholder="e.g., Aspirin 75mg daily, Metformin 500mg twice daily, or 'None'"
+                value={formData.currentMedications}
+                onChange={(e) => setFormData(prev => ({ ...prev, currentMedications: e.target.value }))}
+                className="mt-2"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="allergies">Allergies</Label>
+              <p className="text-sm text-gray-600 mb-2">List any allergies, especially to medications or dental materials</p>
+              <Textarea
+                id="allergies"
+                placeholder="e.g., Penicillin, latex, lidocaine, or 'None known'"
+                value={formData.allergies}
+                onChange={(e) => setFormData(prev => ({ ...prev, allergies: e.target.value }))}
+                className="mt-2"
+              />
+            </div>
+
+            <div className="flex justify-between">
+              <Button variant="outline" onClick={() => setCurrentStep(2)}>
+                Back
+              </Button>
+              <Button onClick={() => setCurrentStep(4)}>
+                Continue to Lifestyle Factors
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {currentStep === 4 && (
+          <div className="space-y-6">
+            <div>
+              <Label htmlFor="previousDentalTreatment">Previous Dental Treatment Experience</Label>
+              <p className="text-sm text-gray-600 mb-2">Describe your previous dental experiences</p>
+              <Textarea
+                id="previousDentalTreatment"
+                placeholder="e.g., Regular cleanings, fillings, extractions, any complications, or 'First dental visit'"
+                value={formData.previousDentalTreatment}
+                onChange={(e) => setFormData(prev => ({ ...prev, previousDentalTreatment: e.target.value }))}
+                className="mt-2"
+              />
+            </div>
+
+            <div>
+              <Label className="text-base font-medium">Smoking Status</Label>
+              <RadioGroup
+                value={formData.smokingStatus}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, smokingStatus: value as any }))}
+                className="mt-2"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="never" id="smoke-never" />
+                  <Label htmlFor="smoke-never">Never smoked</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="former" id="smoke-former" />
+                  <Label htmlFor="smoke-former">Former smoker</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="current" id="smoke-current" />
+                  <Label htmlFor="smoke-current">Current smoker</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            <div>
+              <Label className="text-base font-medium">Alcohol Consumption</Label>
+              <RadioGroup
+                value={formData.alcoholConsumption}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, alcoholConsumption: value as any }))}
+                className="mt-2"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="none" id="alcohol-none" />
+                  <Label htmlFor="alcohol-none">None</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="occasional" id="alcohol-occasional" />
+                  <Label htmlFor="alcohol-occasional">Occasional (1-2 drinks/week)</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="regular" id="alcohol-regular" />
+                  <Label htmlFor="alcohol-regular">Regular (3-14 drinks/week)</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="excessive" id="alcohol-excessive" />
+                  <Label htmlFor="alcohol-excessive">Excessive (&gt;14 drinks/week)</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            <div>
+              <Label className="text-base font-medium">Pregnancy Status</Label>
+              <RadioGroup
+                value={formData.pregnancyStatus}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, pregnancyStatus: value as any }))}
+                className="mt-2"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="not-applicable" id="preg-na" />
+                  <Label htmlFor="preg-na">Not applicable</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="not-pregnant" id="preg-no" />
+                  <Label htmlFor="preg-no">Not pregnant</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="pregnant" id="preg-yes" />
+                  <Label htmlFor="preg-yes">Pregnant</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="trying" id="preg-trying" />
+                  <Label htmlFor="preg-trying">Trying to conceive</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            <div className="border-t pt-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label className="text-sm font-medium">Calculated Urgency Level:</Label>
+                  <Badge className={cn("ml-2", getUrgencyColor(
+                    formData.bleeding || formData.trauma || formData.painLevel >= 8 ? "emergency" :
+                    formData.infection || formData.swelling || formData.painLevel >= 6 ? "high" :
+                    formData.painLevel >= 4 || formData.painDuration.includes("days") ? "medium" : "low"
+                  ))}>
+                    {formData.bleeding || formData.trauma || formData.painLevel >= 8 ? "EMERGENCY" :
+                     formData.infection || formData.swelling || formData.painLevel >= 6 ? "HIGH" :
+                     formData.painLevel >= 4 || formData.painDuration.includes("days") ? "MEDIUM" : "LOW"
+                    }
+                  </Badge>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-between">
+              <Button variant="outline" onClick={() => setCurrentStep(3)}>
                 Back
               </Button>
               <Button onClick={handleSubmit}>

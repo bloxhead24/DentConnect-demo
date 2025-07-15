@@ -59,7 +59,15 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
     bleeding: false,
     infection: false,
     urgencyLevel: "low",
-    triageNotes: ""
+    triageNotes: "",
+    anxietyLevel: "none",
+    medicalHistory: "",
+    currentMedications: "",
+    allergies: "",
+    previousDentalTreatment: "",
+    smokingStatus: "never",
+    alcoholConsumption: "none",
+    pregnancyStatus: "not-applicable"
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -80,11 +88,8 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
   };
 
   const handleTriageComplete = (assessment: TriageAssessmentData) => {
-    // Use urgency data for triage data to maintain consistency
-    setTriageData({
-      ...urgencyData,
-      triageNotes: assessment.triageNotes || urgencyData.additionalNotes
-    });
+    // Store the complete triage assessment data
+    setTriageData(assessment);
     setCurrentStep("details");
   };
 
