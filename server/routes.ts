@@ -273,6 +273,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get available appointments for approval dashboard
+  app.get("/api/practice/:practiceId/available-appointments", async (req, res) => {
+    try {
+      const practiceId = parseInt(req.params.practiceId);
+      const appointments = await storage.getAvailableAppointments(practiceId);
+      res.json(appointments);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch available appointments" });
+    }
+  });
+
   // Get pending bookings for approval dashboard
   app.get("/api/practice/:practiceId/pending-bookings", async (req, res) => {
     try {

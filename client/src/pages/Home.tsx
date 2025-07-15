@@ -14,6 +14,7 @@ import OpenSearchView from "./OpenSearchView";
 import DentConnectLogo from "../components/DentConnectLogo";
 import { DemoCompleteModal } from "../components/DemoCompleteModal";
 import { VirtualConsultation } from "../components/VirtualConsultation";
+import { BookingFlow } from "../components/BookingFlow";
 import { Stethoscope, Users, MapPin, Clock, Shield, Star, Video } from "lucide-react";
 
 export default function Home() {
@@ -25,6 +26,9 @@ export default function Home() {
   const [practiceTag, setPracticeTag] = useState<string>("");
   const [showDemoComplete, setShowDemoComplete] = useState(false);
   const [showVirtualConsultation, setShowVirtualConsultation] = useState(false);
+  const [showBookingFlow, setShowBookingFlow] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
+  const [selectedPractice, setSelectedPractice] = useState<any>(null);
 
   const handleTreatmentSelect = (treatment: TreatmentType) => {
     setSelectedTreatment(treatment);
@@ -60,13 +64,24 @@ export default function Home() {
     setCurrentStep("authenticatedDiary");
   };
 
-  const handleDiaryBooking = (appointment: any) => {
+  const handleDiaryBooking = async (appointment: any) => {
     // Handle booking from authenticated diary
     console.log("Booking appointment:", appointment);
-    // Show demo completion modal after booking
-    setTimeout(() => {
-      setShowDemoComplete(true);
-    }, 2000);
+    
+    // Fetch practice data for the appointment
+    try {
+      const response = await fetch(`/api/practices/${appointment.practiceId}`);
+      if (response.ok) {
+        const practiceData = await response.json();
+        setSelectedPractice(practiceData);
+      }
+    } catch (error) {
+      console.error("Failed to fetch practice data:", error);
+    }
+    
+    // Set the selected appointment and show booking flow
+    setSelectedAppointment(appointment);
+    setShowBookingFlow(true);
   };
 
   const handleBack = () => {
@@ -277,6 +292,18 @@ export default function Home() {
         onClose={() => setShowVirtualConsultation(false)}
         userType="patient"
         onSuccess={() => setShowDemoComplete(true)}
+      />
+
+      {/* Booking Flow Modal */}
+      <BookingFlow
+        practice={selectedPractice}
+        appointment={selectedAppointment}
+        isOpen={showBookingFlow}
+        onClose={() => setShowBookingFlow(false)}
+        onSuccess={() => {
+          setShowBookingFlow(false);
+          setShowDemoComplete(true);
+        }}
       />
 
       {/* Demo Complete Modal */}
