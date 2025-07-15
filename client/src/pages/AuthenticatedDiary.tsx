@@ -4,8 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Badge } from "../components/ui/badge";
 import { cn } from "../lib/utils";
 import { DiaryView } from "../components/DiaryView";
+import { CallbackRequestModal } from "../components/CallbackRequestModal";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
+import { PhoneCall } from "lucide-react";
 import type { Practice, Dentist, Appointment } from "@shared/schema";
 
 interface AuthenticatedDiaryProps {
@@ -194,19 +196,37 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment }: Authen
                 </div>
               </div>
               
-              <Button
-                onClick={() => quickestAppointment && onBookAppointment(quickestAppointment)}
-                disabled={!quickestAppointment}
-                className={cn(
-                  "w-full py-3 text-lg font-semibold",
-                  searchMode === "mydentist" 
-                    ? "bg-teal-600 hover:bg-teal-700" 
-                    : "bg-blue-600 hover:bg-blue-700"
-                )}
-              >
-                <i className="fas fa-bolt mr-3"></i>
-                {quickestAppointment ? "Book This Appointment" : "No Appointments Available"}
-              </Button>
+              <div className="space-y-3">
+                <Button
+                  onClick={() => quickestAppointment && onBookAppointment(quickestAppointment)}
+                  disabled={!quickestAppointment}
+                  className={cn(
+                    "w-full py-3 text-lg font-semibold",
+                    searchMode === "mydentist" 
+                      ? "bg-teal-600 hover:bg-teal-700" 
+                      : "bg-blue-600 hover:bg-blue-700"
+                  )}
+                >
+                  <i className="fas fa-bolt mr-3"></i>
+                  {quickestAppointment ? "Book This Appointment" : "No Appointments Available"}
+                </Button>
+                
+                {/* Callback Request Button */}
+                <CallbackRequestModal practiceId={selectedPractice.id} practiceName={selectedPractice.name}>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full py-3 text-lg font-semibold border-2",
+                      searchMode === "mydentist" 
+                        ? "border-teal-600 text-teal-600 hover:bg-teal-50" 
+                        : "border-blue-600 text-blue-600 hover:bg-blue-50"
+                    )}
+                  >
+                    <PhoneCall className="w-5 h-5 mr-3" />
+                    Request Callback
+                  </Button>
+                </CallbackRequestModal>
+              </div>
             </div>
           </CardContent>
         </Card>

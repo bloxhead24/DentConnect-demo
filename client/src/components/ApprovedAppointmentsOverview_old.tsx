@@ -1,22 +1,76 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
-import { Calendar, Clock, User, Mail, Phone, Activity, Heart, FileText, TrendingUp } from "lucide-react";
+import { Button } from "./ui/button";
+import { Calendar, Clock, User, Phone, Mail, FileText, AlertCircle, MapPin, Activity, Heart, TrendingUp } from "lucide-react";
 import { format } from "date-fns";
 import { PatientDetailsModal } from "./PatientDetailsModal";
+
+interface ApprovedBooking {
+  id: number;
+  userId: number;
+  appointmentId: number;
+  user: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    dateOfBirth: string;
+  };
+  appointment: {
+    appointmentDate: string;
+    appointmentTime: string;
+    duration: number;
+    treatmentType: string;
+  };
+  triageAssessment?: {
+    id: number;
+    painLevel: number;
+    painDuration: string;
+    symptoms: string;
+    swelling: boolean;
+    trauma: boolean;
+    bleeding: boolean;
+    infection: boolean;
+    urgencyLevel: string;
+    triageNotes: string;
+    anxietyLevel?: string;
+    medicalHistory?: string;
+    currentMedications?: string;
+    allergies?: string;
+    previousDentalTreatment?: string;
+    smokingStatus?: string;
+    alcoholConsumption?: string;
+    pregnancyStatus?: string;
+  };
+  status: string;
+  approvalStatus: string;
+  approvedAt: string;
+  createdAt: string;
+  specialRequests?: string;
+  treatmentCategory: string;
+  accessibilityNeeds?: string;
+  medications: boolean;
+  allergies: boolean;
+  lastDentalVisit?: string;
+  anxietyLevel: string;
+}
 
 interface ApprovedAppointmentsOverviewProps {
   practiceId: number;
 }
 
 export function ApprovedAppointmentsOverview({ practiceId }: ApprovedAppointmentsOverviewProps) {
-  const { data: approvedBookings = [], isLoading } = useQuery({
-    queryKey: ["/api/practice", practiceId, "approved-bookings"],
+  const { data: approvedBookings = [], isLoading } = useQuery<ApprovedBooking[]>({
+    queryKey: [`/api/practice/${practiceId}/approved-bookings`],
     queryFn: async () => {
-      const response = await fetch(`/api/practice/${practiceId}/approved-bookings`);
-      if (!response.ok) throw new Error('Failed to fetch approved bookings');
-      return response.json();
-    }
+      const res = await fetch(`/api/practice/${practiceId}/approved-bookings`);
+      if (!res.ok) {
+        throw new Error('Failed to fetch approved bookings');
+      }
+      return res.json();
+    },
+    refetchInterval: 30000, // Refetch every 30 seconds
   });
 
   const getTodaysAppointments = () => {
@@ -171,11 +225,11 @@ export function ApprovedAppointmentsOverview({ practiceId }: ApprovedAppointment
                           </Badge>
                         </div>
                         {booking.accessibilityNeeds && (
-                          <div className="mt-1">
-                            <span className="text-gray-600 text-xs">Accessibility:</span>
-                            <p className="text-xs text-gray-700 mt-1 bg-white rounded p-1">
-                              {booking.accessibilityNeeds}
-                            </p>
+                          <div className="flex items-center justify-between">
+                            <span className="text-gray-600">Accessibility:</span>
+                            <Badge variant="outline" className="bg-blue-100 text-blue-700 text-xs">
+                              Required
+                            </Badge>
                           </div>
                         )}
                         {booking.specialRequests && (
@@ -223,9 +277,7 @@ export function ApprovedAppointmentsOverview({ practiceId }: ApprovedAppointment
                               <Badge variant="outline" className="bg-red-100 text-red-700 text-xs">Infection</Badge>
                             )}
                           </div>
-                          <div className="mt-2">
-                            <PatientDetailsModal booking={booking} />
-                          </div>
+                          <PatientDetailsModal booking={booking} />
                         </div>
                       ) : (
                         <div className="text-sm text-gray-600">
@@ -235,6 +287,7 @@ export function ApprovedAppointmentsOverview({ practiceId }: ApprovedAppointment
                       )}
                     </div>
                   </div>
+
                 </div>
               ))}
             </div>
@@ -334,11 +387,11 @@ export function ApprovedAppointmentsOverview({ practiceId }: ApprovedAppointment
                           </Badge>
                         </div>
                         {booking.accessibilityNeeds && (
-                          <div className="mt-1">
-                            <span className="text-gray-600 text-xs">Accessibility:</span>
-                            <p className="text-xs text-gray-700 mt-1 bg-white rounded p-1">
-                              {booking.accessibilityNeeds}
-                            </p>
+                          <div className="flex items-center justify-between">
+                            <span className="text-gray-600">Accessibility:</span>
+                            <Badge variant="outline" className="bg-blue-100 text-blue-700 text-xs">
+                              Required
+                            </Badge>
                           </div>
                         )}
                         {booking.specialRequests && (
@@ -386,9 +439,7 @@ export function ApprovedAppointmentsOverview({ practiceId }: ApprovedAppointment
                               <Badge variant="outline" className="bg-red-100 text-red-700 text-xs">Infection</Badge>
                             )}
                           </div>
-                          <div className="mt-2">
-                            <PatientDetailsModal booking={booking} />
-                          </div>
+                          <PatientDetailsModal booking={booking} />
                         </div>
                       ) : (
                         <div className="text-sm text-gray-600">
@@ -398,6 +449,7 @@ export function ApprovedAppointmentsOverview({ practiceId }: ApprovedAppointment
                       )}
                     </div>
                   </div>
+
                 </div>
               ))}
             </div>
