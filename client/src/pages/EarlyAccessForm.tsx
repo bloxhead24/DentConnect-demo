@@ -1,6 +1,6 @@
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
-import { DentConnectLogo } from "../components/DentConnectLogo";
+import DentConnectLogo from "../components/DentConnectLogo";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 
 export default function EarlyAccessForm() {

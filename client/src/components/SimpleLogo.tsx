@@ -1,10 +1,10 @@
-interface DentConnectLogoProps {
+interface SimpleLogoProps {
   className?: string;
   width?: number;
   height?: number;
 }
 
-export function DentConnectLogo({ className = "", width = 200, height = 50 }: DentConnectLogoProps) {
+export function SimpleLogo({ className = "", width = 200, height = 50 }: SimpleLogoProps) {
   return (
     <div 
       className={`flex items-center justify-center bg-gradient-to-r from-teal-500 to-blue-500 text-white font-bold rounded-lg ${className}`}
@@ -15,4 +15,4 @@ export function DentConnectLogo({ className = "", width = 200, height = 50 }: De
   );
 }
 
-export default DentConnectLogo;
+export default SimpleLogo;

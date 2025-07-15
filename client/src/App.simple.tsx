@@ -1,102 +1,87 @@
-import React from "react";
 import { Button } from "./components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./components/ui/card";
+import { Badge } from "./components/ui/badge";
+import { Stethoscope, Users, MapPin, Clock, Shield, Star } from "lucide-react";
 
 function SimpleLanding() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-50 to-blue-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-2xl">
-        <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold text-teal-600 mb-2">
-            🦷 DentConnect
-          </CardTitle>
-          <CardDescription className="text-lg text-gray-600">
-            Find available dental appointments near you
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="text-center space-y-4">
-            <h2 className="text-xl font-semibold text-gray-800">
-              What type of treatment do you need?
-            </h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Button 
-                variant="outline" 
-                className="h-20 text-left flex-col items-start p-4 border-2 hover:border-teal-500 hover:bg-teal-50"
-                onClick={() => alert("🚨 Emergency treatment selected!")}
-              >
-                <div className="font-semibold text-red-600">🚨 Emergency</div>
-                <div className="text-sm text-gray-600">Immediate dental care needed</div>
-              </Button>
-              
-              <Button 
-                variant="outline" 
-                className="h-20 text-left flex-col items-start p-4 border-2 hover:border-orange-500 hover:bg-orange-50"
-                onClick={() => alert("⚡ Urgent treatment selected!")}
-              >
-                <div className="font-semibold text-orange-600">⚡ Urgent</div>
-                <div className="text-sm text-gray-600">Pain relief and urgent care</div>
-              </Button>
-              
-              <Button 
-                variant="outline" 
-                className="h-20 text-left flex-col items-start p-4 border-2 hover:border-green-500 hover:bg-green-50"
-                onClick={() => alert("✅ Routine treatment selected!")}
-              >
-                <div className="font-semibold text-green-600">✅ Routine</div>
-                <div className="text-sm text-gray-600">Regular check-up and cleaning</div>
-              </Button>
-              
-              <Button 
-                variant="outline" 
-                className="h-20 text-left flex-col items-start p-4 border-2 hover:border-purple-500 hover:bg-purple-50"
-                onClick={() => alert("✨ Cosmetic treatment selected!")}
-              >
-                <div className="font-semibold text-purple-600">✨ Cosmetic</div>
-                <div className="text-sm text-gray-600">Aesthetic dental treatments</div>
-              </Button>
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-teal-50 via-cyan-50 to-blue-50">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <div className="flex items-center justify-center bg-gradient-to-r from-teal-500 to-blue-500 text-white font-bold rounded-lg mb-6 mx-auto" style={{ width: 300, height: 75 }}>
+            <span className="text-3xl">DentConnect</span>
           </div>
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Find Your Perfect Dental Appointment
+          </h1>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            Connect with local dental practices and book last-minute appointments. 
+            Real-time availability, instant booking, and comprehensive accessibility support.
+          </p>
+        </div>
+
+        {/* Feature Cards */}
+        <div className="grid md:grid-cols-3 gap-8 mb-12">
+          <Card className="text-center">
+            <CardHeader>
+              <Clock className="w-12 h-12 text-teal-500 mx-auto mb-4" />
+              <CardTitle>Real-time Availability</CardTitle>
+              <CardDescription>
+                See live appointment slots from local practices
+              </CardDescription>
+            </CardHeader>
+          </Card>
           
-          <div className="text-center space-y-3">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <p className="text-sm font-semibold text-blue-800">
-                🏆 Demo Status: Working!
-              </p>
-              <p className="text-xs text-blue-600">
-                This simplified version confirms React is functioning correctly
-              </p>
-            </div>
-            
-            <div className="flex gap-2 justify-center">
-              <Button 
-                onClick={() => window.location.href = "/"}
-                className="bg-teal-600 hover:bg-teal-700 text-white"
-              >
-                Back to Full Demo
-              </Button>
-              <Button 
-                onClick={() => window.open('https://dentconnect.replit.app/', '_blank')}
-                variant="outline"
-                className="border-teal-600 text-teal-600 hover:bg-teal-50"
-              >
-                Early Access
-              </Button>
-            </div>
+          <Card className="text-center">
+            <CardHeader>
+              <Shield className="w-12 h-12 text-teal-500 mx-auto mb-4" />
+              <CardTitle>Secure & Verified</CardTitle>
+              <CardDescription>
+                All practices are verified and GDC registered
+              </CardDescription>
+            </CardHeader>
+          </Card>
+          
+          <Card className="text-center">
+            <CardHeader>
+              <MapPin className="w-12 h-12 text-teal-500 mx-auto mb-4" />
+              <CardTitle>Local Practices</CardTitle>
+              <CardDescription>
+                Find nearby dental practices with availability
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </div>
+
+        {/* CTA Section */}
+        <div className="text-center">
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">
+            Ready to Book Your Appointment?
+          </h2>
+          <div className="space-y-4 space-x-0 md:space-y-0 md:space-x-4 flex flex-col md:flex-row justify-center items-center">
+            <Button 
+              size="lg" 
+              className="bg-teal-500 hover:bg-teal-600 text-white px-8 py-3 text-lg"
+              onClick={() => window.location.href = '/early-access'}
+            >
+              <Users className="w-5 h-5 mr-2" />
+              Book as Patient
+            </Button>
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="border-teal-500 text-teal-500 hover:bg-teal-50 px-8 py-3 text-lg"
+              onClick={() => window.location.href = '/dentist-signup'}
+            >
+              <Stethoscope className="w-5 h-5 mr-2" />
+              Join as Dentist
+            </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
 
-function Router() {
-  return <SimpleLanding />;
-}
-
-function App() {
-  return <Router />;
-}
-
-export default App;
+export default SimpleLanding;
