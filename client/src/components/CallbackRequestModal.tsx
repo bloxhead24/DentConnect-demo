@@ -4,7 +4,7 @@ import { apiRequest } from "../lib/queryClient";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "./ui/dialog";
 import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
@@ -31,7 +31,7 @@ export function CallbackRequestModal({ practiceId, practiceName, children }: Cal
     dateOfBirth: "",
     
     // Callback request details
-    requestType: "cancelled_appointment",
+    requestType: "cancellation",
     requestReason: "",
     preferredCallTime: "anytime",
     urgency: "medium",
@@ -462,6 +462,9 @@ export function CallbackRequestModal({ practiceId, practiceName, children }: Cal
             <Phone className="h-5 w-5 text-teal-600" />
             Instant Cancellation Alert - {practiceName}
           </DialogTitle>
+          <DialogDescription>
+            Get called immediately when a cancellation slot becomes available at this practice
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
