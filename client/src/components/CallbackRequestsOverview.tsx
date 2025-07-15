@@ -92,11 +92,7 @@ export function CallbackRequestsOverview({ practiceId }: CallbackRequestsOvervie
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({ requestId, status, notes }: { requestId: number; status: string; notes?: string }) => {
-      return apiRequest(`/api/callback-requests/${requestId}/status`, {
-        method: "POST",
-        body: JSON.stringify({ status, notes }),
-        headers: { "Content-Type": "application/json" }
-      });
+      return apiRequest("POST", `/api/callback-requests/${requestId}/status`, { status, notes });
     },
     onSuccess: () => {
       toast({
@@ -106,7 +102,8 @@ export function CallbackRequestsOverview({ practiceId }: CallbackRequestsOvervie
       setIsStatusDialogOpen(false);
       setSelectedRequest(null);
       setStatusNotes("");
-      queryClient.invalidateQueries({ queryKey: ['/api/practice', practiceId, 'callback-requests'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/practice/${practiceId}/callback-requests/today`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/practice/${practiceId}/callback-requests/previous/7`] });
     },
     onError: () => {
       toast({

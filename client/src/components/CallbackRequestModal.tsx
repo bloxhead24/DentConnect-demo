@@ -60,17 +60,27 @@ export function CallbackRequestModal({ practiceId, practiceName, children }: Cal
 
   const callbackRequestMutation = useMutation({
     mutationFn: async (data: any) => {
-      // Create user first
-      const userResponse = await apiRequest("POST", "/api/users", {
-        firstName: data.firstName,
-        lastName: data.lastName,
-        email: data.email,
-        phone: data.phone,
-        dateOfBirth: data.dateOfBirth,
-        userType: "patient"
-      });
-
-      const user = await userResponse.json();
+      // Create user first or get existing user
+      let user;
+      try {
+        const userResponse = await apiRequest("POST", "/api/users", {
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+          phone: data.phone,
+          dateOfBirth: data.dateOfBirth,
+          userType: "patient"
+        });
+        user = await userResponse.json();
+      } catch (error) {
+        // If user creation fails (likely due to existing email), try to get existing user
+        const existingUserResponse = await fetch(`/api/users/email/${encodeURIComponent(data.email)}`);
+        if (existingUserResponse.ok) {
+          user = await existingUserResponse.json();
+        } else {
+          throw new Error('Failed to create or find user');
+        }
+      }
 
       // Create triage assessment
       const triageResponse = await apiRequest("POST", "/api/triage-assessments", {
@@ -149,7 +159,8 @@ export function CallbackRequestModal({ practiceId, practiceName, children }: Cal
         alcoholConsumption: "never",
         pregnancyStatus: "not_applicable"
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/practice', practiceId, 'callback-requests'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/practice/${practiceId}/callback-requests/today`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/practice/${practiceId}/callback-requests/previous/7`] });
     },
     onError: (error) => {
       toast({
