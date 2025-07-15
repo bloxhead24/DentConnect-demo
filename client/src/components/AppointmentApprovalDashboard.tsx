@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
@@ -56,6 +56,7 @@ interface AppointmentApprovalDashboardProps {
 
 export function AppointmentApprovalDashboard({ practiceId }: AppointmentApprovalDashboardProps) {
   const [selectedDate, setSelectedDate] = useState<string>("");
+  const queryClient = useQueryClient();
 
   const { data: availableAppointments = [], isLoading: appointmentsLoading } = useQuery<Appointment[]>({
     queryKey: [`/api/practice/${practiceId}/available-appointments`],
@@ -75,8 +76,62 @@ export function AppointmentApprovalDashboard({ practiceId }: AppointmentApproval
     }
   });
 
-  // Group appointments by date
-  const appointmentsByDate = availableAppointments.reduce((acc, appointment) => {
+  const approveMutation = useMutation({
+    mutationFn: async (bookingId: number) => {
+      const response = await fetch(`/api/bookings/${bookingId}/approve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ approvedBy: 'Dr. Richard Thompson' })
+      });
+      if (!response.ok) throw new Error('Failed to approve booking');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/practice/${practiceId}/pending-bookings`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/practice/${practiceId}/available-appointments`] });
+    }
+  });
+
+  const rejectMutation = useMutation({
+    mutationFn: async (bookingId: number) => {
+      const response = await fetch(`/api/bookings/${bookingId}/reject`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rejectedBy: 'Dr. Richard Thompson' })
+      });
+      if (!response.ok) throw new Error('Failed to reject booking');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/practice/${practiceId}/pending-bookings`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/practice/${practiceId}/available-appointments`] });
+    }
+  });
+
+  // Create all appointment slots (both available and those with pending bookings)
+  const allAppointments = new Map<number, Appointment>();
+  
+  // Add available appointments
+  availableAppointments.forEach(apt => {
+    allAppointments.set(apt.id, apt);
+  });
+  
+  // Add appointments from pending bookings (they might not be in available list)
+  pendingBookings.forEach(booking => {
+    if (!allAppointments.has(booking.appointmentId)) {
+      allAppointments.set(booking.appointmentId, {
+        id: booking.appointmentId,
+        appointmentDate: booking.appointment.appointmentDate,
+        appointmentTime: booking.appointment.appointmentTime,
+        duration: booking.appointment.duration,
+        treatmentType: booking.appointment.treatmentType,
+        status: 'pending_approval'
+      });
+    }
+  });
+
+  // Group all appointments by date
+  const appointmentsByDate = Array.from(allAppointments.values()).reduce((acc, appointment) => {
     const date = new Date(appointment.appointmentDate).toISOString().split('T')[0];
     if (!acc[date]) {
       acc[date] = [];
@@ -96,13 +151,13 @@ export function AppointmentApprovalDashboard({ practiceId }: AppointmentApproval
   }, {} as Record<number, PendingBooking[]>);
 
   const handleApproveBooking = async (bookingId: number) => {
-    // TODO: Implement approval logic
     console.log(`Approving booking ${bookingId}`);
+    approveMutation.mutate(bookingId);
   };
 
   const handleRejectBooking = async (bookingId: number) => {
-    // TODO: Implement rejection logic
     console.log(`Rejecting booking ${bookingId}`);
+    rejectMutation.mutate(bookingId);
   };
 
   const getUrgencyColor = (urgencyLevel: string) => {
@@ -198,7 +253,7 @@ export function AppointmentApprovalDashboard({ practiceId }: AppointmentApproval
                                 <Clock className="h-4 w-4 text-gray-600" />
                                 <span className="font-medium">{appointment.appointmentTime}</span>
                                 <Badge variant="outline" className={getStatusColor(appointment.status)}>
-                                  {appointment.status === 'available' ? 'Available' : 'Booked'}
+                                  {appointment.status === 'available' ? 'Available' : 'Pending'}
                                 </Badge>
                               </div>
                               <div className="text-sm text-gray-600">
@@ -239,55 +294,37 @@ export function AppointmentApprovalDashboard({ practiceId }: AppointmentApproval
                                           <span>{booking.user.phone}</span>
                                         </div>
                                       </div>
-
-                                      {/* Triage Assessment Summary */}
-                                      <div className="bg-gray-50 rounded-lg p-3 mb-3">
-                                        <div className="flex items-center space-x-2 mb-2">
-                                          <FileText className="h-4 w-4 text-gray-600" />
-                                          <span className="font-medium text-sm">Clinical Assessment</span>
-                                        </div>
-                                        <div className="text-sm space-y-1">
-                                          <div>
-                                            <span className="text-gray-600">Pain Level:</span> {booking.triageAssessment.painLevel}/10
-                                          </div>
-                                          <div>
-                                            <span className="text-gray-600">Duration:</span> {booking.triageAssessment.painDuration}
-                                          </div>
-                                          <div>
-                                            <span className="text-gray-600">Symptoms:</span> {booking.triageAssessment.symptoms}
-                                          </div>
-                                          {booking.triageAssessment.triageNotes && (
-                                            <div>
-                                              <span className="text-gray-600">Notes:</span> {booking.triageAssessment.triageNotes}
-                                            </div>
-                                          )}
-                                        </div>
-                                      </div>
-
+                                      
                                       {booking.specialRequests && (
-                                        <div className="text-sm">
-                                          <span className="text-gray-600">Special Requests:</span> {booking.specialRequests}
+                                        <div className="text-sm text-gray-600 mb-3">
+                                          <strong>Special Requests:</strong> {booking.specialRequests}
                                         </div>
                                       )}
+                                      
+                                      <div className="text-sm text-gray-600 mb-3">
+                                        <strong>Submitted:</strong> {format(new Date(booking.createdAt), 'PPpp')}
+                                      </div>
                                     </div>
                                     
-                                    <div className="flex space-x-2 ml-4">
+                                    <div className="flex space-x-2">
                                       <Button
                                         size="sm"
                                         onClick={() => handleApproveBooking(booking.id)}
+                                        disabled={approveMutation.isPending}
                                         className="bg-green-600 hover:bg-green-700"
                                       >
                                         <CheckCircle className="h-4 w-4 mr-1" />
-                                        Approve
+                                        {approveMutation.isPending ? 'Approving...' : 'Approve'}
                                       </Button>
                                       <Button
                                         size="sm"
                                         variant="outline"
                                         onClick={() => handleRejectBooking(booking.id)}
+                                        disabled={rejectMutation.isPending}
                                         className="border-red-200 text-red-600 hover:bg-red-50"
                                       >
                                         <XCircle className="h-4 w-4 mr-1" />
-                                        Reject
+                                        {rejectMutation.isPending ? 'Rejecting...' : 'Reject'}
                                       </Button>
                                     </div>
                                   </div>
@@ -296,8 +333,8 @@ export function AppointmentApprovalDashboard({ practiceId }: AppointmentApproval
                             </div>
                           ) : (
                             <div className="text-center py-4 text-gray-500">
-                              <User className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-                              <p>No bookings yet for this slot</p>
+                              <AlertCircle className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                              <p>No booking requests for this slot</p>
                             </div>
                           )}
                         </div>

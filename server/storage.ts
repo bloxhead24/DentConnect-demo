@@ -36,6 +36,8 @@ export interface IStorage {
   createBooking(booking: InsertBooking): Promise<Booking>;
   getUserBookings(userId: number): Promise<BookingWithDetails[]>;
   getPendingBookings(practiceId: number): Promise<any[]>;
+  approveBooking(bookingId: number, approvedBy: string): Promise<Booking>;
+  rejectBooking(bookingId: number, rejectedBy: string): Promise<Booking>;
 }
 
 export class MemStorage implements IStorage {
@@ -756,7 +758,10 @@ export class DatabaseStorage implements IStorage {
 
   async getAvailableAppointments(practiceId: number, date?: Date): Promise<Appointment[]> {
     return await db.select().from(appointments).where(
-      eq(appointments.practiceId, practiceId)
+      and(
+        eq(appointments.practiceId, practiceId),
+        eq(appointments.status, 'available')
+      )
     );
   }
 
@@ -850,6 +855,57 @@ export class DatabaseStorage implements IStorage {
       createdAt: row.createdAt,
       specialRequests: row.specialRequests
     }));
+  }
+
+  async approveBooking(bookingId: number, approvedBy: string): Promise<Booking> {
+    // For demo purposes, we'll use a fixed dentist user ID (1)
+    // In production, this would be the actual dentist user ID
+    const dentistUserId = 1;
+    
+    console.log('Approving booking with:', { bookingId, dentistUserId });
+    
+    const [booking] = await db
+      .update(bookings)
+      .set({
+        status: 'approved',
+        approvalStatus: 'approved',
+        approvedBy: dentistUserId,
+        approvedAt: new Date(),
+        updatedAt: new Date()
+      })
+      .where(eq(bookings.id, bookingId))
+      .returning();
+
+    // Update the associated appointment status to 'booked'
+    await db
+      .update(appointments)
+      .set({
+        status: 'booked',
+        userId: booking.userId
+      })
+      .where(eq(appointments.id, booking.appointmentId));
+
+    return booking;
+  }
+
+  async rejectBooking(bookingId: number, rejectedBy: string): Promise<Booking> {
+    // For demo purposes, we'll use a fixed dentist user ID (1)
+    // In production, this would be the actual dentist user ID
+    const dentistUserId = 1;
+    
+    const [booking] = await db
+      .update(bookings)
+      .set({
+        status: 'rejected',
+        approvalStatus: 'rejected',
+        approvedBy: dentistUserId,
+        approvedAt: new Date(),
+        updatedAt: new Date()
+      })
+      .where(eq(bookings.id, bookingId))
+      .returning();
+
+    return booking;
   }
 
   async createAppointment(insertAppointment: InsertAppointment): Promise<Appointment> {

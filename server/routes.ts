@@ -315,14 +315,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get available appointments for approval dashboard
-  app.get("/api/practice/:practiceId/available-appointments", async (req, res) => {
+  // Approve a booking
+  app.post("/api/bookings/:bookingId/approve", async (req, res) => {
     try {
-      const practiceId = parseInt(req.params.practiceId);
-      const appointments = await storage.getAvailableAppointments(practiceId);
-      res.json(appointments);
+      const bookingId = parseInt(req.params.bookingId);
+      const approvedBy = req.body.approvedBy || 'Dr. Richard Thompson';
+      
+      const booking = await storage.approveBooking(bookingId, approvedBy);
+      res.json(booking);
     } catch (error) {
-      res.status(500).json({ error: "Failed to fetch available appointments" });
+      console.error("Error approving booking:", error);
+      res.status(500).json({ error: "Failed to approve booking" });
+    }
+  });
+
+  // Reject a booking
+  app.post("/api/bookings/:bookingId/reject", async (req, res) => {
+    try {
+      const bookingId = parseInt(req.params.bookingId);
+      const rejectedBy = req.body.rejectedBy || 'Dr. Richard Thompson';
+      
+      const booking = await storage.rejectBooking(bookingId, rejectedBy);
+      res.json(booking);
+    } catch (error) {
+      console.error("Error rejecting booking:", error);
+      res.status(500).json({ error: "Failed to reject booking" });
     }
   });
 
