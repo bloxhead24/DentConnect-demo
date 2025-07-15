@@ -28,6 +28,7 @@ export const practices = pgTable("practices", {
   disabledParking: boolean("disabled_parking").default(false),
   openingHours: text("opening_hours"),
   imageUrl: varchar("image_url", { length: 500 }),
+  connectionTag: varchar("connection_tag", { length: 50 }).unique(), // Unique identifier for practice connection
   createdAt: timestamp("created_at").defaultNow(),
 });
 

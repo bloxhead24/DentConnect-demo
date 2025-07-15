@@ -111,6 +111,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Find practice by connection tag (must come before :id route)
+  app.get("/api/practices/tag/:connectionTag", async (req, res) => {
+    try {
+      const connectionTag = req.params.connectionTag;
+      const practice = await storage.getPracticeByConnectionTag(connectionTag);
+      if (!practice) {
+        return res.status(404).json({ message: "Practice not found with connection tag" });
+      }
+      res.json(practice);
+    } catch (error) {
+      console.error("Error fetching practice by connection tag:", error);
+      res.status(500).json({ message: "Failed to fetch practice by connection tag" });
+    }
+  });
+
   app.get("/api/practices/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
@@ -224,7 +239,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Appointment creation route
   app.post("/api/appointments", async (req, res) => {
     try {
-      const appointment = await storage.createAppointment(req.body);
+      const appointmentData = {
+        ...req.body,
+        appointmentDate: new Date(req.body.appointmentDate)
+      };
+      
+      const appointment = await storage.createAppointment(appointmentData);
       res.json(appointment);
     } catch (error: any) {
       console.error("Error creating appointment:", error);

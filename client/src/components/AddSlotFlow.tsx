@@ -94,7 +94,7 @@ export function AddSlotFlow({ isOpen, onClose, onSuccess }: AddSlotFlowProps) {
       practiceId: 1, // Dr. Richard's practice
       dentistId: 1, // Dr. Richard
       treatmentId: 1, // Default treatment ID
-      appointmentDate: appointmentDateTime,
+      appointmentDate: appointmentDateTime.toISOString(),
       appointmentTime: slotData.time,
       duration: slotData.duration,
       treatmentType: slotData.treatmentType,

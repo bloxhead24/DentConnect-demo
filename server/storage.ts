@@ -14,6 +14,7 @@ export interface IStorage {
   // Practice operations
   getPractices(): Promise<Practice[]>;
   getPractice(id: number): Promise<Practice | undefined>;
+  getPracticeByConnectionTag(connectionTag: string): Promise<Practice | undefined>;
   getPracticesWithAppointments(location?: string): Promise<PracticeWithAppointments[]>;
   
   // Treatment operations
@@ -59,21 +60,22 @@ export class MemStorage implements IStorage {
     const samplePractices: Practice[] = [
       {
         id: 1,
-        name: "Newcastle Dental Centre",
-        address: "123 Grey Street, Newcastle upon Tyne, NE1 6EE",
-        postcode: "NE1 6EE",
-        latitude: 54.9783,
-        longitude: -1.6178,
-        phone: "0191 123 4567",
-        rating: 4.8,
-        reviewCount: 156,
+        name: "Dr. Richard Thompson - Newcastle Dental Excellence",
+        address: "15 Grainger Street, Newcastle upon Tyne, NE1 5DQ",
+        postcode: "NE1 5DQ",
+        latitude: 54.9738,
+        longitude: -1.6131,
+        phone: "0191 232 4567",
+        rating: 4.9,
+        reviewCount: 247,
         wheelchairAccess: true,
         signLanguage: true,
-        visualSupport: false,
+        visualSupport: true,
         cognitiveSupport: true,
         disabledParking: true,
-        openingHours: "Mon-Fri 9:00-18:00, Sat 9:00-14:00",
-        imageUrl: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
+        openingHours: "Mon-Fri: 8:00-18:00, Sat: 9:00-17:00",
+        imageUrl: "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400",
+        connectionTag: "DRRICHARD",
         createdAt: new Date(),
       },
       {
@@ -93,6 +95,7 @@ export class MemStorage implements IStorage {
         disabledParking: true,
         openingHours: "Mon-Fri 8:30-17:30, Sat 9:00-13:00",
         imageUrl: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
+        connectionTag: null,
         createdAt: new Date(),
       },
       {
@@ -112,6 +115,7 @@ export class MemStorage implements IStorage {
         disabledParking: true,
         openingHours: "Mon-Fri 9:00-17:00, Sat 9:00-12:00",
         imageUrl: "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
+        connectionTag: null,
         createdAt: new Date(),
       },
       {
@@ -131,6 +135,7 @@ export class MemStorage implements IStorage {
         disabledParking: true,
         openingHours: "Mon-Fri 8:00-18:00, Sat 9:00-13:00",
         imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
+        connectionTag: null,
         createdAt: new Date(),
       },
       {
@@ -150,6 +155,7 @@ export class MemStorage implements IStorage {
         disabledParking: true,
         openingHours: "Mon-Fri 9:00-17:00, Sat 9:00-12:00",
         imageUrl: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
+        connectionTag: null,
         createdAt: new Date(),
       },
       {
@@ -169,6 +175,7 @@ export class MemStorage implements IStorage {
         disabledParking: true,
         openingHours: "Mon-Fri 8:30-17:30, Sat 9:00-14:00",
         imageUrl: "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
+        connectionTag: null,
         createdAt: new Date(),
       },
       {
@@ -188,6 +195,7 @@ export class MemStorage implements IStorage {
         disabledParking: true,
         openingHours: "Mon-Fri 9:00-18:00, Sat 9:00-13:00",
         imageUrl: "https://images.unsplash.com/photo-1551884170-09fb70a3a2ed?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
+        connectionTag: null,
         createdAt: new Date(),
       },
       {
@@ -207,6 +215,7 @@ export class MemStorage implements IStorage {
         disabledParking: true,
         openingHours: "Mon-Fri 8:00-17:00, Sat 9:00-12:00",
         imageUrl: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
+        connectionTag: null,
         createdAt: new Date(),
       },
       {
@@ -226,6 +235,7 @@ export class MemStorage implements IStorage {
         disabledParking: true,
         openingHours: "Mon-Fri 8:30-18:00, Sat 9:00-14:00",
         imageUrl: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
+        connectionTag: null,
         createdAt: new Date(),
       },
       {
@@ -245,6 +255,7 @@ export class MemStorage implements IStorage {
         disabledParking: true,
         openingHours: "Mon-Fri 9:00-17:00, Sat 9:00-12:00",
         imageUrl: "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
+        connectionTag: null,
         createdAt: new Date(),
       },
       {
@@ -264,6 +275,7 @@ export class MemStorage implements IStorage {
         disabledParking: true,
         openingHours: "Mon-Fri 9:00-17:00, Sat 9:00-13:00",
         imageUrl: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
+        connectionTag: null,
         createdAt: new Date(),
       },
       {
@@ -283,6 +295,7 @@ export class MemStorage implements IStorage {
         disabledParking: true,
         openingHours: "Mon-Fri 8:00-18:00, Sat 9:00-14:00",
         imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
+        connectionTag: null,
         createdAt: new Date(),
       },
       {
@@ -302,6 +315,7 @@ export class MemStorage implements IStorage {
         disabledParking: true,
         openingHours: "Mon-Fri 9:00-17:00, Sat 9:00-12:00",
         imageUrl: "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
+        connectionTag: null,
         createdAt: new Date(),
       },
       {
@@ -321,6 +335,7 @@ export class MemStorage implements IStorage {
         disabledParking: true,
         openingHours: "Mon-Fri 8:30-17:30, Sat 9:00-13:00",
         imageUrl: "https://images.unsplash.com/photo-1551884170-09fb70a3a2ed?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
+        connectionTag: null,
         createdAt: new Date(),
       },
       {
@@ -340,6 +355,7 @@ export class MemStorage implements IStorage {
         disabledParking: true,
         openingHours: "Mon-Fri 9:00-18:00, Sat 9:00-14:00",
         imageUrl: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
+        connectionTag: null,
         createdAt: new Date(),
       },
     ];
@@ -489,7 +505,7 @@ export class MemStorage implements IStorage {
     const user: User = {
       ...insertUser,
       id: this.currentUserId++,
-      createdAt: new Date(),
+        createdAt: new Date(),
       firstName: insertUser.firstName || null,
       lastName: insertUser.lastName || null,
       userType: insertUser.userType || 'patient',
@@ -504,6 +520,10 @@ export class MemStorage implements IStorage {
 
   async getPractice(id: number): Promise<Practice | undefined> {
     return this.practices.get(id);
+  }
+
+  async getPracticeByConnectionTag(connectionTag: string): Promise<Practice | undefined> {
+    return Array.from(this.practices.values()).find(practice => practice.connectionTag === connectionTag);
   }
 
   async getPracticesWithAppointments(location?: string): Promise<PracticeWithAppointments[]> {
@@ -568,7 +588,7 @@ export class MemStorage implements IStorage {
     const booking: Booking = {
       ...insertBooking,
       id: this.currentBookingId++,
-      createdAt: new Date(),
+        createdAt: new Date(),
       accessibilityNeeds: insertBooking.accessibilityNeeds || null,
       medications: insertBooking.medications || null,
       allergies: insertBooking.allergies || null,
@@ -609,7 +629,7 @@ export class MemStorage implements IStorage {
       duration: insertAppointment.duration,
       treatmentType: insertAppointment.treatmentType,
       status: insertAppointment.status || 'available',
-      createdAt: new Date(),
+        createdAt: new Date(),
     };
     
     this.appointments.set(appointment.id, appointment);
@@ -645,6 +665,11 @@ export class DatabaseStorage implements IStorage {
 
   async getPractice(id: number): Promise<Practice | undefined> {
     const [practice] = await db.select().from(practices).where(eq(practices.id, id));
+    return practice || undefined;
+  }
+
+  async getPracticeByConnectionTag(connectionTag: string): Promise<Practice | undefined> {
+    const [practice] = await db.select().from(practices).where(eq(practices.connectionTag, connectionTag));
     return practice || undefined;
   }
 
@@ -719,9 +744,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createAppointment(insertAppointment: InsertAppointment): Promise<Appointment> {
+    const appointmentData = {
+      ...insertAppointment,
+      appointmentDate: insertAppointment.appointmentDate instanceof Date 
+        ? insertAppointment.appointmentDate 
+        : new Date(insertAppointment.appointmentDate)
+    };
+    
     const [appointment] = await db
       .insert(appointments)
-      .values(insertAppointment)
+      .values(appointmentData)
       .returning();
     return appointment;
   }
