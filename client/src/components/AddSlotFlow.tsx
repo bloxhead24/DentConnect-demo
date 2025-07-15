@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
@@ -26,8 +27,44 @@ export function AddSlotFlow({ isOpen, onClose, onSuccess }: AddSlotFlowProps) {
     duration: 30,
     treatmentType: ""
   });
+  const queryClient = useQueryClient();
 
   const totalSteps = 4;
+
+  const createAppointmentMutation = useMutation({
+    mutationFn: async (appointmentData: any) => {
+      const response = await fetch('/api/appointments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(appointmentData),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to create appointment');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/practices'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/appointments'] });
+      onSuccess();
+      onClose();
+      // Reset form
+      setCurrentStep(1);
+      setSlotData({
+        date: null,
+        time: "",
+        duration: 30,
+        treatmentType: ""
+      });
+    },
+    onError: (error) => {
+      console.error('Error creating appointment:', error);
+      // Show user-friendly error message
+      alert('Failed to create appointment. Please try again.');
+    }
+  });
 
   const handleNext = () => {
     if (currentStep < totalSteps) {
@@ -42,18 +79,30 @@ export function AddSlotFlow({ isOpen, onClose, onSuccess }: AddSlotFlowProps) {
   };
 
   const handleComplete = () => {
-    // Here you would typically save the slot data to your backend
-    console.log("Creating slot with data:", slotData);
-    onSuccess();
-    onClose();
-    // Reset form
-    setCurrentStep(1);
-    setSlotData({
-      date: null,
-      time: "",
-      duration: 30,
-      treatmentType: ""
-    });
+    if (!slotData.date || !slotData.time || !slotData.treatmentType) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    // Create the appointment date by combining date and time
+    const appointmentDateTime = new Date(slotData.date);
+    const [hours, minutes] = slotData.time.split(':').map(Number);
+    appointmentDateTime.setHours(hours, minutes, 0, 0);
+
+    // Create appointment for Dr. Richard's practice (practiceId: 1, dentistId: 1)
+    const appointmentData = {
+      practiceId: 1, // Dr. Richard's practice
+      dentistId: 1, // Dr. Richard
+      treatmentId: 1, // Default treatment ID
+      appointmentDate: appointmentDateTime,
+      appointmentTime: slotData.time,
+      duration: slotData.duration,
+      treatmentType: slotData.treatmentType,
+      status: 'available'
+    };
+
+    console.log("Creating slot with data:", appointmentData);
+    createAppointmentMutation.mutate(appointmentData);
   };
 
   const getStepTitle = () => {
@@ -156,11 +205,20 @@ export function AddSlotFlow({ isOpen, onClose, onSuccess }: AddSlotFlowProps) {
             ) : (
               <Button 
                 onClick={handleComplete}
-                disabled={!isStepComplete()}
+                disabled={!isStepComplete() || createAppointmentMutation.isPending}
                 className="bg-green-600 hover:bg-green-700"
               >
-                <Check className="h-4 w-4 mr-2" />
-                Create Slot
+                {createAppointmentMutation.isPending ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                    Creating...
+                  </>
+                ) : (
+                  <>
+                    <Check className="h-4 w-4 mr-2" />
+                    Create Slot
+                  </>
+                )}
               </Button>
             )}
           </div>

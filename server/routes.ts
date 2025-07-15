@@ -221,6 +221,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Appointment creation route
+  app.post("/api/appointments", async (req, res) => {
+    try {
+      const appointment = await storage.createAppointment(req.body);
+      res.json(appointment);
+    } catch (error: any) {
+      console.error("Error creating appointment:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // Early Access Registration
   app.post("/api/early-access", async (req, res) => {
     try {

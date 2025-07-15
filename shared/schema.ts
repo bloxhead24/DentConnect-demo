@@ -62,6 +62,9 @@ export const appointments = pgTable("appointments", {
   userId: integer("user_id").references(() => users.id),
   treatmentId: integer("treatment_id").references(() => treatments.id).notNull(),
   appointmentDate: timestamp("appointment_date").notNull(),
+  appointmentTime: varchar("appointment_time", { length: 10 }).notNull(), // Time in HH:MM format
+  duration: integer("duration").notNull(), // Duration in minutes
+  treatmentType: varchar("treatment_type", { length: 100 }).notNull(), // Type of treatment
   status: varchar("status", { length: 20 }).notNull().default("available"), // available, booked, cancelled, completed
   createdAt: timestamp("created_at").defaultNow(),
 });

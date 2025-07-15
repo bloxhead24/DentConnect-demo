@@ -28,6 +28,7 @@ export interface IStorage {
   // Appointment operations
   getAvailableAppointments(practiceId: number, date?: Date): Promise<Appointment[]>;
   bookAppointment(appointmentId: number, userId: number): Promise<Appointment>;
+  createAppointment(appointment: InsertAppointment): Promise<Appointment>;
   
   // Booking operations
   createBooking(booking: InsertBooking): Promise<Booking>;
@@ -448,14 +449,14 @@ export class MemStorage implements IStorage {
     // Sample appointments for today with dentist assignments
     const today = new Date();
     const sampleAppointments: Appointment[] = [
-      { id: 1, practiceId: 1, dentistId: 1, userId: null, treatmentId: 4, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 9, 0), status: "available", createdAt: new Date() },
-      { id: 2, practiceId: 1, dentistId: 1, userId: null, treatmentId: 4, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 11, 0), status: "available", createdAt: new Date() },
-      { id: 3, practiceId: 1, dentistId: 2, userId: null, treatmentId: 4, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 14, 0), status: "available", createdAt: new Date() },
-      { id: 4, practiceId: 1, dentistId: 2, userId: null, treatmentId: 4, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 16, 0), status: "available", createdAt: new Date() },
-      { id: 5, practiceId: 2, dentistId: 3, userId: null, treatmentId: 3, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 10, 0), status: "available", createdAt: new Date() },
-      { id: 6, practiceId: 2, dentistId: 4, userId: null, treatmentId: 3, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 15, 0), status: "available", createdAt: new Date() },
-      { id: 7, practiceId: 3, dentistId: 5, userId: null, treatmentId: 1, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 9, 30), status: "available", createdAt: new Date() },
-      { id: 8, practiceId: 3, dentistId: 6, userId: null, treatmentId: 2, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 13, 0), status: "available", createdAt: new Date() },
+      { id: 1, practiceId: 1, dentistId: 1, userId: null, treatmentId: 4, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 9, 0), appointmentTime: "09:00", duration: 30, treatmentType: "emergency", status: "available", createdAt: new Date() },
+      { id: 2, practiceId: 1, dentistId: 1, userId: null, treatmentId: 4, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 11, 0), appointmentTime: "11:00", duration: 30, treatmentType: "emergency", status: "available", createdAt: new Date() },
+      { id: 3, practiceId: 1, dentistId: 2, userId: null, treatmentId: 4, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 14, 0), appointmentTime: "14:00", duration: 30, treatmentType: "emergency", status: "available", createdAt: new Date() },
+      { id: 4, practiceId: 1, dentistId: 2, userId: null, treatmentId: 4, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 16, 0), appointmentTime: "16:00", duration: 30, treatmentType: "emergency", status: "available", createdAt: new Date() },
+      { id: 5, practiceId: 2, dentistId: 3, userId: null, treatmentId: 3, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 10, 0), appointmentTime: "10:00", duration: 45, treatmentType: "root-canal", status: "available", createdAt: new Date() },
+      { id: 6, practiceId: 2, dentistId: 4, userId: null, treatmentId: 3, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 15, 0), appointmentTime: "15:00", duration: 45, treatmentType: "root-canal", status: "available", createdAt: new Date() },
+      { id: 7, practiceId: 3, dentistId: 5, userId: null, treatmentId: 1, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 9, 30), appointmentTime: "09:30", duration: 30, treatmentType: "check-up", status: "available", createdAt: new Date() },
+      { id: 8, practiceId: 3, dentistId: 6, userId: null, treatmentId: 2, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 13, 0), appointmentTime: "13:00", duration: 60, treatmentType: "cleaning", status: "available", createdAt: new Date() },
     ];
 
     // Initialize data
@@ -595,6 +596,135 @@ export class MemStorage implements IStorage {
       };
     });
   }
+
+  async createAppointment(insertAppointment: InsertAppointment): Promise<Appointment> {
+    const appointment: Appointment = {
+      id: this.currentAppointmentId++,
+      practiceId: insertAppointment.practiceId,
+      dentistId: insertAppointment.dentistId,
+      userId: insertAppointment.userId || null,
+      treatmentId: insertAppointment.treatmentId,
+      appointmentDate: insertAppointment.appointmentDate,
+      appointmentTime: insertAppointment.appointmentTime,
+      duration: insertAppointment.duration,
+      treatmentType: insertAppointment.treatmentType,
+      status: insertAppointment.status || 'available',
+      createdAt: new Date(),
+    };
+    
+    this.appointments.set(appointment.id, appointment);
+    return appointment;
+  }
 }
 
-export const storage = new MemStorage();
+import { db } from "./db";
+import { eq } from "drizzle-orm";
+
+export class DatabaseStorage implements IStorage {
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, username));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
+    return user;
+  }
+
+  async getPractices(): Promise<Practice[]> {
+    return await db.select().from(practices);
+  }
+
+  async getPractice(id: number): Promise<Practice | undefined> {
+    const [practice] = await db.select().from(practices).where(eq(practices.id, id));
+    return practice || undefined;
+  }
+
+  async getPracticesWithAppointments(location?: string): Promise<PracticeWithAppointments[]> {
+    const allPractices = await db.select().from(practices);
+    const allAppointments = await db.select().from(appointments);
+    const allDentists = await db.select().from(dentists);
+    
+    return allPractices.map(practice => {
+      const availableAppointments = allAppointments.filter(
+        apt => apt.practiceId === practice.id && apt.status === 'available'
+      );
+      const practiceDentists = allDentists.filter(
+        dentist => dentist.practiceId === practice.id
+      );
+      
+      return {
+        ...practice,
+        availableAppointments,
+        dentists: practiceDentists
+      };
+    });
+  }
+
+  async getTreatments(): Promise<Treatment[]> {
+    return await db.select().from(treatments);
+  }
+
+  async getTreatmentsByCategory(category: string): Promise<Treatment[]> {
+    return await db.select().from(treatments).where(eq(treatments.category, category));
+  }
+
+  async getDentists(): Promise<Dentist[]> {
+    return await db.select().from(dentists);
+  }
+
+  async getDentistsByPractice(practiceId: number): Promise<Dentist[]> {
+    return await db.select().from(dentists).where(eq(dentists.practiceId, practiceId));
+  }
+
+  async getDentist(id: number): Promise<Dentist | undefined> {
+    const [dentist] = await db.select().from(dentists).where(eq(dentists.id, id));
+    return dentist || undefined;
+  }
+
+  async getAvailableAppointments(practiceId: number, date?: Date): Promise<Appointment[]> {
+    return await db.select().from(appointments).where(
+      eq(appointments.practiceId, practiceId)
+    );
+  }
+
+  async bookAppointment(appointmentId: number, userId: number): Promise<Appointment> {
+    const [appointment] = await db
+      .update(appointments)
+      .set({ status: 'booked' })
+      .where(eq(appointments.id, appointmentId))
+      .returning();
+    return appointment;
+  }
+
+  async createBooking(insertBooking: InsertBooking): Promise<Booking> {
+    const [booking] = await db
+      .insert(bookings)
+      .values(insertBooking)
+      .returning();
+    return booking;
+  }
+
+  async getUserBookings(userId: number): Promise<BookingWithDetails[]> {
+    // This would need a more complex query with joins in a real implementation
+    return [];
+  }
+
+  async createAppointment(insertAppointment: InsertAppointment): Promise<Appointment> {
+    const [appointment] = await db
+      .insert(appointments)
+      .values(insertAppointment)
+      .returning();
+    return appointment;
+  }
+}
+
+export const storage = new DatabaseStorage();
