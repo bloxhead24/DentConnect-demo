@@ -99,6 +99,8 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
 
     try {
       console.log('Starting booking submission...');
+      console.log('Appointment data:', appointment);
+      console.log('Practice data:', practice);
       
       // Create user first or get existing user
       const userPayload = {
@@ -147,6 +149,12 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
       };
       
       console.log('Booking payload:', bookingPayload);
+      
+      // Validate appointment ID exists
+      if (!appointment.id || appointment.id === 888) {
+        console.error('Invalid appointment ID:', appointment.id);
+        throw new Error('Invalid appointment selected');
+      }
       
       const bookingResponse = await fetch('/api/bookings', {
         method: 'POST',
@@ -241,6 +249,7 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
       setCurrentStep("success");
     } catch (error) {
       console.error('Booking submission error:', error);
+      alert('Booking failed: ' + (error instanceof Error ? error.message : 'Unknown error'));
     } finally {
       setIsSubmitting(false);
     }
