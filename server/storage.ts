@@ -1,9 +1,11 @@
 import { 
-  users, practices, treatments, dentists, appointments, bookings, triageAssessments,
+  users, practices, treatments, dentists, appointments, bookings, triageAssessments, callbackRequests,
   type User, type InsertUser, type Practice, type InsertPractice,
   type Treatment, type InsertTreatment, type Dentist, type InsertDentist,
   type Appointment, type InsertAppointment,
-  type Booking, type InsertBooking, type PracticeWithAppointments, type BookingWithDetails
+  type Booking, type InsertBooking, type CallbackRequest, type InsertCallbackRequest,
+  type TriageAssessment, type InsertTriageAssessment,
+  type PracticeWithAppointments, type BookingWithDetails
 } from "@shared/schema";
 
 export interface IStorage {
@@ -39,6 +41,16 @@ export interface IStorage {
   getApprovedBookings(practiceId: number): Promise<any[]>;
   approveBooking(bookingId: number, approvedBy: string): Promise<Booking>;
   rejectBooking(bookingId: number, rejectedBy: string): Promise<Booking>;
+  
+  // Triage assessment operations
+  createTriageAssessment(assessment: InsertTriageAssessment): Promise<TriageAssessment>;
+  
+  // Callback request operations
+  createCallbackRequest(request: InsertCallbackRequest): Promise<CallbackRequest>;
+  getCallbackRequests(practiceId: number, date?: Date): Promise<any[]>;
+  getTodaysCallbackRequests(practiceId: number): Promise<any[]>;
+  getPreviousDaysCallbackRequests(practiceId: number, days: number): Promise<any[]>;
+  updateCallbackRequestStatus(requestId: number, status: string, notes?: string): Promise<CallbackRequest>;
 }
 
 export class MemStorage implements IStorage {
@@ -720,10 +732,21 @@ export class MemStorage implements IStorage {
     this.appointments.set(appointment.id, appointment);
     return appointment;
   }
+
+  async createTriageAssessment(insertAssessment: InsertTriageAssessment): Promise<TriageAssessment> {
+    // This is a placeholder implementation for MemStorage
+    // In a real implementation, you would add proper ID generation and storage
+    const assessment: TriageAssessment = {
+      ...insertAssessment,
+      id: Date.now(), // Simple ID generation
+      createdAt: new Date(),
+    };
+    return assessment;
+  }
 }
 
 import { db } from "./db";
-import { eq, and } from "drizzle-orm";
+import { eq, and, gte, lte } from "drizzle-orm";
 
 export class DatabaseStorage implements IStorage {
   async getUser(id: number): Promise<User | undefined> {
@@ -1080,6 +1103,177 @@ export class DatabaseStorage implements IStorage {
       .values(appointmentData)
       .returning();
     return appointment;
+  }
+
+  async createTriageAssessment(insertAssessment: InsertTriageAssessment): Promise<TriageAssessment> {
+    const [assessment] = await db
+      .insert(triageAssessments)
+      .values(insertAssessment)
+      .returning();
+    return assessment;
+  }
+
+  async createCallbackRequest(insertRequest: InsertCallbackRequest): Promise<CallbackRequest> {
+    const [request] = await db
+      .insert(callbackRequests)
+      .values(insertRequest)
+      .returning();
+    return request;
+  }
+
+  async getCallbackRequests(practiceId: number, date?: Date): Promise<any[]> {
+    const query = db
+      .select({
+        id: callbackRequests.id,
+        userId: callbackRequests.userId,
+        practiceId: callbackRequests.practiceId,
+        appointmentId: callbackRequests.appointmentId,
+        requestType: callbackRequests.requestType,
+        requestReason: callbackRequests.requestReason,
+        preferredCallTime: callbackRequests.preferredCallTime,
+        urgency: callbackRequests.urgency,
+        status: callbackRequests.status,
+        callbackNotes: callbackRequests.callbackNotes,
+        createdAt: callbackRequests.createdAt,
+        user: {
+          firstName: users.firstName,
+          lastName: users.lastName,
+          email: users.email,
+          phone: users.phone,
+          dateOfBirth: users.dateOfBirth,
+        },
+        appointment: {
+          appointmentDate: appointments.appointmentDate,
+          appointmentTime: appointments.appointmentTime,
+          duration: appointments.duration,
+          treatmentType: appointments.treatmentType,
+        },
+        triageAssessment: {
+          id: triageAssessments.id,
+          painLevel: triageAssessments.painLevel,
+          painDuration: triageAssessments.painDuration,
+          symptoms: triageAssessments.symptoms,
+          swelling: triageAssessments.swelling,
+          trauma: triageAssessments.trauma,
+          bleeding: triageAssessments.bleeding,
+          infection: triageAssessments.infection,
+          urgencyLevel: triageAssessments.urgencyLevel,
+          triageNotes: triageAssessments.triageNotes,
+          anxietyLevel: triageAssessments.anxietyLevel,
+          medicalHistory: triageAssessments.medicalHistory,
+          currentMedications: triageAssessments.currentMedications,
+          allergies: triageAssessments.allergies,
+          previousDentalTreatment: triageAssessments.previousDentalTreatment,
+          smokingStatus: triageAssessments.smokingStatus,
+          alcoholConsumption: triageAssessments.alcoholConsumption,
+          pregnancyStatus: triageAssessments.pregnancyStatus,
+        },
+      })
+      .from(callbackRequests)
+      .innerJoin(users, eq(callbackRequests.userId, users.id))
+      .leftJoin(appointments, eq(callbackRequests.appointmentId, appointments.id))
+      .leftJoin(triageAssessments, eq(callbackRequests.triageAssessmentId, triageAssessments.id))
+      .where(eq(callbackRequests.practiceId, practiceId));
+
+    if (date) {
+      const startOfDay = new Date(date);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(date);
+      endOfDay.setHours(23, 59, 59, 999);
+      
+      return query.where(and(
+        eq(callbackRequests.practiceId, practiceId),
+        gte(callbackRequests.createdAt, startOfDay),
+        lte(callbackRequests.createdAt, endOfDay)
+      ));
+    }
+
+    return query;
+  }
+
+  async getTodaysCallbackRequests(practiceId: number): Promise<any[]> {
+    const today = new Date();
+    return this.getCallbackRequests(practiceId, today);
+  }
+
+  async getPreviousDaysCallbackRequests(practiceId: number, days: number): Promise<any[]> {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    startDate.setHours(0, 0, 0, 0);
+    
+    return db
+      .select({
+        id: callbackRequests.id,
+        userId: callbackRequests.userId,
+        practiceId: callbackRequests.practiceId,
+        appointmentId: callbackRequests.appointmentId,
+        requestType: callbackRequests.requestType,
+        requestReason: callbackRequests.requestReason,
+        preferredCallTime: callbackRequests.preferredCallTime,
+        urgency: callbackRequests.urgency,
+        status: callbackRequests.status,
+        callbackNotes: callbackRequests.callbackNotes,
+        createdAt: callbackRequests.createdAt,
+        user: {
+          firstName: users.firstName,
+          lastName: users.lastName,
+          email: users.email,
+          phone: users.phone,
+          dateOfBirth: users.dateOfBirth,
+        },
+        appointment: {
+          appointmentDate: appointments.appointmentDate,
+          appointmentTime: appointments.appointmentTime,
+          duration: appointments.duration,
+          treatmentType: appointments.treatmentType,
+        },
+        triageAssessment: {
+          id: triageAssessments.id,
+          painLevel: triageAssessments.painLevel,
+          painDuration: triageAssessments.painDuration,
+          symptoms: triageAssessments.symptoms,
+          swelling: triageAssessments.swelling,
+          trauma: triageAssessments.trauma,
+          bleeding: triageAssessments.bleeding,
+          infection: triageAssessments.infection,
+          urgencyLevel: triageAssessments.urgencyLevel,
+          triageNotes: triageAssessments.triageNotes,
+          anxietyLevel: triageAssessments.anxietyLevel,
+          medicalHistory: triageAssessments.medicalHistory,
+          currentMedications: triageAssessments.currentMedications,
+          allergies: triageAssessments.allergies,
+          previousDentalTreatment: triageAssessments.previousDentalTreatment,
+          smokingStatus: triageAssessments.smokingStatus,
+          alcoholConsumption: triageAssessments.alcoholConsumption,
+          pregnancyStatus: triageAssessments.pregnancyStatus,
+        },
+      })
+      .from(callbackRequests)
+      .innerJoin(users, eq(callbackRequests.userId, users.id))
+      .leftJoin(appointments, eq(callbackRequests.appointmentId, appointments.id))
+      .leftJoin(triageAssessments, eq(callbackRequests.triageAssessmentId, triageAssessments.id))
+      .where(and(
+        eq(callbackRequests.practiceId, practiceId),
+        gte(callbackRequests.createdAt, startDate)
+      ))
+      .orderBy(callbackRequests.createdAt);
+  }
+
+  async updateCallbackRequestStatus(requestId: number, status: string, notes?: string): Promise<CallbackRequest> {
+    const updateData: any = { status, updatedAt: new Date() };
+    if (notes) {
+      updateData.callbackNotes = notes;
+    }
+    if (status === 'completed') {
+      updateData.completedAt = new Date();
+    }
+
+    const [request] = await db
+      .update(callbackRequests)
+      .set(updateData)
+      .where(eq(callbackRequests.id, requestId))
+      .returning();
+    return request;
   }
 }
 

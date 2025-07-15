@@ -159,6 +159,23 @@ export const bookings = pgTable("bookings", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const callbackRequests = pgTable("callback_requests", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  practiceId: integer("practice_id").references(() => practices.id).notNull(),
+  appointmentId: integer("appointment_id").references(() => appointments.id),
+  triageAssessmentId: integer("triage_assessment_id").references(() => triageAssessments.id),
+  requestType: varchar("request_type", { length: 50 }).notNull().default("cancelled_appointment"), // "cancelled_appointment", "general_inquiry"
+  requestReason: text("request_reason"), // Why they need callback
+  preferredCallTime: varchar("preferred_call_time", { length: 20 }).default("anytime"), // "morning", "afternoon", "evening", "anytime"
+  urgency: varchar("urgency", { length: 20 }).notNull().default("medium"), // "low", "medium", "high", "emergency"
+  status: varchar("status", { length: 20 }).notNull().default("pending"), // "pending", "completed", "cancelled"
+  callbackNotes: text("callback_notes"), // Admin notes about the callback
+  completedAt: timestamp("completed_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
@@ -204,6 +221,12 @@ export const insertDataProcessingRecordSchema = createInsertSchema(dataProcessin
   createdAt: true,
 });
 
+export const insertCallbackRequestSchema = createInsertSchema(callbackRequests).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type Practice = typeof practices.$inferSelect;
@@ -222,6 +245,8 @@ export type AuditLog = typeof auditLogs.$inferSelect;
 export type InsertAuditLog = z.infer<typeof insertAuditLogSchema>;
 export type DataProcessingRecord = typeof dataProcessingRecords.$inferSelect;
 export type InsertDataProcessingRecord = z.infer<typeof insertDataProcessingRecordSchema>;
+export type CallbackRequest = typeof callbackRequests.$inferSelect;
+export type InsertCallbackRequest = z.infer<typeof insertCallbackRequestSchema>;
 
 export type PracticeWithAppointments = Practice & {
   availableAppointments: Appointment[];

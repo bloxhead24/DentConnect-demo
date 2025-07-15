@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import path from "path";
 import { fileURLToPath } from "url";
 import { storage } from "./storage";
-import { insertBookingSchema, insertUserSchema } from "@shared/schema";
+import { insertBookingSchema, insertUserSchema, insertCallbackRequestSchema, insertTriageAssessmentSchema } from "@shared/schema";
 import { securityHeaders, corsOptions, validateInput, apiRateLimiter, requestLogger, antiMalwareCheck, ipReputationCheck, contentIntegrityCheck } from "./security";
 import cors from "cors";
 
@@ -503,6 +503,109 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching user bookings:", error);
       res.status(500).json({ message: "Failed to fetch user bookings" });
+    }
+  });
+
+  // User routes
+  app.post("/api/users", async (req, res) => {
+    try {
+      console.log("User creation request body:", req.body);
+      
+      // Validate with schema
+      const validatedData = insertUserSchema.parse(req.body);
+      
+      // Create user
+      const user = await storage.createUser(validatedData);
+      
+      res.json(user);
+    } catch (error) {
+      console.error("Error creating user:", error);
+      res.status(500).json({ message: "Failed to create user" });
+    }
+  });
+
+  // Triage assessment routes
+  app.post("/api/triage-assessments", async (req, res) => {
+    try {
+      console.log("Triage assessment request body:", req.body);
+      
+      // Validate with schema
+      const validatedData = insertTriageAssessmentSchema.parse(req.body);
+      
+      // Create triage assessment
+      const triageAssessment = await storage.createTriageAssessment(validatedData);
+      
+      res.json(triageAssessment);
+    } catch (error) {
+      console.error("Error creating triage assessment:", error);
+      res.status(500).json({ message: "Failed to create triage assessment" });
+    }
+  });
+
+  // Callback request routes
+  app.post("/api/callback-requests", async (req, res) => {
+    try {
+      console.log("Callback request body:", req.body);
+      
+      // Validate with schema
+      const validatedData = insertCallbackRequestSchema.parse(req.body);
+      
+      // Create callback request
+      const callbackRequest = await storage.createCallbackRequest(validatedData);
+      
+      res.json(callbackRequest);
+    } catch (error) {
+      console.error("Error creating callback request:", error);
+      res.status(500).json({ message: "Failed to create callback request" });
+    }
+  });
+
+  app.get("/api/practice/:practiceId/callback-requests", async (req, res) => {
+    try {
+      const practiceId = parseInt(req.params.practiceId);
+      const date = req.query.date ? new Date(req.query.date as string) : undefined;
+      
+      const callbackRequests = await storage.getCallbackRequests(practiceId, date);
+      res.json(callbackRequests);
+    } catch (error) {
+      console.error("Error fetching callback requests:", error);
+      res.status(500).json({ message: "Failed to fetch callback requests" });
+    }
+  });
+
+  app.get("/api/practice/:practiceId/callback-requests/today", async (req, res) => {
+    try {
+      const practiceId = parseInt(req.params.practiceId);
+      const callbackRequests = await storage.getTodaysCallbackRequests(practiceId);
+      res.json(callbackRequests);
+    } catch (error) {
+      console.error("Error fetching today's callback requests:", error);
+      res.status(500).json({ message: "Failed to fetch today's callback requests" });
+    }
+  });
+
+  app.get("/api/practice/:practiceId/callback-requests/previous/:days", async (req, res) => {
+    try {
+      const practiceId = parseInt(req.params.practiceId);
+      const days = parseInt(req.params.days);
+      const callbackRequests = await storage.getPreviousDaysCallbackRequests(practiceId, days);
+      res.json(callbackRequests);
+    } catch (error) {
+      console.error("Error fetching previous days callback requests:", error);
+      res.status(500).json({ message: "Failed to fetch previous days callback requests" });
+    }
+  });
+
+  app.post("/api/callback-requests/:requestId/status", async (req, res) => {
+    try {
+      const requestId = parseInt(req.params.requestId);
+      const { status, notes } = req.body;
+      
+      const callbackRequest = await storage.updateCallbackRequestStatus(requestId, status, notes);
+      res.json(callbackRequest);
+    } catch (error) {
+      console.error("Error updating callback request status:", error);
+      res.status(500).json({ message: "Failed to update callback request status" });
     }
   });
 

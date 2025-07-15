@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { AppointmentApprovalDashboard } from "../components/AppointmentApprovalDashboard";
 import { ApprovedAppointmentsOverview } from "../components/ApprovedAppointmentsOverview";
+import { CallbackRequestsOverview } from "../components/CallbackRequestsOverview";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
@@ -295,6 +296,9 @@ export default function DentistDashboard() {
           <TabsContent value="overview" className="space-y-6">
             {/* Approved Appointments Overview */}
             <ApprovedAppointmentsOverview practiceId={1} />
+
+            {/* Callback Requests Overview */}
+            <CallbackRequestsOverview practiceId={1} />
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Quick Actions */}

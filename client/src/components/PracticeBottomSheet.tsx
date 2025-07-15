@@ -6,8 +6,9 @@ import { Badge } from "../components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "../components/ui/avatar";
 import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
-import { MapPin, Phone, Clock, Star, Languages, GraduationCap } from "lucide-react";
+import { MapPin, Phone, Clock, Star, Languages, GraduationCap, PhoneCall } from "lucide-react";
 import { DiaryView } from "./DiaryView";
+import { CallbackRequestModal } from "./CallbackRequestModal";
 
 interface PracticeBottomSheetProps {
   practice: Practice | null;
@@ -279,6 +280,27 @@ export function PracticeBottomSheet({ practice, isOpen, onClose, onBookAppointme
               </p>
             </div>
           )}
+
+          {/* Callback Request Option */}
+          <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mt-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
+                  <PhoneCall className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-orange-900">Request Callback</h4>
+                  <p className="text-sm text-orange-700">Get notified when appointments become available</p>
+                </div>
+              </div>
+              <CallbackRequestModal practiceId={practice.id} practiceName={practice.name}>
+                <Button className="bg-orange-600 hover:bg-orange-700 text-white">
+                  <PhoneCall className="w-4 h-4 mr-2" />
+                  Request
+                </Button>
+              </CallbackRequestModal>
+            </div>
+          </div>
           
           <div className="flex space-x-3">
             <Button variant="outline" className="flex-1" onClick={onClose}>
