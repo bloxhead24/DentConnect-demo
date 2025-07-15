@@ -180,6 +180,21 @@ export function AppointmentApprovalDashboard({ practiceId }: AppointmentApproval
     }
   };
 
+  const getAnxietyColor = (anxiety: string) => {
+    switch (anxiety) {
+      case 'severe':
+        return 'bg-red-600 text-white';
+      case 'moderate':
+        return 'bg-orange-500 text-white';
+      case 'mild':
+        return 'bg-yellow-500 text-white';
+      case 'none':
+        return 'bg-green-500 text-white';
+      default:
+        return 'bg-gray-500 text-white';
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'available':
