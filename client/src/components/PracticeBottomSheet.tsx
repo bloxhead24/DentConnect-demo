@@ -289,14 +289,14 @@ export function PracticeBottomSheet({ practice, isOpen, onClose, onBookAppointme
                   <PhoneCall className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-orange-900">Request Callback</h4>
-                  <p className="text-sm text-orange-700">Get notified when appointments become available</p>
+                  <h4 className="font-semibold text-orange-900">Instant Cancellation Alert</h4>
+                  <p className="text-sm text-orange-700">Get called immediately when a cancellation slot becomes available</p>
                 </div>
               </div>
               <CallbackRequestModal practiceId={practice.id} practiceName={practice.name}>
                 <Button className="bg-orange-600 hover:bg-orange-700 text-white">
                   <PhoneCall className="w-4 h-4 mr-2" />
-                  Request
+                  Callback When Available
                 </Button>
               </CallbackRequestModal>
             </div>

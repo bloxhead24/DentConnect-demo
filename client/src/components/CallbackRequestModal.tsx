@@ -127,7 +127,7 @@ export function CallbackRequestModal({ practiceId, practiceName, children }: Cal
     onSuccess: () => {
       toast({
         title: "Callback request submitted",
-        description: "You will receive a call the moment that an appointment is available. Please try to make it quick so that you can be seen in time.",
+        description: "You will receive a call the moment a cancellation slot becomes available. Please answer quickly to secure your appointment.",
       });
       setIsOpen(false);
       setStep(1);
@@ -137,7 +137,7 @@ export function CallbackRequestModal({ practiceId, practiceName, children }: Cal
         email: "",
         phone: "",
         dateOfBirth: "",
-        requestType: "cancelled_appointment",
+        requestType: "cancellation",
         requestReason: "",
         preferredCallTime: "anytime",
         urgency: "medium",
@@ -241,11 +241,11 @@ export function CallbackRequestModal({ practiceId, practiceName, children }: Cal
         >
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="cancellation" id="cancellation" />
-            <Label htmlFor="cancellation">Cancellation Alert</Label>
+            <Label htmlFor="cancellation">Instant Cancellation Alert</Label>
           </div>
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="availability" id="availability" />
-            <Label htmlFor="availability">Availability Check</Label>
+            <Label htmlFor="availability">Next Available Slot</Label>
           </div>
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="emergency" id="emergency" />
@@ -460,7 +460,7 @@ export function CallbackRequestModal({ practiceId, practiceName, children }: Cal
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Phone className="h-5 w-5 text-teal-600" />
-            Request Callback from {practiceName}
+            Instant Cancellation Alert - {practiceName}
           </DialogTitle>
         </DialogHeader>
 
