@@ -177,7 +177,7 @@ export default function DentistDashboard() {
                       🏆 Nominated for Innovation Award
                     </p>
                     <p className="text-xs text-blue-600">
-                      Royal College of Surgeons - National Contribution to Dentistry 2024
+                      Royal College of Surgeons - National Contribution to Dentistry 2025
                     </p>
                   </div>
                   <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>

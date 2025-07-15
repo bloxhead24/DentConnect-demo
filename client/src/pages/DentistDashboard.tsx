@@ -188,7 +188,7 @@ export default function DentistDashboard() {
                       🏆 Dr Richard - Excellence in Patient Care
                     </p>
                     <p className="text-xs text-blue-600">
-                      Royal College of Surgeons - Outstanding Dental Practice 2024
+                      Royal College of Surgeons - Outstanding Dental Practice 2025
                     </p>
                   </div>
                   <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>

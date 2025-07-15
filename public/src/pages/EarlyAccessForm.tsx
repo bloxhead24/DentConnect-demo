@@ -45,7 +45,7 @@ export default function EarlyAccessForm() {
                   <i className="fas fa-award text-blue-600"></i>
                   <span className="font-bold text-blue-800">Royal College of Surgeons</span>
                 </div>
-                <p className="text-sm text-blue-700">National Contribution to Dentistry 2024</p>
+                <p className="text-sm text-blue-700">National Contribution to Dentistry 2025</p>
               </div>
 
               <Button 

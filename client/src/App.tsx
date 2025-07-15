@@ -1,9 +1,10 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useState, useEffect } from "react";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "./components/ui/toaster";
 import { TooltipProvider } from "./components/ui/tooltip";
+import { PasswordProtection } from "./components/PasswordProtection";
 import NotFound from "./pages/not-found";
 
 // Error boundary component
@@ -81,12 +82,30 @@ function Router() {
 }
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    // Check if user is already authenticated
+    const authStatus = sessionStorage.getItem('dentconnect_authenticated');
+    if (authStatus === 'true') {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  const handleAuthenticated = () => {
+    setIsAuthenticated(true);
+  };
+
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <Toaster />
-          <Router />
+          {isAuthenticated ? (
+            <Router />
+          ) : (
+            <PasswordProtection onAuthenticated={handleAuthenticated} />
+          )}
         </TooltipProvider>
       </QueryClientProvider>
     </ErrorBoundary>
