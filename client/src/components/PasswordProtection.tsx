@@ -21,7 +21,7 @@ export function PasswordProtection({ onAuthenticated }: PasswordProtectionProps)
     // Simulate loading delay
     await new Promise(resolve => setTimeout(resolve, 500));
 
-    if (password === 'alibhatti') {
+    if (password === 'ToothPick') {
       // Store authentication in sessionStorage
       sessionStorage.setItem('dentconnect_authenticated', 'true');
       onAuthenticated();
