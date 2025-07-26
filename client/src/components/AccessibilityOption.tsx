@@ -29,12 +29,16 @@ export function AccessibilityOption({ need, selected, onToggle }: AccessibilityO
           {/* Care type specific SVG images */}
           {need.id === 'wheelchair' && (
             <svg viewBox="0 0 24 24" className={cn("w-6 h-6", selected ? "text-white" : "text-blue-600")} fill="currentColor">
-              <path d="M12 4a4 4 0 0 1 4 4 4 4 0 0 1-4 4 4 4 0 0 1-4-4 4 4 0 0 1 4-4m0 10c2.67 0 8 1.33 8 4v2H4v-2c0-2.67 5.33-4 8-4zm-1-9v2H9.5v6H11v-2h1v2h1.5V7H12V5h-1zm-7 7.5L2.5 8l1.42-1.42L6 8.67l3.54-3.54L11 6.58 6.42 11.08 4 8.5z"/>
+              <path d="M18.5 11c-1.56 0-3.02.68-4.03 1.84L12.03 9H8v2h2.5l1.09 2.18A6.996 6.996 0 0 0 7 20c0 .55.45 1 1 1s1-.45 1-1c0-2.76 2.24-5 5-5 .55 0 1-.45 1-1s-.45-1-1-1zm-.5-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
+              <circle cx="18.5" cy="17" r="4" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+              <path d="M16.5 15h4m-2-2v4" stroke="currentColor" strokeWidth="1.5"/>
             </svg>
           )}
           {need.id === 'signLanguage' && (
             <svg viewBox="0 0 24 24" className={cn("w-6 h-6", selected ? "text-white" : "text-purple-600")} fill="currentColor">
-              <path d="M12 3c-1.27 0-2.4.8-2.82 2H7v2h2.05c-.05.33-.05.67 0 1H7v2h2.18c.42 1.2 1.55 2 2.82 2s2.4-.8 2.82-2H17v-2h-2.05c.05-.33.05-.67 0-1H17V5h-2.18C14.4 3.8 13.27 3 12 3zm0 2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm0 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1z"/>
+              <path d="M12 2C10.89 2 10 2.89 10 4s.89 2 2 2 2-.89 2-2-.89-2-2-2zm-2 8V8h4v2l1 1-1 1v6h-2v-4h-2v4H8v-6l-1-1 1-1z"/>
+              <path d="M5 12l1.5-1.5L8 12l-1.5 1.5L5 12zm14 0l-1.5-1.5L16 12l1.5 1.5L19 12z" fill="currentColor"/>
+              <path d="M7 16h2v2H7v-2zm8 0h2v2h-2v-2z" fill="currentColor"/>
             </svg>
           )}
           {need.id === 'visualSupport' && (
