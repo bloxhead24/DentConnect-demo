@@ -3,6 +3,8 @@ export interface AccessibilityNeed {
   name: string;
   description: string;
   icon: string;
+  category?: string;
+  color?: string;
 }
 
 export interface TreatmentType {
