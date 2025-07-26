@@ -91,8 +91,6 @@ export default function SearchModeSelection({
   const handleContinue = () => {
     if (selectedMode) {
       onSearchModeSelect(selectedMode);
-      // Show early access popup after mode selection
-      setTimeout(() => setShowEarlyAccess(true), 1000);
     }
   };
 
@@ -259,7 +257,9 @@ export default function SearchModeSelection({
         
         {selectedMode && (
           <p className="text-center text-sm text-gray-600 mt-3">
-            You selected: <span className="font-medium">{searchModeOptions.find(opt => opt.id === selectedMode)?.title}</span>
+            You selected: <span className="font-medium">
+              {[...primaryOptions, secondaryOption].find(opt => opt.id === selectedMode)?.title}
+            </span>
           </p>
         )}
       </div>
