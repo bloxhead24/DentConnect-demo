@@ -34,22 +34,54 @@ export function TreatmentCard({ treatment, selected, onSelect }: TreatmentCardPr
       onClick={() => onSelect(treatment)}
     >
       <div className="text-center space-y-3 h-full flex flex-col justify-center">
-        <div className={cn(
-          "w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mx-auto shadow-lg",
-          selected ? "bg-primary" : bgClasses[treatment.category]
-        )}>
-          {/* Category-specific dental icons */}
+        <div className="relative mx-auto">
+          <div className={cn(
+            "w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shadow-lg",
+            selected ? "bg-primary" : bgClasses[treatment.category]
+          )}>
+            {/* Category-specific dental icons */}
+            {treatment.category === 'emergency' && (
+              <i className="fas fa-exclamation-triangle text-white text-sm sm:text-lg"></i>
+            )}
+            {treatment.category === 'urgent' && (
+              <i className="fas fa-tooth text-white text-sm sm:text-lg"></i>
+            )}
+            {treatment.category === 'routine' && (
+              <i className="fas fa-stethoscope text-white text-sm sm:text-lg"></i>
+            )}
+            {treatment.category === 'cosmetic' && (
+              <i className="fas fa-star text-white text-sm sm:text-lg"></i>
+            )}
+          </div>
+          
+          {/* Overlayed treatment images */}
           {treatment.category === 'emergency' && (
-            <i className="fas fa-exclamation-triangle text-white text-sm sm:text-lg"></i>
+            <div className="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full flex items-center justify-center shadow-md border border-red-200">
+              <svg viewBox="0 0 24 24" className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-red-600" fill="currentColor">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+            </div>
           )}
           {treatment.category === 'urgent' && (
-            <i className="fas fa-tooth text-white text-sm sm:text-lg"></i>
+            <div className="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full flex items-center justify-center shadow-md border border-orange-200">
+              <svg viewBox="0 0 24 24" className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-orange-600" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+            </div>
           )}
           {treatment.category === 'routine' && (
-            <i className="fas fa-stethoscope text-white text-sm sm:text-lg"></i>
+            <div className="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full flex items-center justify-center shadow-md border border-green-200">
+              <svg viewBox="0 0 24 24" className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-green-600" fill="currentColor">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+              </svg>
+            </div>
           )}
           {treatment.category === 'cosmetic' && (
-            <i className="fas fa-star text-white text-sm sm:text-lg"></i>
+            <div className="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full flex items-center justify-center shadow-md border border-blue-200">
+              <svg viewBox="0 0 24 24" className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-blue-600" fill="currentColor">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+              </svg>
+            </div>
           )}
         </div>
         <div>
