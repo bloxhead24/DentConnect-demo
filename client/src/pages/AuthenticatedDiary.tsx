@@ -166,6 +166,20 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment, currentU
       </div>
 
       <div className="max-w-6xl mx-auto">
+        {/* Demo Notice */}
+        <div className="bg-amber-50 border-l-4 border-amber-400 p-4 mx-4 sm:mx-6 my-4 rounded-r-lg">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <i className="fas fa-exclamation-triangle text-amber-400"></i>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm text-amber-700">
+                <strong>Demo Notice:</strong> This is a demonstration application. No real appointments can be booked through this system.
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Practice Hero Section */}
         <div className="relative bg-gradient-to-r from-blue-600 to-teal-600 text-white">
           <div className="absolute inset-0 bg-black opacity-20"></div>
