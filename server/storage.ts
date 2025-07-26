@@ -93,7 +93,7 @@ export class MemStorage implements IStorage {
         disabledParking: true,
         openingHours: "Mon-Fri: 8:00-18:00, Sat: 9:00-17:00",
         imageUrl: "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400",
-        connectionTag: "DRRICHARD",
+        connectionTag: "DEMO",
         createdAt: new Date(),
       },
       {
