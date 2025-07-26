@@ -13,7 +13,8 @@ import {
   Calendar, 
   MapPin, 
   Phone,
-  Navigation
+  Navigation,
+  Activity
 } from "lucide-react";
 import type { Practice, Dentist } from "@shared/schema";
 
