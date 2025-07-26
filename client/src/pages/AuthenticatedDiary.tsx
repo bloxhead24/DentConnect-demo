@@ -185,13 +185,9 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment, currentU
                     <i className="fas fa-check mr-1"></i>
                     {practiceTag}
                   </Badge>
-                  <Badge className="bg-green-500/80 text-white text-xs">
-                    <Award className="w-3 h-3 mr-1" />
-                    CQC
-                  </Badge>
                 </div>
                 <h1 className="text-2xl sm:text-3xl font-bold mb-2">{selectedPractice.name}</h1>
-                <div className="flex items-center gap-4 text-white/90 text-sm">
+                <div className="flex items-center gap-4 text-white/90 text-sm mb-3">
                   <div className="flex items-center space-x-1">
                     <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                     <span>{selectedPractice.rating} ({selectedPractice.reviewCount})</span>
@@ -200,6 +196,12 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment, currentU
                     <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
                     <span className="break-words">{selectedPractice.address}</span>
                   </div>
+                </div>
+                <div className="flex justify-center">
+                  <Badge className="bg-green-500/80 text-white text-xs">
+                    <Award className="w-3 h-3 mr-1" />
+                    CQC
+                  </Badge>
                 </div>
               </div>
 
