@@ -171,42 +171,51 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
       const booking = await bookingResponse.json();
       console.log('Booking created:', booking);
 
-      // Create triage assessment if we have triage data (check if triage step was completed)
-      // Check if any triage data has been modified from defaults
-      const hasTriageData = triageData && (
-        triageData.urgencyLevel !== "low" || 
-        triageData.painLevel > 0 || 
-        triageData.symptoms.trim() !== "" || 
-        triageData.medicalHistory.trim() !== "" ||
-        triageData.currentMedications.trim() !== "" ||
-        triageData.allergies.trim() !== "" ||
-        triageData.anxietyLevel !== "none" ||
-        triageData.swelling || 
-        triageData.trauma || 
-        triageData.bleeding || 
-        triageData.infection
-      );
+      // ALWAYS create triage assessment - collect comprehensive patient data
+      // Use urgencyData for basic assessment if triageData is not complete
+      const finalTriageData = {
+        painLevel: triageData.painLevel || urgencyData.painLevel || 0,
+        painDuration: triageData.painDuration || urgencyData.painDuration || '',
+        symptoms: triageData.symptoms || urgencyData.symptoms || '',
+        swelling: triageData.swelling || urgencyData.swelling || false,
+        trauma: triageData.trauma || urgencyData.trauma || false,
+        bleeding: triageData.bleeding || urgencyData.bleeding || false,
+        infection: triageData.infection || urgencyData.infection || false,
+        urgencyLevel: triageData.urgencyLevel || urgencyData.urgencyLevel || 'low',
+        triageNotes: triageData.triageNotes || urgencyData.additionalNotes || '',
+        anxietyLevel: triageData.anxietyLevel || 'comfortable',
+        medicalHistory: triageData.medicalHistory || '',
+        currentMedications: triageData.currentMedications || '',
+        allergies: triageData.allergies || '',
+        previousDentalTreatment: triageData.previousDentalTreatment || '',
+        smokingStatus: triageData.smokingStatus || 'never',
+        alcoholConsumption: triageData.alcoholConsumption || 'none',
+        pregnancyStatus: triageData.pregnancyStatus || 'not-applicable'
+      };
+
+      // ALWAYS create triage assessment to ensure complete patient data collection
+      const hasTriageData = true;
       
       if (hasTriageData) {
         const triagePayload = {
           userId: user.id,
-          painLevel: triageData.painLevel,
-          painDuration: triageData.painDuration,
-          symptoms: triageData.symptoms,
-          swelling: triageData.swelling,
-          trauma: triageData.trauma,
-          bleeding: triageData.bleeding,
-          infection: triageData.infection,
-          urgencyLevel: triageData.urgencyLevel,
-          triageNotes: triageData.triageNotes,
-          anxietyLevel: triageData.anxietyLevel,
-          medicalHistory: triageData.medicalHistory,
-          currentMedications: triageData.currentMedications,
-          allergies: triageData.allergies,
-          previousDentalTreatment: triageData.previousDentalTreatment,
-          smokingStatus: triageData.smokingStatus,
-          alcoholConsumption: triageData.alcoholConsumption,
-          pregnancyStatus: triageData.pregnancyStatus
+          painLevel: finalTriageData.painLevel,
+          painDuration: finalTriageData.painDuration,
+          symptoms: finalTriageData.symptoms,
+          swelling: finalTriageData.swelling,
+          trauma: finalTriageData.trauma,
+          bleeding: finalTriageData.bleeding,
+          infection: finalTriageData.infection,
+          urgencyLevel: finalTriageData.urgencyLevel,
+          triageNotes: finalTriageData.triageNotes,
+          anxietyLevel: finalTriageData.anxietyLevel,
+          medicalHistory: finalTriageData.medicalHistory,
+          currentMedications: finalTriageData.currentMedications,
+          allergies: finalTriageData.allergies,
+          previousDentalTreatment: finalTriageData.previousDentalTreatment,
+          smokingStatus: finalTriageData.smokingStatus,
+          alcoholConsumption: finalTriageData.alcoholConsumption,
+          pregnancyStatus: finalTriageData.pregnancyStatus
         };
         
         console.log('Triage payload:', triagePayload);
@@ -221,13 +230,14 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
           const triageAssessment = await triageResponse.json();
           console.log('Triage assessment created:', triageAssessment);
           
-          // Update booking with triage assessment ID
+          // Update booking with triage assessment ID and comprehensive patient data
           const updateBookingPayload = {
             triageAssessmentId: triageAssessment.id,
             accessibilityNeeds: formData.specialRequests || null,
-            medications: triageData.currentMedications ? true : false,
-            allergies: triageData.allergies ? true : false,
-            anxietyLevel: triageData.anxietyLevel
+            medications: finalTriageData.currentMedications ? true : false,
+            allergies: finalTriageData.allergies ? true : false,
+            anxietyLevel: finalTriageData.anxietyLevel,
+            lastDentalVisit: finalTriageData.previousDentalTreatment || 'Not specified'
           };
           
           const updateResponse = await fetch(`/api/bookings/${booking.id}`, {

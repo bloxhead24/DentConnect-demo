@@ -370,6 +370,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Triage assessment creation route
+  app.post("/api/triage-assessments", async (req, res) => {
+    try {
+      console.log("Triage assessment request body:", req.body);
+      
+      const result = insertTriageAssessmentSchema.safeParse(req.body);
+      if (!result.success) {
+        console.error("Triage assessment validation failed:", result.error);
+        return res.status(400).json({ error: "Invalid triage assessment data", details: result.error.issues });
+      }
+      
+      const triageAssessment = await storage.createTriageAssessment(result.data);
+      console.log("Triage assessment created successfully:", triageAssessment);
+      res.status(201).json(triageAssessment);
+    } catch (error) {
+      console.error("Triage assessment creation error:", error);
+      res.status(500).json({ error: "Failed to create triage assessment" });
+    }
+  });
+
   // Appointment creation route
   app.post("/api/appointments", async (req, res) => {
     try {
