@@ -534,7 +534,7 @@ export class MemStorage implements IStorage {
       },
       // Sunderland Family Dental dentists  
       {
-        id: 11,
+        id: 31,
         practiceId: 2,
         name: "Emma Thompson",
         title: "Dr.",
@@ -548,7 +548,7 @@ export class MemStorage implements IStorage {
         createdAt: new Date(),
       },
       {
-        id: 12,
+        id: 32,
         practiceId: 2,
         name: "James Wilson",
         title: "Dr.",
@@ -563,7 +563,7 @@ export class MemStorage implements IStorage {
       },
       // Middlesbrough Advanced Dentistry dentists
       {
-        id: 13,
+        id: 33,
         practiceId: 3,
         name: "Priya Patel",
         title: "Dr.",
@@ -577,7 +577,7 @@ export class MemStorage implements IStorage {
         createdAt: new Date(),
       },
       {
-        id: 14,
+        id: 34,
         practiceId: 3,
         name: "Robert Anderson",
         title: "Prof.",
@@ -824,10 +824,10 @@ export class MemStorage implements IStorage {
       { id: 2, practiceId: 1, dentistId: 1, userId: null, treatmentId: 4, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 11, 0), appointmentTime: "11:00", duration: 30, treatmentType: "emergency", status: "available", createdAt: new Date() },
       { id: 3, practiceId: 1, dentistId: 2, userId: null, treatmentId: 4, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 14, 0), appointmentTime: "14:00", duration: 30, treatmentType: "emergency", status: "available", createdAt: new Date() },
       { id: 4, practiceId: 1, dentistId: 2, userId: null, treatmentId: 4, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 16, 0), appointmentTime: "16:00", duration: 30, treatmentType: "emergency", status: "available", createdAt: new Date() },
-      { id: 5, practiceId: 2, dentistId: 3, userId: null, treatmentId: 3, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 10, 0), appointmentTime: "10:00", duration: 45, treatmentType: "root-canal", status: "available", createdAt: new Date() },
-      { id: 6, practiceId: 2, dentistId: 4, userId: null, treatmentId: 3, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 15, 0), appointmentTime: "15:00", duration: 45, treatmentType: "root-canal", status: "available", createdAt: new Date() },
-      { id: 7, practiceId: 3, dentistId: 5, userId: null, treatmentId: 1, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 9, 30), appointmentTime: "09:30", duration: 30, treatmentType: "check-up", status: "available", createdAt: new Date() },
-      { id: 8, practiceId: 3, dentistId: 6, userId: null, treatmentId: 2, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 13, 0), appointmentTime: "13:00", duration: 60, treatmentType: "cleaning", status: "available", createdAt: new Date() },
+      { id: 5, practiceId: 2, dentistId: 31, userId: null, treatmentId: 3, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 10, 0), appointmentTime: "10:00", duration: 45, treatmentType: "root-canal", status: "available", createdAt: new Date() },
+      { id: 6, practiceId: 2, dentistId: 32, userId: null, treatmentId: 3, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 15, 0), appointmentTime: "15:00", duration: 45, treatmentType: "root-canal", status: "available", createdAt: new Date() },
+      { id: 7, practiceId: 3, dentistId: 33, userId: null, treatmentId: 1, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 9, 30), appointmentTime: "09:30", duration: 30, treatmentType: "check-up", status: "available", createdAt: new Date() },
+      { id: 8, practiceId: 3, dentistId: 34, userId: null, treatmentId: 2, appointmentDate: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 13, 0), appointmentTime: "13:00", duration: 60, treatmentType: "cleaning", status: "available", createdAt: new Date() },
     ];
 
     // Initialize data
@@ -1778,4 +1778,4 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-export const storage = new DatabaseStorage();
+export const storage = new MemStorage();
