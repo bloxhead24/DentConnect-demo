@@ -121,14 +121,12 @@ export function DiaryView({ practice, dentist, searchMode, isOpen, onClose, onBo
           </div>
         </DialogHeader>
 
-        {/* Demo Notice */}
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
-          <div className="flex items-center">
-            <i className="fas fa-info-circle text-amber-500 mr-2"></i>
-            <p className="text-sm text-amber-700">
-              <strong>Demo Only:</strong> This appointment diary is for demonstration purposes. No real bookings can be made.
-            </p>
-          </div>
+        {/* Demo Notice - Compact */}
+        <div className="bg-amber-50/80 border border-amber-200 rounded p-2 mb-3">
+          <p className="text-xs text-amber-700 text-center">
+            <i className="fas fa-info-circle mr-1"></i>
+            <strong>Demo:</strong> No real bookings
+          </p>
         </div>
 
         <div className="space-y-6">

@@ -166,135 +166,109 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment, currentU
       </div>
 
       <div className="max-w-6xl mx-auto">
-        {/* Demo Notice */}
-        <div className="bg-amber-50 border-l-4 border-amber-400 p-4 mx-4 sm:mx-6 my-4 rounded-r-lg">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <i className="fas fa-exclamation-triangle text-amber-400"></i>
-            </div>
-            <div className="ml-3">
-              <p className="text-sm text-amber-700">
-                <strong>Demo Notice:</strong> This is a demonstration application. No real appointments can be booked through this system.
-              </p>
-            </div>
-          </div>
+        {/* Demo Notice - Compact */}
+        <div className="bg-amber-50/80 border-amber-200 border px-4 py-2 mx-4 sm:mx-6 rounded-lg">
+          <p className="text-xs text-amber-700 text-center">
+            <i className="fas fa-info-circle mr-1"></i>
+            <strong>Demo:</strong> Demonstration only - no real appointments
+          </p>
         </div>
 
-        {/* Practice Hero Section */}
+        {/* Practice Hero Section - Streamlined */}
         <div className="relative bg-gradient-to-r from-blue-600 to-teal-600 text-white">
-          <div className="absolute inset-0 bg-black opacity-20"></div>
-          <div className="relative px-4 sm:px-6 py-8 sm:py-12">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-center">
+          <div className="relative px-4 sm:px-6 py-6 sm:py-8">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
               {/* Practice Info */}
-              <div className="lg:col-span-2">
-                <div className="flex flex-wrap items-center gap-2 sm:gap-4 mb-4">
-                  <Badge className="bg-white/20 text-white border-white/30 text-xs sm:text-sm">
-                    <i className="fas fa-check mr-1 sm:mr-2"></i>
-                    <span className="truncate">Connected to {practiceTag}</span>
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-3">
+                  <Badge className="bg-white/20 text-white border-white/30 text-xs">
+                    <i className="fas fa-check mr-1"></i>
+                    {practiceTag}
                   </Badge>
-                  <Badge className="bg-green-500/80 text-white text-xs px-2 py-1">
+                  <Badge className="bg-green-500/80 text-white text-xs">
                     <Award className="w-3 h-3 mr-1" />
                     CQC
                   </Badge>
                 </div>
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 leading-tight">{selectedPractice.name}</h1>
-                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 text-white/90 text-sm sm:text-base">
-                  <div className="flex items-center space-x-2">
-                    <Star className="w-4 h-4 sm:w-5 sm:h-5 fill-yellow-400 text-yellow-400" />
-                    <span className="font-semibold">{selectedPractice.rating}</span>
-                    <span className="hidden sm:inline">({selectedPractice.reviewCount} reviews)</span>
-                    <span className="sm:hidden">({selectedPractice.reviewCount})</span>
+                <h1 className="text-2xl sm:text-3xl font-bold mb-2">{selectedPractice.name}</h1>
+                <div className="flex items-center gap-4 text-white/90 text-sm">
+                  <div className="flex items-center space-x-1">
+                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                    <span>{selectedPractice.rating} ({selectedPractice.reviewCount})</span>
                   </div>
-                  <div className="flex items-start space-x-2">
-                    <MapPin className="w-4 h-4 sm:w-5 sm:h-5 mt-0.5 flex-shrink-0" />
+                  <div className="flex items-start space-x-1">
+                    <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
                     <span className="break-words">{selectedPractice.address}</span>
                   </div>
                 </div>
-                <div className="mt-3 sm:mt-4 flex items-start space-x-2 text-sm sm:text-base">
-                  <Clock className="w-4 h-4 sm:w-5 sm:h-5 mt-0.5 flex-shrink-0" />
-                  <span className="break-words">{selectedPractice.openingHours}</span>
-                </div>
               </div>
 
-              {/* Quick Action Panel */}
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-white/20">
-                <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">Quick Actions</h3>
-                <div className="space-y-2 sm:space-y-3">
-                  <Button
-                    onClick={() => quickestAppointment && onBookAppointment(quickestAppointment)}
-                    disabled={!quickestAppointment}
-                    className="w-full bg-white text-blue-600 hover:bg-gray-100 font-semibold text-sm sm:text-base"
-                    size="lg"
-                  >
-                    <i className="fas fa-bolt mr-2"></i>
-                    <span className="hidden sm:inline">Book Next Available</span>
-                    <span className="sm:hidden">Book Next</span>
-                  </Button>
-                  <Button
-                    onClick={() => setShowFullDiary(true)}
-                    className="w-full bg-white/20 backdrop-blur-sm border-2 border-white/50 text-white hover:bg-white hover:text-blue-600 font-semibold shadow-lg text-sm sm:text-base"
-                    size="lg"
-                  >
-                    <i className="fas fa-calendar-alt mr-2"></i>
-                    <span className="hidden sm:inline">View Full Diary</span>
-                    <span className="sm:hidden">Full Diary</span>
-                  </Button>
-                  <CallbackRequestModal practiceId={selectedPractice.id} practiceName={selectedPractice.name}>
-                    <Button
-                      className="w-full bg-white/20 backdrop-blur-sm border-2 border-white/50 text-white hover:bg-white hover:text-blue-600 font-semibold shadow-lg"
-                    >
-                      <PhoneCall className="w-4 h-4 mr-2" />
-                      Get Cancellation Alerts
-                    </Button>
-                  </CallbackRequestModal>
-                </div>
+              {/* Quick Actions - Horizontal */}
+              <div className="flex flex-col sm:flex-row gap-2 lg:min-w-fit">
+                <Button
+                  onClick={() => quickestAppointment && onBookAppointment(quickestAppointment)}
+                  disabled={!quickestAppointment}
+                  className="bg-white text-blue-600 hover:bg-gray-100 font-semibold"
+                  size="sm"
+                >
+                  <i className="fas fa-bolt mr-1"></i>
+                  Book Next
+                </Button>
+                <Button
+                  onClick={() => setShowFullDiary(true)}
+                  className="bg-white/20 border border-white/50 text-white hover:bg-white hover:text-blue-600"
+                  size="sm"
+                >
+                  <i className="fas fa-calendar-alt mr-1"></i>
+                  Full Diary
+                </Button>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Main Content Tabs */}
-        <div className="px-4 sm:px-6 py-6 sm:py-8">
+        {/* Main Content Tabs - Cleaner */}
+        <div className="px-4 sm:px-6 py-4 sm:py-6">
           <Tabs defaultValue="appointments" className="w-full">
-            <TabsList className="grid w-full grid-cols-5 mb-6 sm:mb-8 h-16 sm:h-auto bg-gray-100 rounded-lg p-1">
-              <TabsTrigger value="appointments" className="flex flex-col items-center justify-center px-1 py-2 text-xs font-medium min-h-[3rem] data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
-                <Clock className="w-4 h-4 mb-1" />
-                <span className="leading-tight text-center">Appts</span>
+            <TabsList className="grid w-full grid-cols-5 mb-4 sm:mb-6 h-12 bg-white border border-gray-200 rounded-lg p-1 shadow-sm">
+              <TabsTrigger value="appointments" className="flex flex-col items-center justify-center px-1 py-1 text-xs font-medium data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 rounded-md transition-colors">
+                <Clock className="w-3 h-3 mb-0.5" />
+                <span>Appts</span>
               </TabsTrigger>
-              <TabsTrigger value="team" className="flex flex-col items-center justify-center px-1 py-2 text-xs font-medium min-h-[3rem] data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
-                <Users className="w-4 h-4 mb-1" />
-                <span className="leading-tight text-center">Team</span>
+              <TabsTrigger value="team" className="flex flex-col items-center justify-center px-1 py-1 text-xs font-medium data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 rounded-md transition-colors">
+                <Users className="w-3 h-3 mb-0.5" />
+                <span>Team</span>
               </TabsTrigger>
-              <TabsTrigger value="services" className="flex flex-col items-center justify-center px-1 py-2 text-xs font-medium min-h-[3rem] data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
-                <i className="fas fa-tooth text-sm mb-1"></i>
-                <span className="leading-tight text-center">Services</span>
+              <TabsTrigger value="services" className="flex flex-col items-center justify-center px-1 py-1 text-xs font-medium data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 rounded-md transition-colors">
+                <i className="fas fa-tooth text-xs mb-0.5"></i>
+                <span>Services</span>
               </TabsTrigger>
-              <TabsTrigger value="reviews" className="flex flex-col items-center justify-center px-1 py-2 text-xs font-medium min-h-[3rem] data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
-                <Star className="w-4 h-4 mb-1" />
-                <span className="leading-tight text-center">Reviews</span>
+              <TabsTrigger value="reviews" className="flex flex-col items-center justify-center px-1 py-1 text-xs font-medium data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 rounded-md transition-colors">
+                <Star className="w-3 h-3 mb-0.5" />
+                <span>Reviews</span>
               </TabsTrigger>
-              <TabsTrigger value="about" className="flex flex-col items-center justify-center px-1 py-2 text-xs font-medium min-h-[3rem] data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
-                <Shield className="w-4 h-4 mb-1" />
-                <span className="leading-tight text-center">About</span>
+              <TabsTrigger value="about" className="flex flex-col items-center justify-center px-1 py-1 text-xs font-medium data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 rounded-md transition-colors">
+                <Shield className="w-3 h-3 mb-0.5" />
+                <span>About</span>
               </TabsTrigger>
             </TabsList>
 
             {/* Appointments Tab */}
-            <TabsContent value="appointments" className="space-y-4 sm:space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-                {/* Next Available Appointment */}
-                <Card className="border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-                  <CardHeader className="pb-3 sm:pb-4">
-                    <CardTitle className="flex items-center space-x-2 sm:space-x-3">
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
-                        <i className="fas fa-bolt text-white text-base sm:text-xl"></i>
+            <TabsContent value="appointments" className="space-y-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {/* Next Available Appointment - Simplified */}
+                <Card className="border border-blue-200 bg-blue-50/30">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center space-x-3">
+                      <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
+                        <i className="fas fa-bolt text-white"></i>
                       </div>
-                      <div className="min-w-0 flex-1">
-                        <h3 className="text-base sm:text-lg font-bold leading-tight">Next Available</h3>
-                        <p className="text-xs sm:text-sm font-normal text-gray-600 truncate">
+                      <div>
+                        <h3 className="text-lg font-bold">Next Available</h3>
+                        <p className="text-sm text-gray-600">
                           {searchMode === "mydentist" && selectedDentist
                             ? `With ${selectedDentist.name}` 
-                            : "Any available dentist"
+                            : "Any dentist"
                           }
                         </p>
                       </div>
@@ -345,19 +319,17 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment, currentU
                   </CardContent>
                 </Card>
 
-                {/* Status Tracker */}
+                {/* Status Tracker - Compact */}
                 {userId && (
-                  <Card>
-                    <CardHeader>
+                  <Card className="border border-green-200 bg-green-50/30">
+                    <CardHeader className="pb-3">
                       <CardTitle className="flex items-center space-x-3">
-                        <div className="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center">
-                          <i className="fas fa-clock text-white text-xl"></i>
+                        <div className="w-10 h-10 rounded-full bg-green-600 flex items-center justify-center">
+                          <i className="fas fa-clock text-white"></i>
                         </div>
                         <div>
                           <h3 className="text-lg font-bold">Booking Status</h3>
-                          <p className="text-sm font-normal text-gray-600">
-                            Track your current bookings
-                          </p>
+                          <p className="text-sm text-gray-600">Track your bookings</p>
                         </div>
                       </CardTitle>
                     </CardHeader>
@@ -365,8 +337,7 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment, currentU
                       <Button
                         onClick={() => setShowStatusTracker(true)}
                         variant="outline"
-                        className="w-full border-2 border-green-600 text-green-600 hover:bg-green-50"
-                        size="lg"
+                        className="w-full border border-green-600 text-green-600 hover:bg-green-50"
                       >
                         <i className="fas fa-search mr-2"></i>
                         Check My Bookings
@@ -376,22 +347,23 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment, currentU
                 )}
               </div>
 
-              {/* Full Diary Access */}
-              <Card className="bg-gray-50">
-                <CardContent className="p-6">
-                  <div className="text-center">
-                    <i className="fas fa-calendar-alt text-4xl text-gray-400 mb-4"></i>
-                    <h3 className="text-xl font-bold mb-2">View Complete Appointment Diary</h3>
-                    <p className="text-gray-600 mb-6">
-                      Browse all available appointments across different dates and times
-                    </p>
+              {/* Full Diary Access - Compact */}
+              <Card className="bg-gray-50/50 border border-gray-200">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <i className="fas fa-calendar-alt text-2xl text-gray-400"></i>
+                      <div>
+                        <h3 className="font-bold">Complete Appointment Diary</h3>
+                        <p className="text-sm text-gray-600">Browse all available appointments</p>
+                      </div>
+                    </div>
                     <Button
                       onClick={() => setShowFullDiary(true)}
                       className="bg-blue-600 hover:bg-blue-700"
-                      size="lg"
                     >
                       <i className="fas fa-calendar-alt mr-2"></i>
-                      Open Full Diary
+                      Open Diary
                     </Button>
                   </div>
                 </CardContent>
@@ -400,38 +372,35 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment, currentU
 
             {/* Team Tab */}
             <TabsContent value="team" className="space-y-6">
-              {/* Practice Overview */}
+              {/* Practice Overview - Compact */}
               <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
-                <CardContent className="p-6">
+                <CardContent className="p-4">
                   <div className="text-center">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Meet Our Expert Team</h3>
-                    <p className="text-gray-600 mb-4">
-                      Our multidisciplinary team of specialists provides comprehensive dental care with cutting-edge technology and compassionate service.
-                    </p>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">Expert Team</h3>
+                    <div className="grid grid-cols-4 gap-3">
                       <div className="text-center">
-                        <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-2">
-                          <i className="fas fa-award text-white"></i>
+                        <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-1">
+                          <i className="fas fa-award text-white text-sm"></i>
                         </div>
-                        <p className="text-sm font-semibold text-gray-900">{practiceData?.dentists?.length || 6} Specialists</p>
+                        <p className="text-xs font-semibold text-gray-900">{practiceData?.dentists?.length || 6} Specialists</p>
                       </div>
                       <div className="text-center">
-                        <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-2">
-                          <i className="fas fa-calendar-check text-white"></i>
+                        <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-1">
+                          <i className="fas fa-calendar-check text-white text-sm"></i>
                         </div>
-                        <p className="text-sm font-semibold text-gray-900">Same Day Appts</p>
+                        <p className="text-xs font-semibold text-gray-900">Same Day</p>
                       </div>
                       <div className="text-center">
-                        <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-2">
-                          <i className="fas fa-language text-white"></i>
+                        <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-1">
+                          <i className="fas fa-language text-white text-sm"></i>
                         </div>
-                        <p className="text-sm font-semibold text-gray-900">8+ Languages</p>
+                        <p className="text-xs font-semibold text-gray-900">8+ Languages</p>
                       </div>
                       <div className="text-center">
-                        <div className="w-12 h-12 bg-orange-600 rounded-full flex items-center justify-center mx-auto mb-2">
-                          <i className="fas fa-heart text-white"></i>
+                        <div className="w-8 h-8 bg-orange-600 rounded-full flex items-center justify-center mx-auto mb-1">
+                          <i className="fas fa-heart text-white text-sm"></i>
                         </div>
-                        <p className="text-sm font-semibold text-gray-900">Anxiety Care</p>
+                        <p className="text-xs font-semibold text-gray-900">Anxiety Care</p>
                       </div>
                     </div>
                   </div>
@@ -463,47 +432,41 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment, currentU
                         </div>
                       </div>
                     </div>
-                    <CardContent className="p-6">
-                      <div className="text-center mb-4">
-                        <h3 className="text-xl font-bold text-gray-900">{dentist.title} {dentist.name}</h3>
+                    <CardContent className="p-4">
+                      <div className="text-center mb-3">
+                        <h3 className="text-lg font-bold text-gray-900">{dentist.title} {dentist.name}</h3>
                         <p className="text-blue-600 font-medium text-sm">{dentist.specialization}</p>
                       </div>
                       
-                      <div className="space-y-3 text-sm">
-                        <div className="flex items-start space-x-2">
-                          <i className="fas fa-graduation-cap text-blue-600 mt-0.5 flex-shrink-0"></i>
-                          <span className="text-gray-600 leading-tight">{dentist.qualifications}</span>
+                      <div className="space-y-2 text-sm mb-3">
+                        <div className="flex items-center space-x-2">
+                          <i className="fas fa-graduation-cap text-blue-600 text-xs"></i>
+                          <span className="text-gray-600 text-xs">{dentist.qualifications}</span>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <i className="fas fa-language text-green-600"></i>
-                          <span className="text-gray-600">{JSON.parse(dentist.languages).join(", ")}</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <i className="fas fa-calendar text-purple-600"></i>
-                          <span className="text-gray-600">{JSON.parse(dentist.availableDays).length} days/week</span>
+                          <i className="fas fa-language text-green-600 text-xs"></i>
+                          <span className="text-gray-600 text-xs">{JSON.parse(dentist.languages).slice(0, 2).join(", ")}</span>
                         </div>
                       </div>
                       
-                      <p className="text-sm text-gray-700 mt-4 leading-relaxed">{dentist.bio}</p>
-                      
-                      <div className="mt-6 space-y-2">
+                      <div className="space-y-2">
                         <Button 
                           className="w-full bg-blue-600 hover:bg-blue-700" 
+                          size="sm"
                           onClick={() => {
                             setSelectedDentist(dentist);
                             setShowFullDiary(true);
                           }}
                         >
                           <i className="fas fa-calendar-alt mr-2"></i>
-                          View {dentist.name}'s Diary
+                          View Diary
                         </Button>
                         
-                        {/* Quick book button for earliest available */}
                         <Button 
                           variant="outline" 
                           className="w-full border-blue-200 hover:bg-blue-50"
+                          size="sm"
                           onClick={() => {
-                            // Find earliest appointment for this dentist
                             const dentistAppointment = practiceData?.availableAppointments?.find(
                               apt => apt.dentistId === dentist.id
                             );
@@ -513,7 +476,7 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment, currentU
                           }}
                         >
                           <i className="fas fa-bolt mr-2"></i>
-                          Book Next Available
+                          Book Next
                         </Button>
                       </div>
                     </CardContent>

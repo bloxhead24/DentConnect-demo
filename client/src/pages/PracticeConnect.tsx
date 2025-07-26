@@ -70,15 +70,13 @@ export default function PracticeConnect({
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-400/5 rounded-full blur-3xl animate-pulse delay-500"></div>
       </div>
 
-      {/* Demo Notice */}
-      <div className="bg-amber-50 border-b border-amber-200 px-4 py-3">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center">
-            <i className="fas fa-info-circle text-amber-500 mr-2"></i>
-            <p className="text-sm text-amber-700">
-              <strong>Demo Notice:</strong> This is a demonstration application. Practice connections are simulated and no real appointments can be booked.
-            </p>
-          </div>
+      {/* Demo Notice - Minimal */}
+      <div className="bg-amber-50/80 border-b border-amber-200 px-4 py-2">
+        <div className="max-w-4xl mx-auto text-center">
+          <p className="text-xs text-amber-700">
+            <i className="fas fa-info-circle mr-1"></i>
+            <strong>Demo:</strong> Simulated connections only
+          </p>
         </div>
       </div>
 
