@@ -152,14 +152,71 @@ export default function PracticeConnect({
                 </div>
                 <CardContent className="p-6">
                   <div className="flex items-center space-x-4">
-                    <div className={`w-14 h-14 rounded-full flex items-center justify-center shadow-lg`} 
+                    <div className={`w-16 h-16 rounded-full flex items-center justify-center shadow-lg relative`} 
                          style={{ backgroundColor: selectedTreatment.color + '20' }}>
-                      <i className={`${selectedTreatment.icon} text-2xl`} 
-                         style={{ color: selectedTreatment.color }}></i>
+                      {/* Dynamic treatment icons */}
+                      {selectedTreatment.category === 'emergency' && (
+                        <i className="fas fa-exclamation-triangle text-3xl text-red-600"></i>
+                      )}
+                      {selectedTreatment.category === 'urgent' && (
+                        <i className="fas fa-clock text-3xl text-orange-600"></i>
+                      )}
+                      {selectedTreatment.category === 'routine' && (
+                        <i className="fas fa-tooth text-3xl text-blue-600"></i>
+                      )}
+                      {selectedTreatment.category === 'cosmetic' && (
+                        <i className="fas fa-smile text-3xl text-purple-600"></i>
+                      )}
+                      {selectedTreatment.category === 'preventive' && (
+                        <i className="fas fa-shield-alt text-3xl text-green-600"></i>
+                      )}
+                      {selectedTreatment.category === 'orthodontic' && (
+                        <i className="fas fa-grip-horizontal text-3xl text-indigo-600"></i>
+                      )}
+                      {selectedTreatment.category === 'surgical' && (
+                        <i className="fas fa-scalpel-path text-3xl text-gray-700"></i>
+                      )}
+                      {selectedTreatment.category === 'endodontic' && (
+                        <i className="fas fa-tooth text-3xl text-yellow-600"></i>
+                      )}
+                      {selectedTreatment.category === 'periodontal' && (
+                        <i className="fas fa-teeth text-3xl text-pink-600"></i>
+                      )}
+                      {selectedTreatment.category === 'prosthetic' && (
+                        <i className="fas fa-teeth-open text-3xl text-cyan-600"></i>
+                      )}
+                      {/* Fallback icon if category doesn't match */}
+                      {!['emergency', 'urgent', 'routine', 'cosmetic', 'preventive', 'orthodontic', 'surgical', 'endodontic', 'periodontal', 'prosthetic'].includes(selectedTreatment.category) && (
+                        <i className="fas fa-tooth text-3xl text-blue-600"></i>
+                      )}
+                      
+                      {/* Animated pulse ring for urgent/emergency treatments */}
+                      {(selectedTreatment.category === 'emergency' || selectedTreatment.category === 'urgent') && (
+                        <div className="absolute inset-0 rounded-full border-2 border-red-400 animate-ping opacity-75"></div>
+                      )}
                     </div>
-                    <div>
+                    <div className="flex-1">
                       <h3 className="font-bold text-gray-900 text-lg">{selectedTreatment.name}</h3>
-                      <p className="text-gray-600 capitalize">{selectedTreatment.category} treatment</p>
+                      <p className="text-gray-600 capitalize mb-2">{selectedTreatment.category} treatment</p>
+                      
+                      {/* Treatment category badge */}
+                      <div className="flex items-center space-x-2">
+                        {selectedTreatment.category === 'emergency' && (
+                          <span className="px-3 py-1 text-xs font-bold bg-red-100 text-red-700 rounded-full">URGENT CARE</span>
+                        )}
+                        {selectedTreatment.category === 'urgent' && (
+                          <span className="px-3 py-1 text-xs font-bold bg-orange-100 text-orange-700 rounded-full">PRIORITY</span>
+                        )}
+                        {selectedTreatment.category === 'routine' && (
+                          <span className="px-3 py-1 text-xs font-bold bg-blue-100 text-blue-700 rounded-full">ROUTINE</span>
+                        )}
+                        {selectedTreatment.category === 'cosmetic' && (
+                          <span className="px-3 py-1 text-xs font-bold bg-purple-100 text-purple-700 rounded-full">COSMETIC</span>
+                        )}
+                        {selectedTreatment.category === 'preventive' && (
+                          <span className="px-3 py-1 text-xs font-bold bg-green-100 text-green-700 rounded-full">PREVENTIVE</span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </CardContent>
