@@ -16,80 +16,24 @@ const accessibilityNeeds: AccessibilityNeed[] = [
     name: "Wheelchair Access",
     description: "Ramp access and accessible facilities",
     icon: "fas fa-wheelchair",
-    category: "mobility",
-    color: "#3B82F6"
-  },
-  {
-    id: "mobilitySupport",
-    name: "Mobility Support",
-    description: "Assistance with movement and positioning",
-    icon: "fas fa-hand-holding-heart",
-    category: "mobility", 
-    color: "#3B82F6"
-  },
-  {
-    id: "visualSupport",
-    name: "Visual Support",
-    description: "Large print and audio assistance",
-    icon: "fas fa-low-vision",
-    category: "sensory",
-    color: "#8B5CF6"
-  },
-  {
-    id: "hearingSupport",
-    name: "Hearing Support", 
-    description: "Hearing loop and written communication",
-    icon: "fas fa-deaf",
-    category: "sensory",
-    color: "#8B5CF6"
   },
   {
     id: "signLanguage",
     name: "Sign Language",
     description: "BSL interpreter available",
     icon: "fas fa-sign-language",
-    category: "sensory",
-    color: "#8B5CF6"
   },
   {
-    id: "sensorySupport",
-    name: "Sensory Support",
-    description: "Quiet environment and reduced lighting",
-    icon: "fas fa-adjust",
-    category: "sensory",
-    color: "#8B5CF6"
+    id: "visualSupport",
+    name: "Visual Support",
+    description: "Large print and audio assistance",
+    icon: "fas fa-eye",
   },
   {
     id: "cognitiveSupport",
     name: "Cognitive Support",
     description: "Extra time and clear explanations",
     icon: "fas fa-brain",
-    category: "cognitive",
-    color: "#06B6D4"
-  },
-  {
-    id: "communicationSupport",
-    name: "Communication Support",
-    description: "Easy-read materials and pictures",
-    icon: "fas fa-comments",
-    category: "cognitive",
-    color: "#06B6D4"
-  },
-  {
-    id: "anxietySupport",
-    name: "Anxiety Support",
-    description: "Calming environment and sedation options",
-    icon: "fas fa-spa",
-    category: "emotional",
-    color: "#10B981"
-  },
-  {
-    id: "familySupport",
-    name: "Family Support",
-    description: "Caregiver or family member present",
-    icon: "fas fa-users",
-    category: "emotional",
-    color: "#10B981"
   },
 ];
 
