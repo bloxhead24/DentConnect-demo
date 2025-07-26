@@ -242,30 +242,26 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment, currentU
         {/* Main Content Tabs */}
         <div className="px-4 sm:px-6 py-6 sm:py-8">
           <Tabs defaultValue="appointments" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 mb-6 sm:mb-8 h-auto">
-              <TabsTrigger value="appointments" className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2 p-2 sm:p-3 text-xs sm:text-sm">
-                <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span className="sm:hidden">Appts</span>
-                <span className="hidden sm:inline">Appointments</span>
+            <TabsList className="grid w-full grid-cols-5 mb-6 sm:mb-8 h-16 sm:h-auto bg-gray-100 rounded-lg p-1">
+              <TabsTrigger value="appointments" className="flex flex-col items-center justify-center px-1 py-2 text-xs font-medium min-h-[3rem] data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
+                <Clock className="w-4 h-4 mb-1" />
+                <span className="leading-tight text-center">Appts</span>
               </TabsTrigger>
-              <TabsTrigger value="team" className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2 p-2 sm:p-3 text-xs sm:text-sm">
-                <Users className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span className="sm:hidden">Team</span>
-                <span className="hidden sm:inline">Meet the Team</span>
+              <TabsTrigger value="team" className="flex flex-col items-center justify-center px-1 py-2 text-xs font-medium min-h-[3rem] data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
+                <Users className="w-4 h-4 mb-1" />
+                <span className="leading-tight text-center">Team</span>
               </TabsTrigger>
-              <TabsTrigger value="services" className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2 p-2 sm:p-3 text-xs sm:text-sm">
-                <i className="fas fa-tooth text-xs sm:text-sm"></i>
-                <span className="sm:hidden">Services</span>
-                <span className="hidden sm:inline">Services & Prices</span>
+              <TabsTrigger value="services" className="flex flex-col items-center justify-center px-1 py-2 text-xs font-medium min-h-[3rem] data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
+                <i className="fas fa-tooth text-sm mb-1"></i>
+                <span className="leading-tight text-center">Services</span>
               </TabsTrigger>
-              <TabsTrigger value="reviews" className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2 p-2 sm:p-3 text-xs sm:text-sm">
-                <Star className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span>Reviews</span>
+              <TabsTrigger value="reviews" className="flex flex-col items-center justify-center px-1 py-2 text-xs font-medium min-h-[3rem] data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
+                <Star className="w-4 h-4 mb-1" />
+                <span className="leading-tight text-center">Reviews</span>
               </TabsTrigger>
-              <TabsTrigger value="about" className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2 p-2 sm:p-3 text-xs sm:text-sm">
-                <Shield className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span className="sm:hidden">About</span>
-                <span className="hidden sm:inline">About Us</span>
+              <TabsTrigger value="about" className="flex flex-col items-center justify-center px-1 py-2 text-xs font-medium min-h-[3rem] data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
+                <Shield className="w-4 h-4 mb-1" />
+                <span className="leading-tight text-center">About</span>
               </TabsTrigger>
             </TabsList>
 
