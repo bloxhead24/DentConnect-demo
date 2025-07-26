@@ -71,33 +71,33 @@ export default function PracticeConnect({
       </div>
 
       {/* Header */}
-      <div className="bg-white/80 backdrop-blur-md border-b border-gray-200/50 px-4 py-6 sticky top-0 z-40 shadow-sm">
-        <div className="flex items-center justify-between max-w-6xl mx-auto">
+      <div className="bg-white/80 backdrop-blur-md border-b border-gray-200/50 px-4 py-4 sticky top-0 z-40 shadow-sm">
+        <div className="flex items-center justify-between max-w-4xl mx-auto">
           <Button 
             variant="ghost" 
             size="sm" 
             onClick={onBack} 
-            className="hover:bg-blue-50 transition-all duration-300 rounded-xl px-4 py-2"
+            className="hover:bg-blue-50 transition-all duration-300 rounded-xl px-3 py-2 flex items-center"
           >
             <i className="fas fa-arrow-left mr-2"></i>
-            Back
+            <span className="hidden sm:inline">Back</span>
           </Button>
-          <div className="text-center">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">
+          <div className="text-center flex-1 px-2">
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent leading-tight">
               Practice Connection
             </h1>
-            <p className="text-sm text-gray-600">Secure access to your dental appointments</p>
+            <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">Secure access to your dental appointments</p>
           </div>
-          <div className="w-16"></div>
+          <div className="w-12 sm:w-16"></div>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto p-6 relative z-10">
+      <div className="max-w-4xl mx-auto p-4 sm:p-6 relative z-10">
         {/* Hero Section */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-8 sm:mb-12">
           <div className="relative">
             <div className={cn(
-              "w-32 h-32 rounded-full mx-auto mb-8 flex items-center justify-center relative shadow-2xl",
+              "w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full mx-auto mb-6 sm:mb-8 flex items-center justify-center relative shadow-2xl",
               searchMode === "mydentist" 
                 ? "bg-gradient-to-br from-teal-500 via-teal-600 to-green-600" 
                 : "bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600"
@@ -106,20 +106,20 @@ export default function PracticeConnect({
               <div className={cn(
                 "absolute inset-0 rounded-full animate-spin",
                 searchMode === "mydentist" 
-                  ? "border-4 border-transparent border-t-teal-300/50" 
-                  : "border-4 border-transparent border-t-blue-300/50"
+                  ? "border-2 sm:border-4 border-transparent border-t-teal-300/50" 
+                  : "border-2 sm:border-4 border-transparent border-t-blue-300/50"
               )}></div>
               
               {searchMode === "mydentist" ? (
-                <UserCheck className="w-16 h-16 text-white drop-shadow-lg" />
+                <UserCheck className="w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 text-white drop-shadow-lg" />
               ) : (
-                <Building className="w-16 h-16 text-white drop-shadow-lg" />
+                <Building className="w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 text-white drop-shadow-lg" />
               )}
             </div>
           </div>
           
           <Badge className={cn(
-            "text-lg px-10 py-4 mb-6 rounded-full shadow-lg border-2 border-white/50 backdrop-blur-sm font-semibold",
+            "text-sm sm:text-base md:text-lg px-6 sm:px-8 md:px-10 py-2 sm:py-3 md:py-4 mb-4 sm:mb-6 rounded-full shadow-lg border-2 border-white/50 backdrop-blur-sm font-semibold inline-block",
             searchMode === "mydentist" 
               ? "bg-gradient-to-r from-teal-600 to-green-600 hover:from-teal-700 hover:to-green-700" 
               : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
@@ -127,13 +127,13 @@ export default function PracticeConnect({
             {searchMode === "mydentist" ? "My Dentist Search" : "My Practice Search"}
           </Badge>
           
-          <h2 className="text-4xl font-bold text-gray-900 mb-6 leading-tight">
+          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight px-2">
             {searchMode === "mydentist" 
               ? "Connect to Your Personal Dentist"
               : "Connect to Your Dental Practice"
             }
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-4">
             {searchMode === "mydentist" 
               ? "Access your personal dentist's appointment diary with your secure practice connection tag. Maintain continuity of care with your trusted dental professional."
               : "Access your practice's appointment system using your secure connection tag. View available appointments with any dentist at your registered practice."
@@ -141,9 +141,9 @@ export default function PracticeConnect({
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 items-start">
           {/* Left Column - Connection Form */}
-          <div className="space-y-8">
+          <div className="space-y-4 sm:space-y-6 lg:space-y-8">
             {/* Selected Treatment Display */}
             {selectedTreatment && (
               <Card className="bg-white/80 backdrop-blur-md border-2 border-blue-200/50 shadow-xl rounded-2xl overflow-hidden">

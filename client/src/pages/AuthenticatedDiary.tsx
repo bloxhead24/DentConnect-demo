@@ -150,16 +150,18 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment, currentU
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-secondary/5">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-4 py-4 sticky top-0 z-40">
+      <div className="bg-white border-b border-gray-200 px-4 py-4 sticky top-0 z-40 shadow-sm">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
-          <Button variant="ghost" size="sm" onClick={onBack}>
+          <Button variant="ghost" size="sm" onClick={onBack} className="flex items-center px-3 py-2">
             <i className="fas fa-arrow-left mr-2"></i>
-            Back
+            <span className="hidden sm:inline">Back</span>
           </Button>
-          <h1 className="text-xl font-bold text-center">
-            {searchMode === "mydentist" ? "My Dentist" : "My Practice"}
-          </h1>
-          <div className="w-16"></div>
+          <div className="text-center flex-1 px-2">
+            <h1 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 leading-tight">
+              {searchMode === "mydentist" ? "My Dentist" : "My Practice"}
+            </h1>
+          </div>
+          <div className="w-12 sm:w-16"></div>
         </div>
       </div>
 
@@ -167,58 +169,61 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment, currentU
         {/* Practice Hero Section */}
         <div className="relative bg-gradient-to-r from-blue-600 to-teal-600 text-white">
           <div className="absolute inset-0 bg-black opacity-20"></div>
-          <div className="relative px-6 py-12">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+          <div className="relative px-4 sm:px-6 py-8 sm:py-12">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-center">
               {/* Practice Info */}
               <div className="lg:col-span-2">
-                <div className="flex items-center space-x-4 mb-4">
-                  <Badge className="bg-white/20 text-white border-white/30">
-                    <i className="fas fa-check mr-2"></i>
-                    Connected to {practiceTag}
+                <div className="flex flex-wrap items-center gap-2 sm:gap-4 mb-4">
+                  <Badge className="bg-white/20 text-white border-white/30 text-xs sm:text-sm">
+                    <i className="fas fa-check mr-1 sm:mr-2"></i>
+                    <span className="truncate">Connected to {practiceTag}</span>
                   </Badge>
                   <Badge className="bg-green-500/80 text-white text-xs px-2 py-1">
                     <Award className="w-3 h-3 mr-1" />
                     CQC
                   </Badge>
                 </div>
-                <h1 className="text-4xl font-bold mb-4">{selectedPractice.name}</h1>
-                <div className="flex items-center space-x-6 text-white/90">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 leading-tight">{selectedPractice.name}</h1>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 text-white/90 text-sm sm:text-base">
                   <div className="flex items-center space-x-2">
-                    <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                    <Star className="w-4 h-4 sm:w-5 sm:h-5 fill-yellow-400 text-yellow-400" />
                     <span className="font-semibold">{selectedPractice.rating}</span>
-                    <span>({selectedPractice.reviewCount} reviews)</span>
+                    <span className="hidden sm:inline">({selectedPractice.reviewCount} reviews)</span>
+                    <span className="sm:hidden">({selectedPractice.reviewCount})</span>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <MapPin className="w-5 h-5" />
-                    <span>{selectedPractice.address}</span>
+                  <div className="flex items-start space-x-2">
+                    <MapPin className="w-4 h-4 sm:w-5 sm:h-5 mt-0.5 flex-shrink-0" />
+                    <span className="break-words">{selectedPractice.address}</span>
                   </div>
                 </div>
-                <div className="mt-4 flex items-center space-x-2">
-                  <Clock className="w-5 h-5" />
-                  <span>{selectedPractice.openingHours}</span>
+                <div className="mt-3 sm:mt-4 flex items-start space-x-2 text-sm sm:text-base">
+                  <Clock className="w-4 h-4 sm:w-5 sm:h-5 mt-0.5 flex-shrink-0" />
+                  <span className="break-words">{selectedPractice.openingHours}</span>
                 </div>
               </div>
 
               {/* Quick Action Panel */}
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
-                <h3 className="text-xl font-bold mb-4">Quick Actions</h3>
-                <div className="space-y-3">
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-white/20">
+                <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">Quick Actions</h3>
+                <div className="space-y-2 sm:space-y-3">
                   <Button
                     onClick={() => quickestAppointment && onBookAppointment(quickestAppointment)}
                     disabled={!quickestAppointment}
-                    className="w-full bg-white text-blue-600 hover:bg-gray-100 font-semibold"
+                    className="w-full bg-white text-blue-600 hover:bg-gray-100 font-semibold text-sm sm:text-base"
                     size="lg"
                   >
                     <i className="fas fa-bolt mr-2"></i>
-                    Book Next Available
+                    <span className="hidden sm:inline">Book Next Available</span>
+                    <span className="sm:hidden">Book Next</span>
                   </Button>
                   <Button
                     onClick={() => setShowFullDiary(true)}
-                    className="w-full bg-white/20 backdrop-blur-sm border-2 border-white/50 text-white hover:bg-white hover:text-blue-600 font-semibold shadow-lg"
+                    className="w-full bg-white/20 backdrop-blur-sm border-2 border-white/50 text-white hover:bg-white hover:text-blue-600 font-semibold shadow-lg text-sm sm:text-base"
                     size="lg"
                   >
                     <i className="fas fa-calendar-alt mr-2"></i>
-                    View Full Diary
+                    <span className="hidden sm:inline">View Full Diary</span>
+                    <span className="sm:hidden">Full Diary</span>
                   </Button>
                   <CallbackRequestModal practiceId={selectedPractice.id} practiceName={selectedPractice.name}>
                     <Button
@@ -235,44 +240,48 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment, currentU
         </div>
 
         {/* Main Content Tabs */}
-        <div className="px-6 py-8">
+        <div className="px-4 sm:px-6 py-6 sm:py-8">
           <Tabs defaultValue="appointments" className="w-full">
-            <TabsList className="grid w-full grid-cols-5 mb-8">
-              <TabsTrigger value="appointments" className="flex items-center space-x-2">
-                <Clock className="w-4 h-4" />
-                <span>Appointments</span>
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 mb-6 sm:mb-8 h-auto">
+              <TabsTrigger value="appointments" className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2 p-2 sm:p-3 text-xs sm:text-sm">
+                <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="sm:hidden">Appts</span>
+                <span className="hidden sm:inline">Appointments</span>
               </TabsTrigger>
-              <TabsTrigger value="team" className="flex items-center space-x-2">
-                <Users className="w-4 h-4" />
-                <span>Meet the Team</span>
+              <TabsTrigger value="team" className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2 p-2 sm:p-3 text-xs sm:text-sm">
+                <Users className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="sm:hidden">Team</span>
+                <span className="hidden sm:inline">Meet the Team</span>
               </TabsTrigger>
-              <TabsTrigger value="services" className="flex items-center space-x-2">
-                <i className="fas fa-tooth text-sm"></i>
-                <span>Services & Prices</span>
+              <TabsTrigger value="services" className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2 p-2 sm:p-3 text-xs sm:text-sm">
+                <i className="fas fa-tooth text-xs sm:text-sm"></i>
+                <span className="sm:hidden">Services</span>
+                <span className="hidden sm:inline">Services & Prices</span>
               </TabsTrigger>
-              <TabsTrigger value="reviews" className="flex items-center space-x-2">
-                <Star className="w-4 h-4" />
+              <TabsTrigger value="reviews" className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2 p-2 sm:p-3 text-xs sm:text-sm">
+                <Star className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span>Reviews</span>
               </TabsTrigger>
-              <TabsTrigger value="about" className="flex items-center space-x-2">
-                <Shield className="w-4 h-4" />
-                <span>About Us</span>
+              <TabsTrigger value="about" className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2 p-2 sm:p-3 text-xs sm:text-sm">
+                <Shield className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="sm:hidden">About</span>
+                <span className="hidden sm:inline">About Us</span>
               </TabsTrigger>
             </TabsList>
 
             {/* Appointments Tab */}
-            <TabsContent value="appointments" className="space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <TabsContent value="appointments" className="space-y-4 sm:space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                 {/* Next Available Appointment */}
                 <Card className="border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-3">
-                      <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center">
-                        <i className="fas fa-bolt text-white text-xl"></i>
+                  <CardHeader className="pb-3 sm:pb-4">
+                    <CardTitle className="flex items-center space-x-2 sm:space-x-3">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                        <i className="fas fa-bolt text-white text-base sm:text-xl"></i>
                       </div>
-                      <div>
-                        <h3 className="text-lg font-bold">Next Available</h3>
-                        <p className="text-sm font-normal text-gray-600">
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-base sm:text-lg font-bold leading-tight">Next Available</h3>
+                        <p className="text-xs sm:text-sm font-normal text-gray-600 truncate">
                           {searchMode === "mydentist" && selectedDentist
                             ? `With ${selectedDentist.name}` 
                             : "Any available dentist"
