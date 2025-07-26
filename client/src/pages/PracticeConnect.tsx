@@ -154,40 +154,72 @@ export default function PracticeConnect({
                   <div className="flex items-center space-x-4">
                     <div className={`w-16 h-16 rounded-full flex items-center justify-center shadow-lg relative`} 
                          style={{ backgroundColor: selectedTreatment.color + '20' }}>
-                      {/* Dynamic treatment icons */}
-                      {selectedTreatment.category === 'emergency' && (
-                        <i className="fas fa-exclamation-triangle text-3xl text-red-600"></i>
+                      {/* Dental treatment specific icons */}
+                      {selectedTreatment.name.toLowerCase().includes('cleaning') && (
+                        <i className="fas fa-broom text-2xl text-blue-600"></i>
                       )}
-                      {selectedTreatment.category === 'urgent' && (
-                        <i className="fas fa-clock text-3xl text-orange-600"></i>
+                      {selectedTreatment.name.toLowerCase().includes('filling') && (
+                        <i className="fas fa-fill-drip text-2xl text-gray-600"></i>
                       )}
-                      {selectedTreatment.category === 'routine' && (
-                        <i className="fas fa-tooth text-3xl text-blue-600"></i>
+                      {selectedTreatment.name.toLowerCase().includes('crown') && (
+                        <i className="fas fa-crown text-2xl text-yellow-600"></i>
                       )}
-                      {selectedTreatment.category === 'cosmetic' && (
-                        <i className="fas fa-smile text-3xl text-purple-600"></i>
+                      {selectedTreatment.name.toLowerCase().includes('root canal') && (
+                        <i className="fas fa-drill text-2xl text-orange-600"></i>
                       )}
-                      {selectedTreatment.category === 'preventive' && (
-                        <i className="fas fa-shield-alt text-3xl text-green-600"></i>
+                      {selectedTreatment.name.toLowerCase().includes('extraction') && (
+                        <i className="fas fa-procedures text-2xl text-red-600"></i>
                       )}
-                      {selectedTreatment.category === 'orthodontic' && (
-                        <i className="fas fa-grip-horizontal text-3xl text-indigo-600"></i>
+                      {selectedTreatment.name.toLowerCase().includes('whitening') && (
+                        <i className="fas fa-star text-2xl text-blue-400"></i>
                       )}
-                      {selectedTreatment.category === 'surgical' && (
-                        <i className="fas fa-scalpel-path text-3xl text-gray-700"></i>
+                      {selectedTreatment.name.toLowerCase().includes('braces') && (
+                        <i className="fas fa-grip-horizontal text-2xl text-indigo-600"></i>
                       )}
-                      {selectedTreatment.category === 'endodontic' && (
-                        <i className="fas fa-tooth text-3xl text-yellow-600"></i>
+                      {selectedTreatment.name.toLowerCase().includes('implant') && (
+                        <i className="fas fa-hammer text-2xl text-gray-700"></i>
                       )}
-                      {selectedTreatment.category === 'periodontal' && (
-                        <i className="fas fa-teeth text-3xl text-pink-600"></i>
+                      {selectedTreatment.name.toLowerCase().includes('bridge') && (
+                        <i className="fas fa-bridge text-2xl text-cyan-600"></i>
                       )}
-                      {selectedTreatment.category === 'prosthetic' && (
-                        <i className="fas fa-teeth-open text-3xl text-cyan-600"></i>
+                      {selectedTreatment.name.toLowerCase().includes('denture') && (
+                        <i className="fas fa-teeth-open text-2xl text-pink-600"></i>
                       )}
-                      {/* Fallback icon if category doesn't match */}
-                      {!['emergency', 'urgent', 'routine', 'cosmetic', 'preventive', 'orthodontic', 'surgical', 'endodontic', 'periodontal', 'prosthetic'].includes(selectedTreatment.category) && (
-                        <i className="fas fa-tooth text-3xl text-blue-600"></i>
+                      {selectedTreatment.name.toLowerCase().includes('checkup') && (
+                        <i className="fas fa-search text-2xl text-green-600"></i>
+                      )}
+                      {selectedTreatment.name.toLowerCase().includes('x-ray') && (
+                        <i className="fas fa-x-ray text-2xl text-purple-600"></i>
+                      )}
+                      {selectedTreatment.name.toLowerCase().includes('veneer') && (
+                        <i className="fas fa-layer-group text-2xl text-blue-500"></i>
+                      )}
+                      {selectedTreatment.name.toLowerCase().includes('gum') && (
+                        <i className="fas fa-seedling text-2xl text-green-500"></i>
+                      )}
+                      {selectedTreatment.name.toLowerCase().includes('emergency') && (
+                        <i className="fas fa-plus-circle text-2xl text-red-500"></i>
+                      )}
+                      
+                      {/* Fallback to category icons if no specific treatment match */}
+                      {!['cleaning', 'filling', 'crown', 'root canal', 'extraction', 'whitening', 'braces', 'implant', 'bridge', 'denture', 'checkup', 'x-ray', 'veneer', 'gum', 'emergency'].some(keyword => selectedTreatment.name.toLowerCase().includes(keyword)) && (
+                        <>
+                          {selectedTreatment.category === 'emergency' && (
+                            <i className="fas fa-exclamation-triangle text-2xl text-red-600"></i>
+                          )}
+                          {selectedTreatment.category === 'urgent' && (
+                            <i className="fas fa-clock text-2xl text-orange-600"></i>
+                          )}
+                          {selectedTreatment.category === 'routine' && (
+                            <i className="fas fa-tooth text-2xl text-blue-600"></i>
+                          )}
+                          {selectedTreatment.category === 'cosmetic' && (
+                            <i className="fas fa-smile text-2xl text-purple-600"></i>
+                          )}
+                          {!['emergency', 'urgent', 'routine', 'cosmetic'].includes(selectedTreatment.category) && (
+                            <i className="fas fa-tooth text-2xl text-blue-600"></i>
+                          )}
+                        </>
                       )}
                       
                       {/* Animated pulse ring for urgent/emergency treatments */}
