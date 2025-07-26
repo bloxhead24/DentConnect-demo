@@ -20,50 +20,37 @@ export function AccessibilityOption({ need, selected, onToggle }: AccessibilityO
       onClick={() => onToggle(need)}
     >
       <div className="flex items-center space-x-4">
-        <div className="relative">
-          {/* Main accessibility circle */}
-          <div className={cn(
-            "w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg",
-            selected ? "bg-primary text-white scale-110" : "bg-primary/10 text-primary"
-          )}>
-            <i className={`${need.icon} text-lg`}></i>
-          </div>
-          
-          {/* Overlayed care images */}
+        <div className={cn(
+          "w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg border-2",
+          selected 
+            ? "bg-primary border-primary scale-110 ring-4 ring-primary/30" 
+            : "bg-white border-gray-200 hover:border-primary/50"
+        )}>
+          {/* Care type specific SVG images */}
           {need.id === 'wheelchair' && (
-            <div className="absolute -top-1 -right-1 w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-md border border-blue-200">
-              <svg viewBox="0 0 24 24" className="w-3 h-3 text-blue-600" fill="currentColor">
-                <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/>
-              </svg>
-            </div>
+            <svg viewBox="0 0 24 24" className={cn("w-6 h-6", selected ? "text-white" : "text-blue-600")} fill="currentColor">
+              <path d="M12 4a4 4 0 0 1 4 4 4 4 0 0 1-4 4 4 4 0 0 1-4-4 4 4 0 0 1 4-4m0 10c2.67 0 8 1.33 8 4v2H4v-2c0-2.67 5.33-4 8-4zm-1-9v2H9.5v6H11v-2h1v2h1.5V7H12V5h-1zm-7 7.5L2.5 8l1.42-1.42L6 8.67l3.54-3.54L11 6.58 6.42 11.08 4 8.5z"/>
+            </svg>
           )}
           {need.id === 'signLanguage' && (
-            <div className="absolute -top-1 -right-1 w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-md border border-purple-200">
-              <svg viewBox="0 0 24 24" className="w-3 h-3 text-purple-600" fill="currentColor">
-                <path d="M9 11H7v3h2v-3zm4 0h-2v3h2v-3zm4 0h-2v3h2v-3z"/>
-              </svg>
-            </div>
+            <svg viewBox="0 0 24 24" className={cn("w-6 h-6", selected ? "text-white" : "text-purple-600")} fill="currentColor">
+              <path d="M12 3c-1.27 0-2.4.8-2.82 2H7v2h2.05c-.05.33-.05.67 0 1H7v2h2.18c.42 1.2 1.55 2 2.82 2s2.4-.8 2.82-2H17v-2h-2.05c.05-.33.05-.67 0-1H17V5h-2.18C14.4 3.8 13.27 3 12 3zm0 2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm0 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1z"/>
+            </svg>
           )}
           {need.id === 'visualSupport' && (
-            <div className="absolute -top-1 -right-1 w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-md border border-indigo-200">
-              <svg viewBox="0 0 24 24" className="w-3 h-3 text-indigo-600" fill="currentColor">
-                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-              </svg>
-            </div>
+            <svg viewBox="0 0 24 24" className={cn("w-6 h-6", selected ? "text-white" : "text-indigo-600")} fill="currentColor">
+              <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+            </svg>
           )}
           {need.id === 'cognitiveSupport' && (
-            <div className="absolute -top-1 -right-1 w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-md border border-cyan-200">
-              <svg viewBox="0 0 24 24" className="w-3 h-3 text-cyan-600" fill="currentColor">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-              </svg>
-            </div>
+            <svg viewBox="0 0 24 24" className={cn("w-6 h-6", selected ? "text-white" : "text-cyan-600")} fill="currentColor">
+              <path d="M21.99 4c0-1.1-.89-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18zM18 14H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+            </svg>
           )}
           {need.id === 'anxietySupport' && (
-            <div className="absolute -top-1 -right-1 w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-md border border-green-200">
-              <svg viewBox="0 0 24 24" className="w-3 h-3 text-green-600" fill="currentColor">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-              </svg>
-            </div>
+            <svg viewBox="0 0 24 24" className={cn("w-6 h-6", selected ? "text-white" : "text-green-600")} fill="currentColor">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
           )}
         </div>
         <div className="flex-1">
