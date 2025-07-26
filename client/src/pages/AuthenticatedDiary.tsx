@@ -176,9 +176,9 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment, currentU
                     <i className="fas fa-check mr-2"></i>
                     Connected to {practiceTag}
                   </Badge>
-                  <Badge className="bg-green-500/80 text-white">
-                    <Award className="w-4 h-4 mr-1" />
-                    CQC Outstanding
+                  <Badge className="bg-green-500/80 text-white text-xs px-2 py-1">
+                    <Award className="w-3 h-3 mr-1" />
+                    CQC
                   </Badge>
                 </div>
                 <h1 className="text-4xl font-bold mb-4">{selectedPractice.name}</h1>
