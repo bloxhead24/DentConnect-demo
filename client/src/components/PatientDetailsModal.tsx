@@ -122,7 +122,9 @@ export function PatientDetailsModal({ booking, triggerButton }: PatientDetailsMo
                   <h4 className="font-medium text-yellow-900 mb-2">Step 2: Clinical Indicators</h4>
                   <div className="flex flex-wrap gap-2">
                     {booking.triageAssessment.swelling && (
-                      <Badge variant="outline" className="bg-red-50 text-red-700">Swelling Present</Badge>
+                      <Badge variant="outline" className="bg-red-50 text-red-700">
+                        <AlertTriangle className="h-3 w-3 mr-1" />Swelling Present
+                      </Badge>
                     )}
                     {booking.triageAssessment.trauma && (
                       <Badge variant="outline" className="bg-red-50 text-red-700">Trauma Present</Badge>
@@ -230,21 +232,111 @@ export function PatientDetailsModal({ booking, triggerButton }: PatientDetailsMo
             </div>
           )}
 
-          {/* Special Requests and Accessibility */}
-          <div className="grid grid-cols-2 gap-4">
-            {booking.specialRequests && (
-              <div className="bg-purple-50 rounded-lg p-3">
-                <h4 className="font-semibold text-purple-900 mb-2 text-sm">Special Requests</h4>
-                <p className="text-sm">{booking.specialRequests}</p>
-              </div>
-            )}
+          {/* Care Preferences Section */}
+          <div className="bg-purple-50 rounded-lg p-4">
+            <h3 className="font-semibold text-purple-900 mb-3 flex items-center">
+              <Heart className="h-4 w-4 mr-2" />
+              Care Preferences & Special Requirements
+            </h3>
             
-            {booking.accessibilityNeeds && (
-              <div className="bg-blue-50 rounded-lg p-3">
-                <h4 className="font-semibold text-blue-900 mb-2 text-sm">Accessibility Needs</h4>
-                <p className="text-sm">{booking.accessibilityNeeds}</p>
+            <div className="space-y-3">
+              {/* Medical Preferences */}
+              {booking.triageAssessment && (booking.triageAssessment.currentMedications || booking.triageAssessment.allergies || booking.triageAssessment.medicalHistory) && (
+                <div className="bg-white rounded-lg p-3 border border-purple-200">
+                  <h4 className="font-medium text-purple-900 mb-2 text-sm">Medical Information</h4>
+                  <div className="space-y-2 text-sm">
+                    {booking.triageAssessment.currentMedications && (
+                      <div>
+                        <span className="text-gray-600">Current Medications:</span>
+                        <p className="font-medium text-blue-800 bg-blue-50 rounded px-2 py-1 mt-1">{booking.triageAssessment.currentMedications}</p>
+                      </div>
+                    )}
+                    {booking.triageAssessment.allergies && (
+                      <div>
+                        <span className="text-gray-600">Allergies:</span>
+                        <p className="font-medium text-red-800 bg-red-50 rounded px-2 py-1 mt-1">{booking.triageAssessment.allergies}</p>
+                      </div>
+                    )}
+                    {booking.triageAssessment.medicalHistory && (
+                      <div>
+                        <span className="text-gray-600">Medical History:</span>
+                        <p className="font-medium text-gray-800 bg-gray-50 rounded px-2 py-1 mt-1">{booking.triageAssessment.medicalHistory}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Anxiety & Comfort Preferences */}
+              <div className="bg-white rounded-lg p-3 border border-purple-200">
+                <h4 className="font-medium text-purple-900 mb-2 text-sm">Comfort & Anxiety Management</h4>
+                <div className="flex items-center space-x-4">
+                  <div>
+                    <span className="text-gray-600 text-sm">Anxiety Level:</span>
+                    <Badge className={getAnxietyColor(booking.triageAssessment?.anxietyLevel || booking.anxietyLevel)} variant="outline">
+                      {booking.triageAssessment?.anxietyLevel || booking.anxietyLevel}
+                    </Badge>
+                  </div>
+                  <div>
+                    <span className="text-gray-600 text-sm">Last Dental Visit:</span>
+                    <span className="font-medium ml-2">{booking.lastDentalVisit || 'Not specified'}</span>
+                  </div>
+                </div>
               </div>
-            )}
+
+              {/* Accessibility & Special Requests */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {booking.accessibilityNeeds && (
+                  <div className="bg-white rounded-lg p-3 border border-purple-200">
+                    <h4 className="font-medium text-purple-900 mb-2 text-sm">Accessibility Requirements</h4>
+                    <p className="text-sm text-gray-700 bg-purple-50 rounded px-2 py-1">{booking.accessibilityNeeds}</p>
+                  </div>
+                )}
+                
+                {booking.specialRequests && (
+                  <div className="bg-white rounded-lg p-3 border border-purple-200">
+                    <h4 className="font-medium text-purple-900 mb-2 text-sm">Special Requests</h4>
+                    <p className="text-sm text-gray-700 bg-green-50 rounded px-2 py-1">{booking.specialRequests}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Lifestyle Factors Badge Summary */}
+              {booking.triageAssessment && (
+                <div className="bg-white rounded-lg p-3 border border-purple-200">
+                  <h4 className="font-medium text-purple-900 mb-2 text-sm">Lifestyle Considerations</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {booking.triageAssessment.smokingStatus !== 'never' && (
+                      <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
+                        {booking.triageAssessment.smokingStatus} smoker
+                      </Badge>
+                    )}
+                    {booking.triageAssessment.alcoholConsumption !== 'none' && (
+                      <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
+                        {booking.triageAssessment.alcoholConsumption} alcohol use
+                      </Badge>
+                    )}
+                    {booking.triageAssessment.pregnancyStatus === 'pregnant' && (
+                      <Badge variant="outline" className="bg-pink-50 text-pink-700 border-pink-200">
+                        Expecting
+                      </Badge>
+                    )}
+                    {booking.triageAssessment.pregnancyStatus === 'trying' && (
+                      <Badge variant="outline" className="bg-pink-50 text-pink-700 border-pink-200">
+                        Trying to conceive
+                      </Badge>
+                    )}
+                    {(!booking.triageAssessment.smokingStatus || booking.triageAssessment.smokingStatus === 'never') && 
+                     (!booking.triageAssessment.alcoholConsumption || booking.triageAssessment.alcoholConsumption === 'none') && 
+                     (!booking.triageAssessment.pregnancyStatus || booking.triageAssessment.pregnancyStatus === 'not-applicable') && (
+                      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                        No lifestyle concerns
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </DialogContent>

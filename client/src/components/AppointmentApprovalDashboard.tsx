@@ -319,6 +319,45 @@ export function AppointmentApprovalDashboard({ practiceId }: AppointmentApproval
                                         </Badge>
                                       </div>
 
+                                      {/* Care Preferences Summary */}
+                                      {booking.triageAssessment && (
+                                        <div className="bg-purple-50 rounded-lg p-3 mb-3">
+                                          <h4 className="text-xs font-medium text-purple-800 mb-2">Care Preferences</h4>
+                                          <div className="flex flex-wrap gap-1">
+                                            {booking.triageAssessment.currentMedications && (
+                                              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
+                                                Medication: {booking.triageAssessment.currentMedications}
+                                              </Badge>
+                                            )}
+                                            {booking.triageAssessment.allergies && (
+                                              <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 text-xs">
+                                                Allergies: {booking.triageAssessment.allergies}
+                                              </Badge>
+                                            )}
+                                            {booking.accessibilityNeeds && (
+                                              <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200 text-xs">
+                                                Accessibility needs
+                                              </Badge>
+                                            )}
+                                            {booking.specialRequests && (
+                                              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 text-xs">
+                                                Special requests
+                                              </Badge>
+                                            )}
+                                            {booking.triageAssessment.smokingStatus !== 'never' && (
+                                              <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200 text-xs">
+                                                {booking.triageAssessment.smokingStatus} smoker
+                                              </Badge>
+                                            )}
+                                            {booking.triageAssessment.pregnancyStatus === 'pregnant' && (
+                                              <Badge variant="outline" className="bg-pink-50 text-pink-700 border-pink-200 text-xs">
+                                                Expecting
+                                              </Badge>
+                                            )}
+                                          </div>
+                                        </div>
+                                      )}
+
                                       {/* Patient Contact Info */}
                                       <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 mb-3">
                                         <div className="flex items-center space-x-2">

@@ -278,13 +278,14 @@ export function ApprovedAppointmentsOverview({ practiceId }: ApprovedAppointment
               </div>
             </div>
 
-            {/* Contact & Notes */}
+            {/* Care Preferences & Contact */}
             <div className="bg-white/70 backdrop-blur-sm rounded-lg border border-gray-200/50 p-4">
               <h4 className="font-semibold text-gray-900 flex items-center text-sm mb-3">
-                <Phone className="h-4 w-4 mr-2 text-blue-600" />
-                Contact & Notes
+                <Heart className="h-4 w-4 mr-2 text-purple-600" />
+                Care Preferences & Contact
               </h4>
               <div className="space-y-2 text-sm">
+                {/* Contact Information */}
                 <div className="flex items-center">
                   <Mail className="h-3 w-3 mr-2 text-gray-500" />
                   <span className="text-xs text-gray-700 truncate">{booking.user.email}</span>
@@ -293,8 +294,74 @@ export function ApprovedAppointmentsOverview({ practiceId }: ApprovedAppointment
                   <Phone className="h-3 w-3 mr-2 text-gray-500" />
                   <span className="text-xs text-gray-700">{booking.user.phone}</span>
                 </div>
+
+                {/* Care Preferences */}
+                <div className="border-t border-gray-200 pt-2 mt-3">
+                  <p className="text-xs font-medium text-gray-700 mb-2">Care Preferences:</p>
+                  
+                  {/* Medical Information */}
+                  {(booking.triageAssessment.currentMedications || booking.triageAssessment.allergies || booking.triageAssessment.medicalHistory) && (
+                    <div className="space-y-1">
+                      {booking.triageAssessment.currentMedications && (
+                        <div className="text-xs">
+                          <span className="text-gray-600">Medications:</span>
+                          <span className="ml-1 bg-blue-50 text-blue-800 px-1 rounded text-xs">{booking.triageAssessment.currentMedications}</span>
+                        </div>
+                      )}
+                      {booking.triageAssessment.allergies && (
+                        <div className="text-xs">
+                          <span className="text-gray-600">Allergies:</span>
+                          <span className="ml-1 bg-red-50 text-red-800 px-1 rounded text-xs">{booking.triageAssessment.allergies}</span>
+                        </div>
+                      )}
+                      {booking.triageAssessment.medicalHistory && (
+                        <div className="text-xs">
+                          <span className="text-gray-600">Medical History:</span>
+                          <p className="text-xs bg-gray-50 rounded p-1 mt-1 line-clamp-2">{booking.triageAssessment.medicalHistory}</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Lifestyle Factors */}
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {booking.triageAssessment.smokingStatus !== 'never' && (
+                      <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200 text-xs">
+                        {booking.triageAssessment.smokingStatus} smoker
+                      </Badge>
+                    )}
+                    {booking.triageAssessment.alcoholConsumption !== 'none' && (
+                      <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200 text-xs">
+                        {booking.triageAssessment.alcoholConsumption} alcohol use
+                      </Badge>
+                    )}
+                    {booking.triageAssessment.pregnancyStatus === 'pregnant' && (
+                      <Badge variant="outline" className="bg-pink-50 text-pink-700 border-pink-200 text-xs">
+                        Pregnant
+                      </Badge>
+                    )}
+                  </div>
+
+                  {/* Accessibility Needs */}
+                  {booking.accessibilityNeeds && (
+                    <div className="mt-2">
+                      <span className="text-gray-600 text-xs">Accessibility:</span>
+                      <p className="text-xs bg-purple-50 text-purple-800 rounded p-1 mt-1">{booking.accessibilityNeeds}</p>
+                    </div>
+                  )}
+
+                  {/* Special Requests */}
+                  {booking.specialRequests && (
+                    <div className="mt-2">
+                      <span className="text-gray-600 text-xs">Special Requests:</span>
+                      <p className="text-xs bg-green-50 text-green-800 rounded p-1 mt-1 line-clamp-2">{booking.specialRequests}</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Clinical Notes */}
                 {booking.triageAssessment.triageNotes && (
-                  <div className="mt-2">
+                  <div className="border-t border-gray-200 pt-2 mt-3">
                     <p className="text-xs text-gray-600 mb-1">Clinical Notes:</p>
                     <p className="text-xs bg-gray-50 rounded p-2 line-clamp-2">{booking.triageAssessment.triageNotes}</p>
                   </div>
