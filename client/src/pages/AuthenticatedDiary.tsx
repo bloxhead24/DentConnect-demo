@@ -215,7 +215,7 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment, currentU
                   <Button
                     onClick={() => setShowFullDiary(true)}
                     variant="outline"
-                    className="w-full border-white text-white hover:bg-white/10"
+                    className="w-full border-2 border-white text-white hover:bg-white hover:text-blue-600 font-semibold"
                     size="lg"
                   >
                     <i className="fas fa-calendar-alt mr-2"></i>
@@ -224,7 +224,7 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment, currentU
                   <CallbackRequestModal practiceId={selectedPractice.id} practiceName={selectedPractice.name}>
                     <Button
                       variant="outline"
-                      className="w-full border-white text-white hover:bg-white/10"
+                      className="w-full border-2 border-white text-white hover:bg-white hover:text-blue-600 font-semibold"
                     >
                       <PhoneCall className="w-4 h-4 mr-2" />
                       Get Cancellation Alerts
