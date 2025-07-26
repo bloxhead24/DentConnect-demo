@@ -35,6 +35,12 @@ const accessibilityNeeds: AccessibilityNeed[] = [
     description: "Extra time and clear explanations",
     icon: "fas fa-brain",
   },
+  {
+    id: "anxietySupport",
+    name: "Anxiety Support",
+    description: "Calming environment and sedation options",
+    icon: "fas fa-spa",
+  },
 ];
 
 export default function AccessibilityForm({ onComplete, onBack, selectedNeeds }: AccessibilityFormProps) {

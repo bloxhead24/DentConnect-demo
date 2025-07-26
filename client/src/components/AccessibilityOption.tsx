@@ -20,11 +20,66 @@ export function AccessibilityOption({ need, selected, onToggle }: AccessibilityO
       onClick={() => onToggle(need)}
     >
       <div className="flex items-center space-x-4">
-        <div className={cn(
-          "w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg",
-          selected ? "bg-primary text-white scale-110" : "bg-primary/10 text-primary"
-        )}>
-          <i className={`${need.icon} text-lg`}></i>
+        <div className="relative flex items-center justify-center">
+          {/* Main accessibility circle */}
+          <div className={cn(
+            "w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg",
+            selected ? "bg-primary text-white scale-110" : "bg-primary/10 text-primary"
+          )}>
+            <i className={`${need.icon} text-lg`}></i>
+          </div>
+          
+          {/* Small decorative icons around the circle */}
+          {need.id === 'wheelchair' && (
+            <>
+              <div className="absolute -top-1 -left-1 w-4 h-4 bg-blue-100 rounded-full flex items-center justify-center">
+                <i className="fas fa-building text-blue-600 text-xs"></i>
+              </div>
+              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-blue-100 rounded-full flex items-center justify-center">
+                <i className="fas fa-door-open text-blue-600 text-xs"></i>
+              </div>
+            </>
+          )}
+          {need.id === 'signLanguage' && (
+            <>
+              <div className="absolute -top-1 -left-1 w-4 h-4 bg-purple-100 rounded-full flex items-center justify-center">
+                <i className="fas fa-hands text-purple-600 text-xs"></i>
+              </div>
+              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-purple-100 rounded-full flex items-center justify-center">
+                <i className="fas fa-comment text-purple-600 text-xs"></i>
+              </div>
+            </>
+          )}
+          {need.id === 'visualSupport' && (
+            <>
+              <div className="absolute -top-1 -left-1 w-4 h-4 bg-indigo-100 rounded-full flex items-center justify-center">
+                <i className="fas fa-font text-indigo-600 text-xs"></i>
+              </div>
+              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-indigo-100 rounded-full flex items-center justify-center">
+                <i className="fas fa-volume-up text-indigo-600 text-xs"></i>
+              </div>
+            </>
+          )}
+          {need.id === 'cognitiveSupport' && (
+            <>
+              <div className="absolute -top-1 -left-1 w-4 h-4 bg-cyan-100 rounded-full flex items-center justify-center">
+                <i className="fas fa-clock text-cyan-600 text-xs"></i>
+              </div>
+              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-cyan-100 rounded-full flex items-center justify-center">
+                <i className="fas fa-book-open text-cyan-600 text-xs"></i>
+              </div>
+            </>
+          )}
+          {need.id === 'anxietySupport' && (
+            <>
+              <div className="absolute -top-1 -left-1 w-4 h-4 bg-green-100 rounded-full flex items-center justify-center">
+                <i className="fas fa-leaf text-green-600 text-xs"></i>
+              </div>
+              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-100 rounded-full flex items-center justify-center">
+                <i className="fas fa-heart text-green-600 text-xs"></i>
+              </div>
+            </>
+          )}
         </div>
         <div className="flex-1">
           <h4 className={cn("font-bold", selected ? "text-primary" : "text-gray-900")}>
