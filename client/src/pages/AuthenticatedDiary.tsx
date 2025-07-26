@@ -386,53 +386,177 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment, currentU
 
             {/* Team Tab */}
             <TabsContent value="team" className="space-y-6">
+              {/* Practice Overview */}
+              <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+                <CardContent className="p-6">
+                  <div className="text-center">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Meet Our Expert Team</h3>
+                    <p className="text-gray-600 mb-4">
+                      Our multidisciplinary team of specialists provides comprehensive dental care with cutting-edge technology and compassionate service.
+                    </p>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
+                      <div className="text-center">
+                        <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-2">
+                          <i className="fas fa-award text-white"></i>
+                        </div>
+                        <p className="text-sm font-semibold text-gray-900">{practiceData?.dentists?.length || 6} Specialists</p>
+                      </div>
+                      <div className="text-center">
+                        <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-2">
+                          <i className="fas fa-calendar-check text-white"></i>
+                        </div>
+                        <p className="text-sm font-semibold text-gray-900">Same Day Appts</p>
+                      </div>
+                      <div className="text-center">
+                        <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-2">
+                          <i className="fas fa-language text-white"></i>
+                        </div>
+                        <p className="text-sm font-semibold text-gray-900">8+ Languages</p>
+                      </div>
+                      <div className="text-center">
+                        <div className="w-12 h-12 bg-orange-600 rounded-full flex items-center justify-center mx-auto mb-2">
+                          <i className="fas fa-heart text-white"></i>
+                        </div>
+                        <p className="text-sm font-semibold text-gray-900">Anxiety Care</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Dentist Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {practiceData?.dentists?.map((dentist) => (
-                  <Card key={dentist.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <Card key={dentist.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 group">
                     <div className="relative">
                       <img 
                         src={dentist.imageUrl} 
                         alt={dentist.name}
-                        className="w-full h-48 object-cover"
+                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                       <div className="absolute top-4 right-4">
-                        <Badge className="bg-blue-600">
+                        <Badge className="bg-blue-600 shadow-lg">
                           {dentist.experience} years
                         </Badge>
+                      </div>
+                      <div className="absolute bottom-4 left-4 right-4">
+                        <div className="flex items-center space-x-1 text-yellow-400">
+                          {[...Array(5)].map((_, i) => (
+                            <i key={i} className="fas fa-star text-sm"></i>
+                          ))}
+                          <span className="text-white text-sm font-medium ml-2">4.9</span>
+                        </div>
                       </div>
                     </div>
                     <CardContent className="p-6">
                       <div className="text-center mb-4">
-                        <h3 className="text-xl font-bold">{dentist.name}</h3>
-                        <p className="text-blue-600 font-medium">{dentist.specialization}</p>
+                        <h3 className="text-xl font-bold text-gray-900">{dentist.title} {dentist.name}</h3>
+                        <p className="text-blue-600 font-medium text-sm">{dentist.specialization}</p>
                       </div>
-                      <div className="space-y-2 text-sm text-gray-600">
-                        <div className="flex items-center space-x-2">
-                          <i className="fas fa-graduation-cap text-blue-600"></i>
-                          <span>{dentist.qualifications}</span>
+                      
+                      <div className="space-y-3 text-sm">
+                        <div className="flex items-start space-x-2">
+                          <i className="fas fa-graduation-cap text-blue-600 mt-0.5 flex-shrink-0"></i>
+                          <span className="text-gray-600 leading-tight">{dentist.qualifications}</span>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <i className="fas fa-language text-blue-600"></i>
-                          <span>{JSON.parse(dentist.languages).join(", ")}</span>
+                          <i className="fas fa-language text-green-600"></i>
+                          <span className="text-gray-600">{JSON.parse(dentist.languages).join(", ")}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <i className="fas fa-calendar text-purple-600"></i>
+                          <span className="text-gray-600">{JSON.parse(dentist.availableDays).length} days/week</span>
                         </div>
                       </div>
-                      <p className="text-sm text-gray-700 mt-4">{dentist.bio}</p>
-                      {searchMode === "practice" && (
+                      
+                      <p className="text-sm text-gray-700 mt-4 leading-relaxed">{dentist.bio}</p>
+                      
+                      <div className="mt-6 space-y-2">
                         <Button 
-                          className="w-full mt-4" 
-                          variant="outline"
+                          className="w-full bg-blue-600 hover:bg-blue-700" 
                           onClick={() => {
                             setSelectedDentist(dentist);
                             setShowFullDiary(true);
                           }}
                         >
-                          View {dentist.name}'s Appointments
+                          <i className="fas fa-calendar-alt mr-2"></i>
+                          View {dentist.name}'s Diary
                         </Button>
-                      )}
+                        
+                        {/* Quick book button for earliest available */}
+                        <Button 
+                          variant="outline" 
+                          className="w-full border-blue-200 hover:bg-blue-50"
+                          onClick={() => {
+                            // Find earliest appointment for this dentist
+                            const dentistAppointment = practiceData?.availableAppointments?.find(
+                              apt => apt.dentistId === dentist.id
+                            );
+                            if (dentistAppointment) {
+                              onBookAppointment(dentistAppointment);
+                            }
+                          }}
+                        >
+                          <i className="fas fa-bolt mr-2"></i>
+                          Book Next Available
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 ))}
               </div>
+
+              {/* Support Staff Section */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <i className="fas fa-users text-blue-600"></i>
+                    <span>Our Support Team</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {[
+                      {
+                        name: "Rachel Thompson",
+                        role: "Practice Manager",
+                        image: "https://images.unsplash.com/photo-1494790108755-2616b332e0a0?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150",
+                        description: "Oversees daily operations and patient care coordination"
+                      },
+                      {
+                        name: "Mark Stevens",
+                        role: "Senior Dental Hygienist",
+                        image: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150",
+                        description: "Specialist in preventative care and oral health education"
+                      },
+                      {
+                        name: "Sophie Miller",
+                        role: "Dental Nurse",
+                        image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150",
+                        description: "Patient comfort specialist and treatment support"
+                      },
+                      {
+                        name: "David Wilson",
+                        role: "Receptionist",
+                        image: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150",
+                        description: "First point of contact and appointment coordination"
+                      }
+                    ].map((staff, index) => (
+                      <div key={index} className="text-center">
+                        <img 
+                          src={staff.image} 
+                          alt={staff.name}
+                          className="w-20 h-20 rounded-full mx-auto mb-3 object-cover"
+                        />
+                        <h4 className="font-semibold text-gray-900">{staff.name}</h4>
+                        <p className="text-sm text-blue-600 font-medium">{staff.role}</p>
+                        <p className="text-xs text-gray-600 mt-1">{staff.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
 
             {/* Services Tab */}
