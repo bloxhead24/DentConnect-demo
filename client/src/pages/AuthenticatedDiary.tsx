@@ -198,9 +198,9 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment, currentU
                   </div>
                 </div>
                 <div className="flex justify-center">
-                  <Badge className="bg-green-500/80 text-white text-xs">
+                  <Badge className="bg-amber-500/90 text-white text-xs px-3 py-1 shadow-lg">
                     <Award className="w-3 h-3 mr-1" />
-                    CQC
+                    Royal College Excellence Award Nominee 2025
                   </Badge>
                 </div>
               </div>
