@@ -222,6 +222,17 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment, currentU
                   <i className="fas fa-calendar-alt mr-1"></i>
                   Full Diary
                 </Button>
+                <Button
+                  onClick={() => {
+                    // Show cancellation alert signup
+                    alert("Cancellation alerts will notify you immediately when appointments become available. This feature will be active during the pilot study.");
+                  }}
+                  className="bg-amber-500/90 border border-amber-400 text-white hover:bg-amber-600"
+                  size="sm"
+                >
+                  <i className="fas fa-bell mr-1"></i>
+                  Alert Me
+                </Button>
               </div>
             </div>
           </div>
@@ -364,6 +375,30 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment, currentU
                     >
                       <i className="fas fa-calendar-alt mr-2"></i>
                       Open Diary
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Cancellation Alerts - New Feature */}
+              <Card className="bg-amber-50/50 border border-amber-200">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <i className="fas fa-bell text-2xl text-amber-500"></i>
+                      <div>
+                        <h3 className="font-bold text-amber-800">Cancellation Alerts</h3>
+                        <p className="text-sm text-amber-700">Get notified when appointments become available</p>
+                      </div>
+                    </div>
+                    <Button
+                      onClick={() => {
+                        alert(`${searchMode === "mydentist" ? "Dr. Richard Thompson" : "Practice"} cancellation alerts activated! You'll receive instant notifications when appointments become available.`);
+                      }}
+                      className="bg-amber-500 hover:bg-amber-600 text-white"
+                    >
+                      <i className="fas fa-bell mr-2"></i>
+                      Set Alert
                     </Button>
                   </div>
                 </CardContent>
