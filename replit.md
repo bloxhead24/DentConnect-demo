@@ -140,16 +140,15 @@ Preferred communication style: Simple, everyday language.
 → **PROFESSIONAL PRESENTATION**: Styled notices with amber color scheme and warning icons for clear visibility
 → **USER SAFETY**: Ensures users understand no real appointments can be booked through the demonstration system
 
-✓ **EXPANDED DENTAL TEAM WITH INDIVIDUAL DIARY ACCESS** (July 26, 2025)
-→ **ENHANCED TEAM STRUCTURE**: Expanded from 2 to 28 dental specialists with comprehensive specializations
+✓ **REDUCED DENTAL TEAM TO 5 SPECIALISTS FOR EASIER MANAGEMENT** (July 26, 2025)
+→ **STREAMLINED TEAM STRUCTURE**: Reduced from 28 to 5 core dental specialists for simpler management
 → **PRINCIPAL DENTIST FEATURED**: Dr. Richard Thompson highlighted as practice leader with Royal College Excellence Award 2025
-→ **COMPREHENSIVE SPECIALIST COVERAGE**: Added experts in pediatric dentistry, cosmetics, oral surgery, endodontics, periodontics, orthodontics, prosthodontics, oral medicine, sedation dentistry, dental hygiene, maxillofacial surgery, geriatric dentistry, digital dentistry, oral pathology, sleep dentistry, laser dentistry, pain management, implant prosthodontics, pediatric oral surgery, aesthetic reconstruction, holistic dentistry, emergency dentistry, trauma care, micro-dentistry, precision endodontics, ceramic arts, oral rehabilitation, and minimally invasive biomimetic dentistry
-→ **ADVANCED SPECIALIZATIONS**: Includes TMJ disorders, sleep medicine, special needs dentistry, and CAD/CAM technology specialists
-→ **INDIVIDUAL DIARY VIEWING**: Each team member now has "View [Name]'s Diary" functionality for personalized appointment access
-→ **ENHANCED TEAM PAGE**: Added practice overview section with professional statistics and team highlights
+→ **CORE SPECIALIZATIONS**: 5 key specialists covering General Dentistry & Emergency Care, Pediatric Dentistry & Family Care, Cosmetic Dentistry & Smile Design, Oral Surgery & Implantology, and Endodontics & Root Canal Therapy
+→ **CONDITIONAL ACCESS CONTROLS**: My Practice page shows all 5 dentists with full functionality; My Dentist page shows all 5 but only Dr. Richard Thompson has interactive diary access and booking buttons
+→ **ENHANCED TEAM PAGE**: Practice overview displays correct team size with professional statistics
 → **SUPPORT STAFF INTEGRATION**: Included practice manager, dental hygienist, nurse, and receptionist profiles
 → **PROFESSIONAL PROFILES**: Each dentist features detailed qualifications, experience, languages, and specialization information
-→ **QUICK BOOKING OPTIONS**: Both individual diary access and "Book Next Available" buttons for each team member
+→ **SELECTIVE INTERACTION**: Other dentists in My Dentist mode display as "Team Member - Available for consultation" without booking functionality
 
 ✓ **MOBILE COMPATIBILITY FIXES FOR PRACTICE PAGES** (July 26, 2025)
 → **TAB NAVIGATION REDESIGN**: Completely redesigned tab system for full mobile accessibility with touch-friendly interaction
