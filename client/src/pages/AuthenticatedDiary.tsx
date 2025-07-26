@@ -437,21 +437,18 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment, currentU
                   <h3 className="text-2xl font-bold mb-6 text-gray-900">{serviceCategory.category}</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {serviceCategory.treatments.map((treatment, index) => (
-                      <Card key={index} className="hover:shadow-lg transition-shadow">
-                        <CardHeader>
+                      <Card key={index} className="hover:shadow-md transition-all duration-300 border-l-4 border-l-blue-600">
+                        <CardHeader className="pb-3">
                           <CardTitle className="flex items-center justify-between">
-                            <span className="text-lg">{treatment.name}</span>
-                            <Badge variant="secondary">{treatment.duration}</Badge>
+                            <span className="text-lg font-semibold text-gray-800">{treatment.name}</span>
+                            <Badge variant="secondary" className="bg-blue-100 text-blue-700">{treatment.duration}</Badge>
                           </CardTitle>
                         </CardHeader>
-                        <CardContent>
-                          <p className="text-gray-600 mb-4">{treatment.description}</p>
-                          <div className="flex items-center justify-between">
+                        <CardContent className="pt-0">
+                          <p className="text-gray-600 mb-6 leading-relaxed">{treatment.description}</p>
+                          <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                            <span className="text-sm text-gray-500 uppercase tracking-wide font-medium">Price</span>
                             <span className="text-2xl font-bold text-blue-600">{treatment.price}</span>
-                            <Button size="sm">
-                              <i className="fas fa-calendar mr-2"></i>
-                              Book Now
-                            </Button>
                           </div>
                         </CardContent>
                       </Card>
