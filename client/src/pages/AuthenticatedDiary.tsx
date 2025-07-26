@@ -450,34 +450,47 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment, currentU
                       </div>
                       
                       <div className="space-y-2">
-                        <Button 
-                          className="w-full bg-blue-600 hover:bg-blue-700" 
-                          size="sm"
-                          onClick={() => {
-                            setSelectedDentist(dentist);
-                            setShowFullDiary(true);
-                          }}
-                        >
-                          <i className="fas fa-calendar-alt mr-2"></i>
-                          View Diary
-                        </Button>
-                        
-                        <Button 
-                          variant="outline" 
-                          className="w-full border-blue-200 hover:bg-blue-50"
-                          size="sm"
-                          onClick={() => {
-                            const dentistAppointment = practiceData?.availableAppointments?.find(
-                              apt => apt.dentistId === dentist.id
-                            );
-                            if (dentistAppointment) {
-                              onBookAppointment(dentistAppointment);
-                            }
-                          }}
-                        >
-                          <i className="fas fa-bolt mr-2"></i>
-                          Book Next
-                        </Button>
+                        {/* Show buttons based on search mode and dentist */}
+                        {searchMode === "practice" || (searchMode === "mydentist" && dentist.name === "Richard Thompson") ? (
+                          <>
+                            <Button 
+                              className="w-full bg-blue-600 hover:bg-blue-700" 
+                              size="sm"
+                              onClick={() => {
+                                setSelectedDentist(dentist);
+                                setShowFullDiary(true);
+                              }}
+                            >
+                              <i className="fas fa-calendar-alt mr-2"></i>
+                              View {dentist.name} Diary
+                            </Button>
+                            
+                            <Button 
+                              variant="outline" 
+                              className="w-full border-blue-200 hover:bg-blue-50"
+                              size="sm"
+                              onClick={() => {
+                                const dentistAppointment = practiceData?.availableAppointments?.find(
+                                  apt => apt.dentistId === dentist.id
+                                );
+                                if (dentistAppointment) {
+                                  onBookAppointment(dentistAppointment);
+                                }
+                              }}
+                            >
+                              <i className="fas fa-bolt mr-2"></i>
+                              Book Next Available
+                            </Button>
+                          </>
+                        ) : (
+                          /* Display only dentist for reference in mydentist mode */
+                          <div className="text-center p-3 bg-gray-50 rounded-lg">
+                            <p className="text-sm text-gray-600 mb-2">Team Member</p>
+                            <Badge variant="secondary" className="text-xs">
+                              Available for consultation
+                            </Badge>
+                          </div>
+                        )}
                       </div>
                     </CardContent>
                   </Card>
