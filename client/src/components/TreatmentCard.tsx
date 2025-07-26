@@ -47,12 +47,15 @@ export function TreatmentCard({ treatment, selected, onSelect }: TreatmentCardPr
           {/* Treatment category specific SVG images */}
           {treatment.category === 'emergency' && (
             <svg viewBox="0 0 24 24" className={cn("w-5 h-5 sm:w-6 sm:h-6", selected ? "text-white" : "text-red-600")} fill="currentColor">
-              <path d="M19 8h-2v3h-3v2h3v3h2v-3h3v-2h-3V8zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7zm0 2c2.76 0 5 2.24 5 5s-2.24 5-5 5-5-2.24-5-5 2.24-5 5-5zm-1 3v4l3-2-3-2z"/>
+              <circle cx="12" cy="20" r="2" fill="currentColor"/>
             </svg>
           )}
           {treatment.category === 'urgent' && (
             <svg viewBox="0 0 24 24" className={cn("w-5 h-5 sm:w-6 sm:h-6", selected ? "text-white" : "text-orange-600")} fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM9.5 6L12 8.5 14.5 6 16 7.5 13.5 10 16 12.5 14.5 14 12 11.5 9.5 14 8 12.5 10.5 10 8 7.5 9.5 6z"/>
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7zm0 2c2.76 0 5 2.24 5 5s-2.24 5-5 5-5-2.24-5-5 2.24-5 5-5z"/>
+              <path d="M12 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="currentColor"/>
+              <path d="M10 8h4v1h-4V8zm0 2h4v1h-4v-1z" fill={selected ? "#dc2626" : "white"}/>
             </svg>
           )}
           {treatment.category === 'routine' && (
