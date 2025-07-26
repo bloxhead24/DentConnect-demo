@@ -35,6 +35,14 @@ interface PendingBooking {
     infection: boolean;
     urgencyLevel: string;
     triageNotes: string;
+    anxietyLevel: string;
+    medicalHistory: string;
+    currentMedications: string;
+    allergies: string;
+    previousDentalTreatment: string;
+    smokingStatus: string;
+    alcoholConsumption: string;
+    pregnancyStatus: string;
   };
   status: string;
   approvalStatus: string;

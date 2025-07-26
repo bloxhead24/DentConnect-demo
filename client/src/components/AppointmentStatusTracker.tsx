@@ -111,11 +111,11 @@ export function AppointmentStatusTracker({ userId, practice, onBack }: Appointme
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'approved':
-        return <CheckCircle className="h-8 w-8 text-green-500" />;
+        return <CheckCircle className="h-6 w-6 text-white" />;
       case 'rejected':
-        return <XCircle className="h-8 w-8 text-red-500" />;
+        return <XCircle className="h-6 w-6 text-white" />;
       default:
-        return <Clock className="h-8 w-8 text-blue-500 animate-pulse" />;
+        return <Clock className="h-6 w-6 text-white animate-pulse" />;
     }
   };
 
@@ -201,76 +201,91 @@ export function AppointmentStatusTracker({ userId, practice, onBack }: Appointme
   const assignedDentist = dentistData?.find((d: Dentist) => d.id === 1); // Assume Dr. Richard for now
 
   return (
-    <div className="max-w-md mx-auto p-6 space-y-6">
-      {/* Status Header */}
+    <div className="max-w-2xl mx-auto p-4 sm:p-6 space-y-6">
+      {/* Enhanced Status Header */}
       <Card className={cn(
-        "border-2",
-        currentBooking.approvalStatus === 'approved' ? "border-green-200 bg-green-50" :
-        currentBooking.approvalStatus === 'rejected' ? "border-red-200 bg-red-50" :
-        "border-blue-200 bg-blue-50"
+        "border-2 overflow-hidden",
+        currentBooking.approvalStatus === 'approved' ? "border-green-200 bg-gradient-to-br from-green-50 to-green-100" :
+        currentBooking.approvalStatus === 'rejected' ? "border-red-200 bg-gradient-to-br from-red-50 to-red-100" :
+        "border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100"
       )}>
-        <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            {getStatusIcon(currentBooking.approvalStatus)}
+        <CardHeader className="text-center relative">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute inset-0 bg-repeat bg-center" 
+                 style={{backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`}}></div>
           </div>
-          <CardTitle className={cn("text-xl", statusInfo.color)}>
-            {statusInfo.title}
-          </CardTitle>
-          <p className="text-gray-600 mt-2">
-            {statusInfo.message}
-          </p>
+          
+          <div className="relative z-10">
+            <div className="flex justify-center mb-4">
+              <div className={cn(
+                "p-4 rounded-full shadow-lg",
+                currentBooking.approvalStatus === 'approved' ? "bg-green-500" :
+                currentBooking.approvalStatus === 'rejected' ? "bg-red-500" :
+                "bg-blue-500"
+              )}>
+                {getStatusIcon(currentBooking.approvalStatus)}
+              </div>
+            </div>
+            <CardTitle className={cn("text-xl sm:text-2xl font-bold", statusInfo.color)}>
+              {statusInfo.title}
+            </CardTitle>
+            <p className="text-gray-700 mt-3 text-sm sm:text-base leading-relaxed max-w-lg mx-auto">
+              {statusInfo.message}
+            </p>
+            
+            {/* Loading Animation for Pending */}
+            {currentBooking.approvalStatus === 'pending' && isPolling && (
+              <div className="mt-4 space-y-2">
+                <div className="flex justify-center space-x-1">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
+                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
+                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
+                </div>
+                <p className="text-blue-600 text-sm font-medium animate-pulse">
+                  {getLoadingMessages()[currentMessageIndex]}
+                </p>
+              </div>
+            )}
+          </div>
         </CardHeader>
       </Card>
 
-      {/* Loading Animation for Pending Status */}
-      {currentBooking.approvalStatus === 'pending' && (
-        <Card className="border-blue-200">
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <div className="flex justify-center mb-4">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-              </div>
-              <p className="text-blue-600 font-medium animate-pulse">
-                {getLoadingMessages()[currentMessageIndex]}
-              </p>
-              <p className="text-sm text-gray-500 mt-2">
-                This usually takes 2-5 minutes
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
-      {/* Appointment Details */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Calendar className="h-5 w-5" />
+
+      {/* Enhanced Appointment Details */}
+      <Card className="border border-gray-200 shadow-sm">
+        <CardHeader className="bg-gray-50 border-b">
+          <CardTitle className="text-lg flex items-center space-x-2">
+            <Calendar className="h-5 w-5 text-primary" />
             <span>Appointment Details</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="text-sm text-gray-500">Date</p>
-              <p className="font-medium">
-                {format(new Date(currentBooking.appointment.appointmentDate), 'MMM d, yyyy')}
-              </p>
+        <CardContent className="p-6 space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="space-y-1">
+              <span className="text-gray-600 text-sm font-medium">Date</span>
+              <div className="flex items-center space-x-2">
+                <Calendar className="h-4 w-4 text-gray-400" />
+                <p className="font-semibold text-gray-900">
+                  {format(new Date(currentBooking.appointment.appointmentDate), 'EEEE, MMMM d, yyyy')}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm text-gray-500">Time</p>
-              <p className="font-medium">{currentBooking.appointment.appointmentTime}</p>
+            <div className="space-y-1">
+              <span className="text-gray-600 text-sm font-medium">Time</span>
+              <div className="flex items-center space-x-2">
+                <Clock className="h-4 w-4 text-gray-400" />
+                <p className="font-semibold text-gray-900">{currentBooking.appointment.appointmentTime}</p>
+              </div>
             </div>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="text-sm text-gray-500">Duration</p>
-              <p className="font-medium">{currentBooking.appointment.duration} minutes</p>
+            <div className="space-y-1">
+              <span className="text-gray-600 text-sm font-medium">Duration</span>
+              <p className="font-semibold text-gray-900">{currentBooking.appointment.duration} minutes</p>
             </div>
-            <div>
-              <p className="text-sm text-gray-500">Treatment</p>
-              <Badge variant="outline" className="capitalize">
+            <div className="space-y-1">
+              <span className="text-gray-600 text-sm font-medium">Treatment Type</span>
+              <Badge variant="outline" className="font-medium capitalize">
                 {currentBooking.appointment.treatmentType}
               </Badge>
             </div>
@@ -362,15 +377,53 @@ export function AppointmentStatusTracker({ userId, practice, onBack }: Appointme
         </Card>
       )}
 
-      {/* Back Button for Pending Status */}
-      {currentBooking.approvalStatus === 'pending' && (
-        <Button 
-          variant="outline" 
-          onClick={onBack}
-          className="w-full"
-        >
+      {/* Enhanced Action Buttons */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <Button onClick={onBack} variant="outline" className="flex-1">
+          <Calendar className="h-4 w-4 mr-2" />
           Back to Appointments
         </Button>
+        
+        {currentBooking.approvalStatus === 'pending' && (
+          <Button 
+            onClick={() => refetch()} 
+            variant="outline" 
+            className="flex-1 border-blue-200 text-blue-600 hover:bg-blue-50"
+          >
+            Refresh Status
+          </Button>
+        )}
+      </div>
+
+      {/* Important Notes for Approved Appointments */}
+      {currentBooking.approvalStatus === 'approved' && (
+        <Card className="border-green-200 bg-green-50">
+          <CardHeader>
+            <CardTitle className="text-lg text-green-800 flex items-center space-x-2">
+              <Activity className="h-5 w-5" />
+              <span>Appointment Preparation</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="bg-white rounded-lg p-4 space-y-3">
+              <div className="text-sm text-gray-700">
+                <div className="flex items-center space-x-2 font-medium mb-2">
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <span>Please Bring With You:</span>
+                </div>
+                <ul className="list-disc list-inside space-y-1 text-sm text-gray-600 ml-6">
+                  <li>Photo ID (driving license or passport)</li>
+                  <li>Current medications list</li>
+                  <li>Previous dental records (if available)</li>
+                  <li>Insurance details</li>
+                </ul>
+              </div>
+              <div className="text-xs text-gray-500 pt-2 border-t">
+                Please arrive 10 minutes early for check-in and preparation
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       )}
     </div>
   );

@@ -1092,17 +1092,23 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getPendingBookings(practiceId: number): Promise<any[]> {
-    // Get all bookings with pending approval status for this practice
+    // Get all bookings with pending approval status for this practice, including triage assessments
     const bookingsQuery = await db
       .select({
         id: bookings.id,
         userId: bookings.userId,
         appointmentId: bookings.appointmentId,
+        triageAssessmentId: bookings.triageAssessmentId,
         treatmentCategory: bookings.treatmentCategory,
         specialRequests: bookings.specialRequests,
         status: bookings.status,
         approvalStatus: bookings.approvalStatus,
         createdAt: bookings.createdAt,
+        accessibilityNeeds: bookings.accessibilityNeeds,
+        medications: bookings.medications,
+        allergies: bookings.allergies,
+        lastDentalVisit: bookings.lastDentalVisit,
+        anxietyLevel: bookings.anxietyLevel,
         // User details
         userFirstName: users.firstName,
         userLastName: users.lastName,
@@ -1113,23 +1119,44 @@ export class DatabaseStorage implements IStorage {
         appointmentDate: appointments.appointmentDate,
         appointmentTime: appointments.appointmentTime,
         duration: appointments.duration,
-        treatmentType: appointments.treatmentType
+        treatmentType: appointments.treatmentType,
+        // Triage assessment details
+        triagePainLevel: triageAssessments.painLevel,
+        triagePainDuration: triageAssessments.painDuration,
+        triageSymptoms: triageAssessments.symptoms,
+        triageSwelling: triageAssessments.swelling,
+        triageTrauma: triageAssessments.trauma,
+        triageBleeding: triageAssessments.bleeding,
+        triageInfection: triageAssessments.infection,
+        triageUrgencyLevel: triageAssessments.urgencyLevel,
+        triageNotes: triageAssessments.triageNotes,
+        triageAnxietyLevel: triageAssessments.anxietyLevel,
+        triageMedicalHistory: triageAssessments.medicalHistory,
+        triageCurrentMedications: triageAssessments.currentMedications,
+        triageAllergies: triageAssessments.allergies,
+        triagePreviousDentalTreatment: triageAssessments.previousDentalTreatment,
+        triageSmokingStatus: triageAssessments.smokingStatus,
+        triageAlcoholConsumption: triageAssessments.alcoholConsumption,
+        triagePregnancyStatus: triageAssessments.pregnancyStatus
       })
       .from(bookings)
       .innerJoin(users, eq(bookings.userId, users.id))
       .innerJoin(appointments, eq(bookings.appointmentId, appointments.id))
+      .leftJoin(triageAssessments, eq(bookings.triageAssessmentId, triageAssessments.id))
       .where(
         and(
           eq(appointments.practiceId, practiceId),
           eq(bookings.status, 'pending_approval')
         )
-      );
+      )
+      .orderBy(bookings.createdAt);
 
     // Transform the flat result into the expected nested structure
     return bookingsQuery.map(row => ({
       id: row.id,
       userId: row.userId,
       appointmentId: row.appointmentId,
+      triageAssessmentId: row.triageAssessmentId,
       user: {
         firstName: row.userFirstName,
         lastName: row.userLastName,
@@ -1143,21 +1170,36 @@ export class DatabaseStorage implements IStorage {
         duration: row.duration,
         treatmentType: row.treatmentType
       },
-      triageAssessment: {
-        painLevel: 0,
-        painDuration: '',
-        symptoms: '',
-        swelling: false,
-        trauma: false,
-        bleeding: false,
-        infection: false,
-        urgencyLevel: 'routine',
-        triageNotes: ''
-      },
+      triageAssessment: row.triageAssessmentId ? {
+        id: row.triageAssessmentId,
+        painLevel: row.triagePainLevel || 0,
+        painDuration: row.triagePainDuration || '',
+        symptoms: row.triageSymptoms || '',
+        swelling: row.triageSwelling || false,
+        trauma: row.triageTrauma || false,
+        bleeding: row.triageBleeding || false,
+        infection: row.triageInfection || false,
+        urgencyLevel: row.triageUrgencyLevel || 'low',
+        triageNotes: row.triageNotes || '',
+        anxietyLevel: row.triageAnxietyLevel || 'none',
+        medicalHistory: row.triageMedicalHistory || '',
+        currentMedications: row.triageCurrentMedications || '',
+        allergies: row.triageAllergies || '',
+        previousDentalTreatment: row.triagePreviousDentalTreatment || '',
+        smokingStatus: row.triageSmokingStatus || 'never',
+        alcoholConsumption: row.triageAlcoholConsumption || 'none',
+        pregnancyStatus: row.triagePregnancyStatus || 'not-applicable'
+      } : null,
       status: row.status,
       approvalStatus: row.approvalStatus,
       createdAt: row.createdAt,
-      specialRequests: row.specialRequests
+      treatmentCategory: row.treatmentCategory,
+      specialRequests: row.specialRequests,
+      accessibilityNeeds: row.accessibilityNeeds,
+      medications: row.medications,
+      allergies: row.allergies,
+      lastDentalVisit: row.lastDentalVisit,
+      anxietyLevel: row.anxietyLevel
     }));
   }
 
