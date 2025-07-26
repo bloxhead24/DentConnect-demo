@@ -18,7 +18,7 @@ const treatmentTypes: TreatmentType[] = [
     name: "Emergency",
     category: "emergency",
     description: "Severe pain, trauma",
-    icon: "fas fa-exclamation",
+    icon: "fas fa-exclamation-triangle",
     color: "red",
   },
   {
@@ -26,7 +26,7 @@ const treatmentTypes: TreatmentType[] = [
     name: "Urgent",
     category: "urgent", 
     description: "Filling, extraction",
-    icon: "fas fa-clock",
+    icon: "fas fa-tooth",
     color: "orange",
   },
   {
@@ -34,7 +34,7 @@ const treatmentTypes: TreatmentType[] = [
     name: "Routine",
     category: "routine",
     description: "Cleaning, check-up",
-    icon: "fas fa-calendar-check",
+    icon: "fas fa-stethoscope",
     color: "green",
   },
   {
@@ -42,7 +42,7 @@ const treatmentTypes: TreatmentType[] = [
     name: "Cosmetic",
     category: "cosmetic",
     description: "Whitening, veneers",
-    icon: "fas fa-smile",
+    icon: "fas fa-star",
     color: "blue",
   },
 ];

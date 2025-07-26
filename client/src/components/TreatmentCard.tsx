@@ -35,10 +35,27 @@ export function TreatmentCard({ treatment, selected, onSelect }: TreatmentCardPr
     >
       <div className="text-center space-y-3 h-full flex flex-col justify-center">
         <div className={cn(
-          "w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mx-auto shadow-lg",
+          "w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mx-auto shadow-lg relative",
           selected ? "bg-primary" : bgClasses[treatment.category]
         )}>
-          <i className={`${treatment.icon} text-white text-sm sm:text-lg`}></i>
+          {/* Category-specific dental icons */}
+          {treatment.category === 'emergency' && (
+            <i className="fas fa-exclamation-triangle text-white text-sm sm:text-lg"></i>
+          )}
+          {treatment.category === 'urgent' && (
+            <i className="fas fa-tooth text-white text-sm sm:text-lg"></i>
+          )}
+          {treatment.category === 'routine' && (
+            <i className="fas fa-stethoscope text-white text-sm sm:text-lg"></i>
+          )}
+          {treatment.category === 'cosmetic' && (
+            <i className="fas fa-star text-white text-sm sm:text-lg"></i>
+          )}
+          
+          {/* Small dental icon overlay for context */}
+          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center shadow-sm">
+            <i className="fas fa-tooth text-gray-600 text-xs"></i>
+          </div>
         </div>
         <div>
           <h4 className={`font-bold responsive-body ${selected ? 'text-primary' : 'text-gray-900'}`}>
