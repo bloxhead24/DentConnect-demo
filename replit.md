@@ -141,7 +141,7 @@ Preferred communication style: Simple, everyday language.
 → **USER SAFETY**: Ensures users understand no real appointments can be booked through the demonstration system
 
 ✓ **EXPANDED DENTAL TEAM WITH INDIVIDUAL DIARY ACCESS** (July 26, 2025)
-→ **ENHANCED TEAM STRUCTURE**: Expanded from 2 to 6 dental specialists with diverse specializations
+→ **ENHANCED TEAM STRUCTURE**: Expanded from 2 to 10 dental specialists with diverse specializations
 → **PRINCIPAL DENTIST FEATURED**: Dr. Richard Thompson highlighted as practice leader with Royal College Excellence Award 2025
 → **SPECIALIST COVERAGE**: Added experts in pediatric dentistry, cosmetics, oral surgery, endodontics, and periodontics
 → **INDIVIDUAL DIARY VIEWING**: Each team member now has "View [Name]'s Diary" functionality for personalized appointment access

@@ -382,7 +382,7 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment, currentU
                         <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-1">
                           <i className="fas fa-award text-white text-sm"></i>
                         </div>
-                        <p className="text-xs font-semibold text-gray-900">{practiceData?.dentists?.length || 6} Specialists</p>
+                        <p className="text-xs font-semibold text-gray-900">{practiceData?.dentists?.length || 10} Specialists</p>
                       </div>
                       <div className="text-center">
                         <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-1">
