@@ -26,59 +26,63 @@ export default function SearchModeSelection({
   const [selectedMode, setSelectedMode] = useState<SearchMode | null>(null);
   const [showEarlyAccess, setShowEarlyAccess] = useState(false);
 
-  const searchModeOptions = [
-    {
-      id: "open" as SearchMode,
-      title: "Open Search",
-      subtitle: "Fastest appointment booking",
-      description: "Matches you with any available dentist at the quickest possible time. Perfect for urgent care when speed matters most.",
-      icon: "fas fa-bolt",
-      color: "from-orange-500 to-red-500",
-      bgColor: "bg-gradient-to-br from-orange-50 to-red-50",
-      borderColor: "border-orange-200",
-      features: [
-        "Fastest appointment times",
-        "Any qualified emergency dentist",
-        "Real-time availability",
-        "Instant booking confirmation"
-      ],
-      recommended: selectedTreatment?.category === "emergency"
-    },
+  const primaryOptions = [
     {
       id: "practice" as SearchMode,
-      title: "My Practice Search",
-      subtitle: "Familiar environment",
-      description: "Matches you with the earliest appointment from any dentist within your registered practice. Maintains continuity of care.",
+      title: "My Practice",
+      subtitle: "Any dentist at your practice",
+      description: "Connect with any available dentist at your registered practice. Access your dental records and maintain continuity of care within your familiar environment.",
       icon: "fas fa-building",
-      color: "from-blue-500 to-teal-500",
-      bgColor: "bg-gradient-to-br from-blue-50 to-teal-50",
+      color: "from-blue-500 to-indigo-500",
+      bgColor: "bg-gradient-to-br from-blue-50 to-indigo-50",
       borderColor: "border-blue-200",
       features: [
         "Your familiar practice",
-        "Access to your dental records",
-        "Any dentist in your practice",
+        "Access to your dental records", 
+        "Any available dentist",
         "Continuity of care"
       ],
+      visual: "👥", // Multiple dentists
       recommended: false
     },
     {
       id: "mydentist" as SearchMode,
-      title: "My Dentist Search",
-      subtitle: "Personal care continuity",
-      description: "Matches you with the earliest appointment from your own dentist's diary. Best for ongoing treatment continuity.",
+      title: "My Dentist",
+      subtitle: "Your personal dentist only",
+      description: "Connect specifically with your personal dentist. Ensures complete care history and maintains your trusted personal relationship.",
       icon: "fas fa-user-md",
-      color: "from-teal-500 to-green-500",
-      bgColor: "bg-gradient-to-br from-teal-50 to-green-50",
+      color: "from-teal-500 to-emerald-500",
+      bgColor: "bg-gradient-to-br from-teal-50 to-emerald-50",
       borderColor: "border-teal-200",
       features: [
         "Your personal dentist only",
-        "Complete treatment history",
-        "Personalized care approach",
-        "Long-term relationship"
+        "Complete care history",
+        "Trusted relationship", 
+        "Personalized treatment"
       ],
+      visual: "👨‍⚕️", // Single dentist
       recommended: selectedTreatment?.category === "routine"
     }
   ];
+
+  const secondaryOption = {
+    id: "open" as SearchMode,
+    title: "Open Search",
+    subtitle: "Any dentist, fastest time",
+    description: "Matches you with any available dentist at the quickest possible time. Perfect for urgent care when speed matters most.",
+    icon: "fas fa-bolt",
+    color: "from-orange-500 to-red-500",
+    bgColor: "bg-gradient-to-br from-orange-50 to-red-50",
+    borderColor: "border-orange-200",
+    features: [
+      "Fastest appointment times",
+      "Any qualified emergency dentist", 
+      "Real-time availability",
+      "Instant booking confirmation"
+    ],
+    visual: "⚡",
+    recommended: selectedTreatment?.category === "emergency"
+  };
 
   const handleModeSelect = (mode: SearchMode) => {
     setSelectedMode(mode);
@@ -125,21 +129,21 @@ export default function SearchModeSelection({
         )}
       </div>
 
-      {/* Search Mode Options */}
-      <div className="max-w-4xl mx-auto space-y-4 mb-8">
-        {searchModeOptions.map((option) => (
+      {/* Primary Options - Side by Side */}
+      <div className="max-w-6xl mx-auto mb-8">
+        <div className="grid md:grid-cols-2 gap-6 mb-8">
+          {primaryOptions.map((option) => (
           <Card 
             key={option.id}
             className={cn(
-              "relative overflow-hidden transition-all duration-300",
-              option.id === "open" ? "cursor-not-allowed opacity-75" : "cursor-pointer",
+              "relative overflow-hidden transition-all duration-300 cursor-pointer",
               selectedMode === option.id
                 ? "ring-2 ring-teal-500 shadow-lg scale-[1.02]"
-                : option.id === "open" ? "" : "hover:shadow-md hover:scale-[1.01]",
+                : "hover:shadow-md hover:scale-[1.01]",
               option.bgColor,
               option.borderColor
             )}
-            onClick={() => option.id !== "open" && handleModeSelect(option.id)}
+            onClick={() => handleModeSelect(option.id)}
           >
             {option.recommended && (
               <div className="absolute top-4 right-4 z-10">
@@ -150,71 +154,85 @@ export default function SearchModeSelection({
               </div>
             )}
             
-            {/* Coming Soon Overlay for Open Search */}
-            {option.id === "open" && (
-              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
-                <div className="bg-white rounded-lg p-6 text-center shadow-xl">
-                  <div className="text-4xl mb-3">🚧</div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Coming Soon</h3>
-                  <p className="text-gray-600 text-sm">
-                    Open search is being enhanced with<br />
-                    advanced AI matching capabilities
-                  </p>
-                </div>
-              </div>
-            )}
-            
             <div className="p-6">
-              <div className="flex items-start space-x-4">
-                {/* Icon */}
-                <div className={cn(
-                  "w-16 h-16 rounded-2xl bg-gradient-to-br flex items-center justify-center shadow-lg",
-                  option.color
-                )}>
-                  <i className={cn(option.icon, "text-2xl text-white")}></i>
+              {/* Visual and Icon */}
+              <div className="flex items-center justify-between mb-4">
+                <div className={cn("w-16 h-16 rounded-full flex items-center justify-center text-2xl bg-gradient-to-r", option.color)}>
+                  <span className="text-3xl">{option.visual}</span>
                 </div>
-                
-                {/* Content */}
-                <div className="flex-1">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <h3 className="text-xl font-bold text-gray-900">{option.title}</h3>
-                    <Badge variant="outline" className="text-xs">
-                      {option.subtitle}
-                    </Badge>
+                <i className={cn("text-3xl opacity-20", option.icon)}></i>
+              </div>
+              
+              <h3 className="text-xl font-bold text-gray-900 mb-2">{option.title}</h3>
+              <p className="text-sm text-gray-600 mb-1">{option.subtitle}</p>
+              <p className="text-sm text-gray-500 mb-4 leading-relaxed">{option.description}</p>
+              
+              <div className="space-y-2">
+                {option.features.map((feature, index) => (
+                  <div key={index} className="flex items-center text-sm text-gray-600">
+                    <i className="fas fa-check text-green-500 mr-2 text-xs"></i>
+                    {feature}
                   </div>
-                  
-                  <p className="text-gray-700 mb-4 leading-relaxed">
-                    {option.description}
-                  </p>
-                  
-                  {/* Features */}
-                  <div className="grid grid-cols-2 gap-2">
-                    {option.features.map((feature, index) => (
-                      <div key={index} className="flex items-center space-x-2">
-                        <i className="fas fa-check text-green-600 text-sm"></i>
-                        <span className="text-sm text-gray-600">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                
-                {/* Selection Indicator */}
-                <div className="flex items-center">
-                  <div className={cn(
-                    "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all",
-                    selectedMode === option.id
-                      ? "border-teal-500 bg-teal-500"
-                      : "border-gray-300"
-                  )}>
-                    {selectedMode === option.id && (
-                      <i className="fas fa-check text-white text-sm"></i>
-                    )}
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </Card>
         ))}
+        </div>
+
+        {/* Secondary Option - Open Search at Bottom */}
+        <div className="max-w-4xl mx-auto">
+          <Card 
+            className={cn(
+              "relative overflow-hidden cursor-not-allowed opacity-75",
+              secondaryOption.bgColor,
+              secondaryOption.borderColor
+            )}
+          >
+            {secondaryOption.recommended && (
+              <div className="absolute top-4 right-4 z-10">
+                <Badge className="bg-green-600 text-white shadow-lg">
+                  <i className="fas fa-star mr-1"></i>
+                  Recommended
+                </Badge>
+              </div>
+            )}
+            
+            {/* Coming Soon Overlay */}
+            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
+              <div className="bg-white rounded-lg p-6 text-center shadow-xl">
+                <div className="text-4xl mb-3">🚧</div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Coming Soon</h3>
+                <p className="text-gray-600 text-sm">
+                  Open search is being enhanced with<br />
+                  advanced AI matching capabilities
+                </p>
+              </div>
+            </div>
+            
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className={cn("w-16 h-16 rounded-full flex items-center justify-center text-2xl bg-gradient-to-r", secondaryOption.color)}>
+                  <span className="text-3xl">{secondaryOption.visual}</span>
+                </div>
+                <i className={cn("text-3xl opacity-20", secondaryOption.icon)}></i>
+              </div>
+              
+              <h3 className="text-xl font-bold text-gray-900 mb-2">{secondaryOption.title}</h3>
+              <p className="text-sm text-gray-600 mb-1">{secondaryOption.subtitle}</p>
+              <p className="text-sm text-gray-500 mb-4 leading-relaxed">{secondaryOption.description}</p>
+              
+              <div className="grid grid-cols-2 gap-2">
+                {secondaryOption.features.map((feature, index) => (
+                  <div key={index} className="flex items-center text-sm text-gray-600">
+                    <i className="fas fa-check text-green-500 mr-2 text-xs"></i>
+                    {feature}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Card>
+        </div>
       </div>
 
       {/* Continue Button */}
