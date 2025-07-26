@@ -34,67 +34,22 @@ export function TreatmentCard({ treatment, selected, onSelect }: TreatmentCardPr
       onClick={() => onSelect(treatment)}
     >
       <div className="text-center space-y-3 h-full flex flex-col justify-center">
-        <div className="relative mx-auto flex items-center justify-center">
-          {/* Main treatment circle */}
-          <div className={cn(
-            "w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shadow-lg",
-            selected ? "bg-primary" : bgClasses[treatment.category]
-          )}>
-            {/* Category-specific dental icons */}
-            {treatment.category === 'emergency' && (
-              <i className="fas fa-exclamation-triangle text-white text-sm sm:text-lg"></i>
-            )}
-            {treatment.category === 'urgent' && (
-              <i className="fas fa-tooth text-white text-sm sm:text-lg"></i>
-            )}
-            {treatment.category === 'routine' && (
-              <i className="fas fa-stethoscope text-white text-sm sm:text-lg"></i>
-            )}
-            {treatment.category === 'cosmetic' && (
-              <i className="fas fa-star text-white text-sm sm:text-lg"></i>
-            )}
-          </div>
-          
-          {/* Small decorative icons around the circle */}
+        <div className={cn(
+          "w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mx-auto shadow-lg",
+          selected ? "bg-primary" : bgClasses[treatment.category]
+        )}>
+          {/* Category-specific dental icons */}
           {treatment.category === 'emergency' && (
-            <>
-              <div className="absolute -top-1 -left-1 w-4 h-4 bg-red-100 rounded-full flex items-center justify-center">
-                <i className="fas fa-plus text-red-600 text-xs"></i>
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-red-100 rounded-full flex items-center justify-center">
-                <i className="fas fa-clock text-red-600 text-xs"></i>
-              </div>
-            </>
+            <i className="fas fa-exclamation-triangle text-white text-sm sm:text-lg"></i>
           )}
           {treatment.category === 'urgent' && (
-            <>
-              <div className="absolute -top-1 -left-1 w-4 h-4 bg-orange-100 rounded-full flex items-center justify-center">
-                <i className="fas fa-procedures text-orange-600 text-xs"></i>
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-orange-100 rounded-full flex items-center justify-center">
-                <i className="fas fa-fill-drip text-orange-600 text-xs"></i>
-              </div>
-            </>
+            <i className="fas fa-tooth text-white text-sm sm:text-lg"></i>
           )}
           {treatment.category === 'routine' && (
-            <>
-              <div className="absolute -top-1 -left-1 w-4 h-4 bg-green-100 rounded-full flex items-center justify-center">
-                <i className="fas fa-broom text-green-600 text-xs"></i>
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-100 rounded-full flex items-center justify-center">
-                <i className="fas fa-search text-green-600 text-xs"></i>
-              </div>
-            </>
+            <i className="fas fa-stethoscope text-white text-sm sm:text-lg"></i>
           )}
           {treatment.category === 'cosmetic' && (
-            <>
-              <div className="absolute -top-1 -left-1 w-4 h-4 bg-blue-100 rounded-full flex items-center justify-center">
-                <i className="fas fa-sparkles text-blue-600 text-xs"></i>
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-blue-100 rounded-full flex items-center justify-center">
-                <i className="fas fa-smile text-blue-600 text-xs"></i>
-              </div>
-            </>
+            <i className="fas fa-star text-white text-sm sm:text-lg"></i>
           )}
         </div>
         <div>
