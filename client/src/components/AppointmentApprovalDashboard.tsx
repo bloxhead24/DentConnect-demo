@@ -17,7 +17,7 @@ interface PendingBooking {
     email: string;
     phone: string;
     dateOfBirth: string;
-  };
+  } | null;
   appointment: {
     appointmentDate: string;
     appointmentTime: string;
@@ -307,7 +307,7 @@ export function AppointmentApprovalDashboard({ practiceId }: AppointmentApproval
                                       <div className="flex items-center space-x-3 mb-3">
                                         <User className="h-4 w-4 text-gray-600" />
                                         <span className="font-medium">
-                                          {booking.user.firstName} {booking.user.lastName}
+                                          {booking.user?.firstName} {booking.user?.lastName}
                                         </span>
                                         <Badge className={`${booking.anxietyLevel === 'anxious' ? 'bg-red-100 text-red-800' : 
                                           booking.anxietyLevel === 'nervous' ? 'bg-yellow-100 text-yellow-800' : 
@@ -362,11 +362,11 @@ export function AppointmentApprovalDashboard({ practiceId }: AppointmentApproval
                                       <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 mb-3">
                                         <div className="flex items-center space-x-2">
                                           <Mail className="h-4 w-4" />
-                                          <span>{booking.user.email}</span>
+                                          <span>{booking.user?.email}</span>
                                         </div>
                                         <div className="flex items-center space-x-2">
                                           <Phone className="h-4 w-4" />
-                                          <span>{booking.user.phone}</span>
+                                          <span>{booking.user?.phone}</span>
                                         </div>
                                       </div>
 

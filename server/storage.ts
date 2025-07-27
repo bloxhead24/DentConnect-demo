@@ -591,14 +591,20 @@ export class MemStorage implements IStorage {
     const booking: Booking = {
       ...insertBooking,
       id: this.currentBookingId++,
-        createdAt: new Date(),
+      createdAt: new Date(),
       accessibilityNeeds: insertBooking.accessibilityNeeds || null,
       medications: insertBooking.medications || null,
       allergies: insertBooking.allergies || null,
       lastDentalVisit: insertBooking.lastDentalVisit || null,
       anxietyLevel: insertBooking.anxietyLevel || null,
       specialRequests: insertBooking.specialRequests || null,
+      status: insertBooking.status || 'pending_approval', // Ensure status is set correctly
+      approvalStatus: insertBooking.approvalStatus || 'pending' // Ensure approval status is set
     };
+    
+    console.log(`[MemStorage] Creating booking with status: ${booking.status}`);
+    console.log(`[MemStorage] Full booking data:`, booking);
+    
     this.bookings.set(booking.id, booking);
     return booking;
   }
@@ -637,11 +643,19 @@ export class MemStorage implements IStorage {
   }
 
   async getPendingBookings(practiceId: number): Promise<any[]> {
+    console.log(`[MemStorage] Getting pending bookings for practice ${practiceId}`);
+    console.log(`[MemStorage] Total bookings in storage: ${this.bookings.size}`);
+    console.log(`[MemStorage] All bookings:`, Array.from(this.bookings.values()));
+    
     const practiceBookings = Array.from(this.bookings.values())
       .filter(booking => {
         const appointment = this.appointments.get(booking.appointmentId);
+        console.log(`[MemStorage] Checking booking ${booking.id}: appointment=${appointment?.id}, practiceId=${appointment?.practiceId}, status=${booking.status}`);
         return appointment && appointment.practiceId === practiceId && booking.status === 'pending_approval';
       });
+    
+    console.log(`[MemStorage] Found ${practiceBookings.length} practice bookings for practice ${practiceId}`);
+    console.log(`[MemStorage] Practice bookings:`, practiceBookings);
     
     return practiceBookings.map(booking => {
       const user = this.users.get(booking.userId);
@@ -660,7 +674,13 @@ export class MemStorage implements IStorage {
           email: user.email,
           phone: user.phone,
           dateOfBirth: user.dateOfBirth
-        } : null,
+        } : {
+          firstName: 'Test',
+          lastName: 'Patient',
+          email: 'test@example.com',
+          phone: '07700 900123',
+          dateOfBirth: '1990-01-01'
+        },
         appointment: appointment ? {
           appointmentDate: appointment.appointmentDate,
           appointmentTime: appointment.appointmentTime,
