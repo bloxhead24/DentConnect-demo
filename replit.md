@@ -134,7 +134,7 @@ Preferred communication style: Simple, everyday language.
 → **CORPORATE AESTHETIC**: Redesigned with professional slate gray color scheme and subtle amber accents for sophisticated appearance
 → **MINIMAL DESIGN**: Clean, left-aligned layout with single award icon and proper typography hierarchy
 → **REFINED STYLING**: Removed excessive animations in favor of subtle glow effects and clean geometric borders
-→ **PROFESSIONAL TYPOGRAPHY**: Upper-case Royal College of Surgeons title with clear finalist and contribution details
+→ **PROFESSIONAL TYPOGRAPHY**: Upper-case Royal College of Surgeons title with Newcastle location and clear finalist details
 → **SOPHISTICATED COLOR PALETTE**: Slate grays with amber/gold accents for prestigious yet understated appearance
 → **CLEAN ANIMATIONS**: Subtle fade-in entrance animation without distracting sparkles or bouncing elements
 → **BUSINESS-APPROPRIATE**: Corporate-level design suitable for professional healthcare environment presentations

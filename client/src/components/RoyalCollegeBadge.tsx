@@ -25,7 +25,7 @@ export function RoyalCollegeBadge() {
                 Royal College of Surgeons
               </div>
               <div className="text-slate-300 text-[10px] font-medium">
-                DentConnect • Finalist 2025 • Outstanding Contribution to Dentistry
+                DentConnect Newcastle • Finalist 2025 • Outstanding Contribution to Dentistry
               </div>
             </div>
           </div>
