@@ -658,8 +658,8 @@ export class MemStorage implements IStorage {
     const practiceBookings = Array.from(this.bookings.values())
       .filter(booking => {
         const appointment = this.appointments.get(booking.appointmentId);
-        console.log(`[MemStorage] Checking booking ${booking.id}: appointment=${appointment?.id}, practiceId=${appointment?.practiceId}, status=${booking.status}`);
-        return appointment && appointment.practiceId === practiceId && booking.status === 'pending_approval';
+        console.log(`[MemStorage] Checking booking ${booking.id}: appointment=${appointment?.id}, practiceId=${appointment?.practiceId}, approvalStatus=${booking.approvalStatus}`);
+        return appointment && appointment.practiceId === practiceId && booking.approvalStatus === 'pending';
       });
     
     console.log(`[MemStorage] Found ${practiceBookings.length} practice bookings for practice ${practiceId}`);
