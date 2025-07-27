@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
@@ -14,7 +15,8 @@ import {
   MapPin, 
   Phone,
   Navigation,
-  Activity
+  Activity,
+  ExternalLink
 } from "lucide-react";
 import type { Practice, Dentist } from "@shared/schema";
 
@@ -49,6 +51,7 @@ interface AppointmentStatusTrackerProps {
 export function AppointmentStatusTracker({ userId, practice, onBack }: AppointmentStatusTrackerProps) {
   const [currentBooking, setCurrentBooking] = useState<BookingStatus | null>(null);
   const [isPolling, setIsPolling] = useState(true);
+  const [, setLocation] = useLocation();
 
   // Query to get user's bookings for this practice
   const { data: userBookings, refetch } = useQuery({
@@ -383,6 +386,15 @@ export function AppointmentStatusTracker({ userId, practice, onBack }: Appointme
         <Button onClick={onBack} variant="outline" className="flex-1">
           <Calendar className="h-4 w-4 mr-2" />
           Back to Appointments
+        </Button>
+        
+        <Button 
+          onClick={() => setLocation('/booking-status')}
+          variant="outline" 
+          className="flex-1 border-primary text-primary hover:bg-primary/5"
+        >
+          <ExternalLink className="h-4 w-4 mr-2" />
+          View Full Details
         </Button>
         
         {currentBooking.approvalStatus === 'pending' && (
