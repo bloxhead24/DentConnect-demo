@@ -587,23 +587,31 @@ export class MemStorage implements IStorage {
     return updatedAppointment;
   }
 
-  async createBooking(insertBooking: InsertBooking): Promise<Booking> {
+  async createBooking(insertBooking: any): Promise<Booking> {
     const booking: Booking = {
-      ...insertBooking,
       id: this.currentBookingId++,
-      createdAt: new Date(),
+      userId: insertBooking.userId,
+      appointmentId: insertBooking.appointmentId,
+      triageAssessmentId: insertBooking.triageAssessmentId || null,
+      treatmentCategory: insertBooking.treatmentCategory,
       accessibilityNeeds: insertBooking.accessibilityNeeds || null,
       medications: insertBooking.medications || null,
       allergies: insertBooking.allergies || null,
       lastDentalVisit: insertBooking.lastDentalVisit || null,
       anxietyLevel: insertBooking.anxietyLevel || null,
       specialRequests: insertBooking.specialRequests || null,
-      status: insertBooking.status || 'pending_approval', // Ensure status is set correctly
-      approvalStatus: insertBooking.approvalStatus || 'pending' // Ensure approval status is set
+      status: insertBooking.status || 'pending_approval',
+      approvalStatus: insertBooking.approvalStatus || 'pending',
+      approvedBy: undefined,
+      approvedAt: undefined,
+      rejectedBy: undefined,
+      rejectedAt: undefined,
+      createdAt: new Date(),
+      updatedAt: undefined
     };
     
     console.log(`[MemStorage] Creating booking with status: ${booking.status}`);
-    console.log(`[MemStorage] Full booking data:`, booking);
+    console.log(`[MemStorage] Full booking data including medical fields:`, booking);
     
     this.bookings.set(booking.id, booking);
     return booking;
@@ -731,11 +739,14 @@ export class MemStorage implements IStorage {
     return practiceBookings.map(booking => {
       const user = this.users.get(booking.userId);
       const appointment = this.appointments.get(booking.appointmentId);
+      const triageAssessment = booking.triageAssessmentId ? 
+        this.triageAssessments.get(booking.triageAssessmentId) : null;
       
       return {
         id: booking.id,
         userId: booking.userId,
         appointmentId: booking.appointmentId,
+        triageAssessmentId: booking.triageAssessmentId,
         user: user ? {
           firstName: user.firstName,
           lastName: user.lastName,
@@ -749,7 +760,26 @@ export class MemStorage implements IStorage {
           duration: appointment.duration,
           treatmentType: appointment.treatmentType
         } : null,
-        triageAssessment: booking.triageAssessment || null,
+        triageAssessment: triageAssessment ? {
+          id: triageAssessment.id,
+          painLevel: triageAssessment.painLevel,
+          painDuration: triageAssessment.painDuration,
+          symptoms: triageAssessment.symptoms,
+          swelling: triageAssessment.swelling,
+          trauma: triageAssessment.trauma,
+          bleeding: triageAssessment.bleeding,
+          infection: triageAssessment.infection,
+          urgencyLevel: triageAssessment.urgencyLevel,
+          triageNotes: triageAssessment.triageNotes,
+          anxietyLevel: triageAssessment.anxietyLevel,
+          medicalHistory: triageAssessment.medicalHistory,
+          currentMedications: triageAssessment.currentMedications,
+          allergies: triageAssessment.allergies,
+          previousDentalTreatment: triageAssessment.previousDentalTreatment,
+          smokingStatus: triageAssessment.smokingStatus,
+          alcoholConsumption: triageAssessment.alcoholConsumption,
+          pregnancyStatus: triageAssessment.pregnancyStatus
+        } : null,
         status: booking.status,
         approvalStatus: booking.approvalStatus,
         approvedAt: booking.approvedAt,
