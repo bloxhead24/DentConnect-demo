@@ -234,10 +234,11 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
           const updateBookingPayload = {
             triageAssessmentId: triageAssessment.id,
             accessibilityNeeds: formData.specialRequests || null,
-            medications: finalTriageData.currentMedications ? true : false,
-            allergies: finalTriageData.allergies ? true : false,
+            medications: finalTriageData.currentMedications && finalTriageData.currentMedications.trim().toLowerCase() !== 'none',
+            allergies: finalTriageData.allergies && finalTriageData.allergies.trim().toLowerCase() !== 'none known' && finalTriageData.allergies.trim().toLowerCase() !== 'none',
             anxietyLevel: finalTriageData.anxietyLevel,
-            lastDentalVisit: finalTriageData.previousDentalTreatment || 'Not specified'
+            lastDentalVisit: finalTriageData.previousDentalTreatment || 'Not specified',
+            medicalHistory: finalTriageData.medicalHistory || 'None specified'
           };
           
           const updateResponse = await fetch(`/api/bookings/${booking.id}`, {

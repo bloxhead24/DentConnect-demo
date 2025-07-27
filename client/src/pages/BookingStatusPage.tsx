@@ -22,7 +22,7 @@ interface BookingStatus {
     address: string;
     phone: string;
   };
-  user: {
+  user?: {
     firstName: string;
     lastName: string;
     email: string;
@@ -253,15 +253,15 @@ export default function BookingStatusPage() {
                   <div className="space-y-1">
                     <div className="flex items-center space-x-2">
                       <User className="h-4 w-4 text-gray-400" />
-                      <span>{latestBooking.user.firstName} {latestBooking.user.lastName}</span>
+                      <span>{latestBooking.user?.firstName || "Patient"} {latestBooking.user?.lastName || "Name"}</span>
                     </div>
                     <div className="flex items-center space-x-2 text-sm text-gray-600">
                       <Mail className="h-4 w-4" />
-                      <span>{latestBooking.user.email}</span>
+                      <span>{latestBooking.user?.email || "No email provided"}</span>
                     </div>
                     <div className="flex items-center space-x-2 text-sm text-gray-600">
                       <Phone className="h-4 w-4" />
-                      <span>{latestBooking.user.phone}</span>
+                      <span>{latestBooking.user?.phone || "No phone provided"}</span>
                     </div>
                   </div>
                 </div>

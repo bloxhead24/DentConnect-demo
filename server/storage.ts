@@ -742,6 +742,10 @@ export class MemStorage implements IStorage {
       const triageAssessment = booking.triageAssessmentId ? 
         this.triageAssessments.get(booking.triageAssessmentId) : null;
       
+      console.log(`[MemStorage] APPROVED: Looking for triage assessment ${booking.triageAssessmentId}`);
+      console.log(`[MemStorage] APPROVED: Found triage assessment:`, triageAssessment);
+      console.log(`[MemStorage] APPROVED: All triage assessments:`, Array.from(this.triageAssessments.keys()));
+      
       return {
         id: booking.id,
         userId: booking.userId,
