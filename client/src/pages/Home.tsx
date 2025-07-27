@@ -115,8 +115,11 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-secondary/5">
+      {/* Booking Status Header */}
+      <BookingStatusHeader />
+      
       {/* Enhanced Mobile-First Header */}
-      <div className="bg-white/90 backdrop-blur-md shadow-lg border-b border-primary/10 sticky top-0 z-50">
+      <div className="bg-white/90 backdrop-blur-md shadow-lg border-b border-primary/10 sticky z-40" style={{ top: '60px' }}>
         <div className="px-4 py-3">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center">
@@ -296,9 +299,6 @@ export default function Home() {
         onClose={() => setShowDemoComplete(false)}
         demoType="patient"
       />
-
-      {/* Booking Status Header */}
-      <BookingStatusHeader />
 
       {/* Royal College Badge */}
       <RoyalCollegeBadge />

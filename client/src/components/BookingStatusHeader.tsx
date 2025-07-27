@@ -85,36 +85,45 @@ export function BookingStatusHeader() {
   const StatusIcon = statusConfig.icon;
 
   return (
-    <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md px-4 animate-in fade-in-50 slide-in-from-top-4 duration-500">
-      <Card className="border-2 shadow-xl backdrop-blur-md bg-white/95">
-        <CardContent className="p-4">
-          <div className="flex items-center space-x-3">
-            <div className={`p-2 rounded-full ${statusConfig.color}`}>
-              <StatusIcon className="w-5 h-5" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center space-x-2">
-                <p className="font-semibold text-sm truncate">{statusConfig.text}</p>
-                <Badge variant="outline" className="text-xs">
-                  {latestBooking.appointment.treatmentType}
-                </Badge>
+    <div className="fixed top-0 left-0 right-0 z-50 animate-in fade-in-50 slide-in-from-top-2 duration-300">
+      <div className="bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="flex items-center justify-between py-3">
+            {/* Status Icon and Info */}
+            <div className="flex items-center space-x-3">
+              <div className={`p-2 rounded-lg ${statusConfig.color} shadow-sm`}>
+                <StatusIcon className="w-4 h-4" />
               </div>
-              <p className="text-xs text-gray-600 truncate">
-                {statusConfig.description}
-              </p>
-              <div className="flex items-center space-x-4 mt-1 text-xs text-gray-500">
-                <div className="flex items-center space-x-1">
-                  <Calendar className="w-3 h-3" />
-                  <span>{new Date(latestBooking.appointment.appointmentDate).toLocaleDateString()}</span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center space-x-2">
+                  <p className="font-semibold text-sm text-gray-900">{statusConfig.text}</p>
+                  <Badge variant="outline" className="text-xs bg-gray-50">
+                    {latestBooking.appointment.treatmentType}
+                  </Badge>
                 </div>
-                <div className="flex items-center space-x-1">
-                  <Clock className="w-3 h-3" />
-                  <span>{latestBooking.appointment.appointmentTime}</span>
-                </div>
+                <p className="text-xs text-gray-600 truncate">
+                  {statusConfig.description}
+                </p>
               </div>
             </div>
+
+            {/* Appointment Details */}
+            <div className="hidden sm:flex items-center space-x-6 text-xs text-gray-600">
+              <div className="flex items-center space-x-1">
+                <Calendar className="w-3 h-3" />
+                <span>{new Date(latestBooking.appointment.appointmentDate).toLocaleDateString()}</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <Clock className="w-3 h-3" />
+                <span>{latestBooking.appointment.appointmentTime}</span>
+              </div>
+              <div className="text-gray-400">•</div>
+              <span className="font-medium text-gray-700">{latestBooking.practice.name}</span>
+            </div>
+
+            {/* Action Button */}
             <Button
-              variant="outline"
+              variant="default"
               size="sm"
               onClick={() => {
                 console.log('BookingStatusHeader: Navigating to /booking-status');
@@ -122,14 +131,15 @@ export function BookingStatusHeader() {
                 console.log('Latest booking:', latestBooking);
                 setLocation('/booking-status');
               }}
-              className="ml-auto shrink-0 text-xs h-8 px-3 border-gray-300 hover:bg-gray-50"
+              className="ml-4 shrink-0 text-xs h-8 px-4 bg-primary hover:bg-primary/90 text-white shadow-sm"
             >
               <ExternalLink className="w-3 h-3 mr-1" />
-              View Details
+              <span className="hidden sm:inline">View Details</span>
+              <span className="sm:hidden">Details</span>
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
