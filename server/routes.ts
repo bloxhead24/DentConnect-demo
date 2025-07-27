@@ -260,22 +260,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         appointmentId: req.body.appointmentId,
         treatmentCategory: req.body.treatmentCategory,
         specialRequests: req.body.specialRequests,
-        status: req.body.status || "pending_approval",
-        approvalStatus: req.body.approvalStatus || "pending"
+        status: "confirmed", // Set to confirmed instead of pending_approval
+        approvalStatus: "pending" // Keep pending for dental approval
       };
       
       console.log("Parsed booking data:", bookingData);
       
       // Validate with schema
-      const validatedData = insertBookingSchema.parse(bookingData);
+      const result = insertBookingSchema.safeParse(bookingData);
+      if (!result.success) {
+        console.error("Booking validation failed:", result.error);
+        return res.status(400).json({ error: "Invalid booking data", details: result.error.issues });
+      }
       
       // Book the appointment
-      await storage.bookAppointment(validatedData.appointmentId, validatedData.userId);
+      await storage.bookAppointment(result.data.appointmentId, result.data.userId);
       
       // Create booking record
-      const booking = await storage.createBooking(validatedData);
+      const booking = await storage.createBooking(result.data);
+      console.log("Booking created successfully:", booking);
       
-      res.json(booking);
+      res.status(201).json(booking);
     } catch (error) {
       console.error("Error creating booking:", error);
       res.status(500).json({ message: "Failed to create booking" });
@@ -298,13 +303,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get all bookings for a user
+  // Get all bookings for a user with detailed information
   app.get("/api/users/:userId/bookings", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
+      console.log("Fetching bookings for user:", userId);
+      
       const bookings = await storage.getUserBookings(userId);
+      console.log("Found bookings:", bookings);
+      
       res.json(bookings);
     } catch (error) {
+      console.error("Error fetching user bookings:", error);
       res.status(500).json({ error: "Failed to fetch bookings" });
     }
   });
@@ -546,12 +556,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("Triage assessment request body:", req.body);
       
       // Validate with schema
-      const validatedData = insertTriageAssessmentSchema.parse(req.body);
+      const result = insertTriageAssessmentSchema.safeParse(req.body);
+      if (!result.success) {
+        console.error("Triage assessment validation failed:", result.error);
+        return res.status(400).json({ error: "Invalid triage assessment data", details: result.error.issues });
+      }
       
       // Create triage assessment
-      const triageAssessment = await storage.createTriageAssessment(validatedData);
+      const triageAssessment = await storage.createTriageAssessment(result.data);
+      console.log("Triage assessment created successfully:", triageAssessment);
       
-      res.json(triageAssessment);
+      res.status(201).json(triageAssessment);
     } catch (error) {
       console.error("Error creating triage assessment:", error);
       res.status(500).json({ message: "Failed to create triage assessment" });

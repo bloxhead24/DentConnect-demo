@@ -256,8 +256,9 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
         }
       }
 
-      // Store user ID for status tracking
+      // Store user ID and booking info for status tracking
       sessionStorage.setItem('currentUserId', user.id.toString());
+      sessionStorage.setItem('latestBookingId', booking.id.toString());
       setCurrentStep("success");
     } catch (error) {
       console.error('Booking submission error:', error);
@@ -364,7 +365,7 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
                 {dentist && (
                   <div className="flex items-center space-x-3">
                     <i className="fas fa-user-md text-primary"></i>
-                    <span>Dr. {dentist.firstName} {dentist.lastName}</span>
+                    <span>{dentist.name}</span>
                   </div>
                 )}
                 
@@ -527,7 +528,7 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
                   {dentist && (
                     <div className="flex justify-between">
                       <span>Dentist:</span>
-                      <span className="font-medium">Dr. {dentist.firstName} {dentist.lastName}</span>
+                      <span className="font-medium">{dentist.name}</span>
                     </div>
                   )}
                 </div>

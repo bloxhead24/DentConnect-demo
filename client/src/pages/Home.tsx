@@ -15,6 +15,8 @@ import DentConnectLogo from "../components/DentConnectLogo";
 import { DemoCompleteModal } from "../components/DemoCompleteModal";
 import { VirtualConsultation } from "../components/VirtualConsultation";
 import { BookingFlow } from "../components/BookingFlow";
+import { BookingStatusHeader } from "../components/BookingStatusHeader";
+import { RoyalCollegeBadge } from "../components/RoyalCollegeBadge";
 import { Stethoscope, Users, MapPin, Clock, Shield, Star, Video } from "lucide-react";
 
 export default function Home() {
@@ -231,7 +233,7 @@ export default function Home() {
           />
         )}
 
-        {currentStep === "practiceConnect" && selectedSearchMode && (
+        {currentStep === "practiceConnect" && selectedSearchMode && (selectedSearchMode === "practice" || selectedSearchMode === "mydentist") && (
           <PracticeConnect
             selectedTreatment={selectedTreatment}
             selectedAccessibility={selectedAccessibility}
@@ -262,7 +264,7 @@ export default function Home() {
           <MapView 
             selectedTreatment={selectedTreatment}
             selectedAccessibility={selectedAccessibility}
-            selectedSearchMode={selectedSearchMode}
+            selectedSearchMode={selectedSearchMode || "open"}
             onBack={handleBack}
           />
         )}
@@ -295,7 +297,11 @@ export default function Home() {
         demoType="patient"
       />
 
+      {/* Booking Status Header */}
+      <BookingStatusHeader />
 
+      {/* Royal College Badge */}
+      <RoyalCollegeBadge />
     </div>
   );
 }

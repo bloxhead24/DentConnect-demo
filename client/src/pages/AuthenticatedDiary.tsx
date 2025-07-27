@@ -11,6 +11,7 @@ import { AppointmentStatusTracker } from "../components/AppointmentStatusTracker
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { PhoneCall, Star, MapPin, Clock, Users, Award, Shield, Accessibility } from "lucide-react";
+import { RoyalCollegeBadge } from "../components/RoyalCollegeBadge";
 import type { Practice, Dentist, Appointment } from "@shared/schema";
 
 interface AuthenticatedDiaryProps {
@@ -821,13 +822,8 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment, currentU
         </div>
       </div>
 
-      {/* Royal College Excellence Award Badge - Footer Center */}
-      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40 animate-in fade-in-50 slide-in-from-bottom-4 duration-1000">
-        <Badge className="bg-amber-500/95 backdrop-blur-md text-white text-xs px-4 py-2 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
-          <Award className="w-3 h-3 mr-1" />
-          Royal College Excellence Award Nominee 2025
-        </Badge>
-      </div>
+      {/* Royal College Badge */}
+      <RoyalCollegeBadge />
     </div>
   );
 }
