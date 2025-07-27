@@ -61,6 +61,7 @@ export class MemStorage implements IStorage {
   private dentists: Map<number, Dentist> = new Map();
   private appointments: Map<number, Appointment> = new Map();
   private bookings: Map<number, Booking> = new Map();
+  private triageAssessments: Map<number, TriageAssessment> = new Map();
   
   private currentUserId = 1;
   private currentPracticeId = 1;
@@ -645,11 +646,14 @@ export class MemStorage implements IStorage {
     return practiceBookings.map(booking => {
       const user = this.users.get(booking.userId);
       const appointment = this.appointments.get(booking.appointmentId);
+      const triageAssessment = booking.triageAssessmentId ? 
+        this.triageAssessments.get(booking.triageAssessmentId) : null;
       
       return {
         id: booking.id,
         userId: booking.userId,
         appointmentId: booking.appointmentId,
+        triageAssessmentId: booking.triageAssessmentId,
         user: user ? {
           firstName: user.firstName,
           lastName: user.lastName,
@@ -663,11 +667,36 @@ export class MemStorage implements IStorage {
           duration: appointment.duration,
           treatmentType: appointment.treatmentType
         } : null,
-        triageAssessment: booking.triageAssessment || {},
+        triageAssessment: triageAssessment ? {
+          id: triageAssessment.id,
+          painLevel: triageAssessment.painLevel,
+          painDuration: triageAssessment.painDuration,
+          symptoms: triageAssessment.symptoms,
+          swelling: triageAssessment.swelling,
+          trauma: triageAssessment.trauma,
+          bleeding: triageAssessment.bleeding,
+          infection: triageAssessment.infection,
+          urgencyLevel: triageAssessment.urgencyLevel,
+          triageNotes: triageAssessment.triageNotes,
+          anxietyLevel: triageAssessment.anxietyLevel,
+          medicalHistory: triageAssessment.medicalHistory,
+          currentMedications: triageAssessment.currentMedications,
+          allergies: triageAssessment.allergies,
+          previousDentalTreatment: triageAssessment.previousDentalTreatment,
+          smokingStatus: triageAssessment.smokingStatus,
+          alcoholConsumption: triageAssessment.alcoholConsumption,
+          pregnancyStatus: triageAssessment.pregnancyStatus
+        } : null,
         status: booking.status,
         approvalStatus: booking.approvalStatus,
         createdAt: booking.createdAt,
-        specialRequests: booking.specialRequests
+        specialRequests: booking.specialRequests,
+        treatmentCategory: booking.treatmentCategory,
+        accessibilityNeeds: booking.accessibilityNeeds,
+        medications: booking.medications,
+        allergies: booking.allergies,
+        lastDentalVisit: booking.lastDentalVisit,
+        anxietyLevel: booking.anxietyLevel
       };
     });
   }
@@ -736,13 +765,15 @@ export class MemStorage implements IStorage {
   }
 
   async createTriageAssessment(insertAssessment: InsertTriageAssessment): Promise<TriageAssessment> {
-    // This is a placeholder implementation for MemStorage
-    // In a real implementation, you would add proper ID generation and storage
     const assessment: TriageAssessment = {
       ...insertAssessment,
       id: Date.now(), // Simple ID generation
       createdAt: new Date(),
     };
+    
+    // Store the assessment in memory
+    this.triageAssessments.set(assessment.id, assessment);
+    
     return assessment;
   }
 }

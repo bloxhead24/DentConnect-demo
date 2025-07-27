@@ -260,7 +260,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         appointmentId: req.body.appointmentId,
         treatmentCategory: req.body.treatmentCategory,
         specialRequests: req.body.specialRequests,
-        status: "confirmed", // Set to confirmed instead of pending_approval
+        status: "pending_approval", // Set to pending_approval for dental review
         approvalStatus: "pending" // Keep pending for dental approval
       };
       
