@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useLocation } from 'wouter';
 import { Badge } from './ui/badge';
 import { Card, CardContent } from './ui/card';
-import { CheckCircle2, Clock, XCircle, Calendar, User } from 'lucide-react';
+import { Button } from './ui/button';
+import { CheckCircle2, Clock, XCircle, Calendar, User, ExternalLink } from 'lucide-react';
 
 interface BookingStatus {
   id: number;
@@ -24,6 +26,7 @@ interface BookingStatus {
 
 export function BookingStatusHeader() {
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+  const [, setLocation] = useLocation();
 
   useEffect(() => {
     const userId = sessionStorage.getItem('currentUserId');
@@ -110,6 +113,15 @@ export function BookingStatusHeader() {
                 </div>
               </div>
             </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setLocation('/booking-status')}
+              className="ml-auto shrink-0 text-xs h-8 px-3 border-gray-300 hover:bg-gray-50"
+            >
+              <ExternalLink className="w-3 h-3 mr-1" />
+              View Details
+            </Button>
           </div>
         </CardContent>
       </Card>

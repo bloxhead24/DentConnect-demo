@@ -68,6 +68,7 @@ import Home from "./pages/Home";
 import EarlyAccessForm from "./pages/EarlyAccessForm";
 import DentistSignup from "./pages/DentistSignup";
 import DentistDashboard from "./pages/DentistDashboard";
+import BookingStatusPage from "./pages/BookingStatusPage";
 
 function Router() {
   return (
@@ -76,6 +77,7 @@ function Router() {
       <Route path="/early-access" component={EarlyAccessForm} />
       <Route path="/dentist-signup" component={DentistSignup} />
       <Route path="/dentist-dashboard" component={DentistDashboard} />
+      <Route path="/booking-status" component={BookingStatusPage} />
       <Route component={NotFound} />
     </Switch>
   );
