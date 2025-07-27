@@ -89,12 +89,13 @@ export function ApprovedAppointmentsOverview({ practiceId }: ApprovedAppointment
   });
 
   // Filter to only show bookings with complete triage assessments
-  const approvedBookings = allApprovedBookings.filter(booking => 
-    booking.triageAssessment && 
-    booking.triageAssessment.painLevel !== null &&
-    booking.triageAssessment.symptoms &&
-    booking.triageAssessment.urgencyLevel
-  );
+  const approvedBookings = allApprovedBookings.filter(booking => {
+    console.log('Filtering booking:', booking.id, 'triageAssessment:', booking.triageAssessment);
+    return booking.triageAssessment && 
+           booking.triageAssessment.painLevel !== null &&
+           booking.triageAssessment.symptoms &&
+           booking.triageAssessment.urgencyLevel;
+  });
 
   const getTodaysAppointments = () => {
     const today = new Date();
