@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useLocation } from 'wouter';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
-import { ArrowLeft, Calendar, Clock, User, Phone, Mail, Activity, Heart, FileText, AlertTriangle, CheckCircle2, XCircle } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, User, Phone, Mail, Activity, Heart, FileText, AlertTriangle, CheckCircle2, XCircle, MapPin, Navigation, ExternalLink } from 'lucide-react';
 import { format } from 'date-fns';
+import L from 'leaflet';
 
 interface BookingStatus {
   id: number;
@@ -21,6 +22,8 @@ interface BookingStatus {
     name: string;
     address: string;
     phone: string;
+    latitude?: number;
+    longitude?: number;
   };
   user?: {
     firstName: string;
@@ -32,6 +35,89 @@ interface BookingStatus {
   specialRequests?: string;
   createdAt: string;
   approvedAt?: string;
+}
+
+// Simple Map Component
+function PracticeMap({ practice }: { practice: { name: string; address: string; latitude?: number; longitude?: number } }) {
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<L.Map | null>(null);
+
+  useEffect(() => {
+    if (!mapRef.current || !practice.latitude || !practice.longitude) return;
+
+    // Clear existing map
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.remove();
+    }
+
+    // Create map
+    const map = L.map(mapRef.current).setView([practice.latitude, practice.longitude], 15);
+    mapInstanceRef.current = map;
+
+    // Add tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Create custom marker icon
+    const markerIcon = L.divIcon({
+      html: `
+        <div style="
+          background: #059669;
+          width: 30px;
+          height: 30px;
+          border-radius: 50% 50% 50% 0;
+          transform: rotate(-45deg);
+          border: 3px solid white;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        ">
+          <div style="
+            color: white;
+            font-size: 14px;
+            transform: rotate(45deg);
+            font-weight: bold;
+          ">🦷</div>
+        </div>
+      `,
+      className: 'custom-dental-marker',
+      iconSize: [30, 30],
+      iconAnchor: [15, 30]
+    });
+
+    // Add marker
+    L.marker([practice.latitude, practice.longitude], { icon: markerIcon })
+      .addTo(map)
+      .bindPopup(`
+        <div style="text-align: center; padding: 8px;">
+          <strong>${practice.name}</strong><br>
+          <small>${practice.address}</small>
+        </div>
+      `);
+
+    // Cleanup
+    return () => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
+    };
+  }, [practice.latitude, practice.longitude, practice.name, practice.address]);
+
+  if (!practice.latitude || !practice.longitude) {
+    return (
+      <div className="h-64 bg-gray-100 rounded-lg flex items-center justify-center">
+        <div className="text-center text-gray-500">
+          <MapPin className="h-8 w-8 mx-auto mb-2" />
+          <p>Map location not available</p>
+        </div>
+      </div>
+    );
+  }
+
+  return <div ref={mapRef} className="h-64 w-full rounded-lg border-2 border-gray-200" />;
 }
 
 export default function BookingStatusPage() {
@@ -210,6 +296,81 @@ export default function BookingStatusPage() {
                 <p className="font-semibold text-gray-900">
                   {latestBooking.appointment.appointmentTime} ({latestBooking.appointment.duration} mins)
                 </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Practice Location & Navigation */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <MapPin className="h-5 w-5 text-primary" />
+              <span>Practice Location</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Interactive Map */}
+            <div className="space-y-3">
+              <PracticeMap practice={latestBooking.practice} />
+              
+              {/* Address and Navigation */}
+              <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                <div className="flex items-start space-x-3">
+                  <MapPin className="h-5 w-5 text-gray-600 mt-0.5" />
+                  <div className="flex-1">
+                    <h4 className="font-medium text-gray-900">{latestBooking.practice.name}</h4>
+                    <p className="text-gray-600 text-sm">{latestBooking.practice.address}</p>
+                  </div>
+                </div>
+                
+                {/* Navigation Buttons */}
+                <div className="flex flex-col sm:flex-row gap-2">
+                  {latestBooking.practice.latitude && latestBooking.practice.longitude && (
+                    <>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${latestBooking.practice.latitude},${latestBooking.practice.longitude}`;
+                          window.open(googleMapsUrl, '_blank');
+                        }}
+                        className="flex-1 flex items-center space-x-2"
+                      >
+                        <Navigation className="h-4 w-4" />
+                        <span>Get Directions</span>
+                        <ExternalLink className="h-3 w-3" />
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const appleMapsUrl = `http://maps.apple.com/?daddr=${latestBooking.practice.latitude},${latestBooking.practice.longitude}`;
+                          window.open(appleMapsUrl, '_blank');
+                        }}
+                        className="flex-1 flex items-center space-x-2"
+                      >
+                        <MapPin className="h-4 w-4" />
+                        <span>Apple Maps</span>
+                        <ExternalLink className="h-3 w-3" />
+                      </Button>
+                    </>
+                  )}
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      navigator.clipboard.writeText(latestBooking.practice.address);
+                      // Could add a toast notification here if needed
+                    }}
+                    className="flex-1 flex items-center space-x-2"
+                  >
+                    <FileText className="h-4 w-4" />
+                    <span>Copy Address</span>
+                  </Button>
+                </div>
               </div>
             </div>
           </CardContent>
