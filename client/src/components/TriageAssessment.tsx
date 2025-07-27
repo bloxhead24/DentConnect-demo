@@ -280,6 +280,14 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
 
         {currentStep === 3 && (
           <div className="space-y-6">
+            {/* Medical Safety Alert */}
+            <Alert className="border-blue-200 bg-blue-50">
+              <AlertDescription className="text-blue-700">
+                <i className="fas fa-info-circle mr-2"></i>
+                The following medical information is required for your safety and to ensure proper treatment planning.
+              </AlertDescription>
+            </Alert>
+
             <div>
               <Label className="text-base font-medium">Anxiety Level Assessment</Label>
               <p className="text-sm text-gray-600 mb-4">How anxious do you feel about dental treatment?</p>
@@ -308,38 +316,41 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
             </div>
 
             <div>
-              <Label htmlFor="medicalHistory">Medical History</Label>
-              <p className="text-sm text-gray-600 mb-2">Please list any significant medical conditions</p>
+              <Label htmlFor="medicalHistory">Medical History *</Label>
+              <p className="text-sm text-gray-600 mb-2">Please list any significant medical conditions (required for patient safety)</p>
               <Textarea
                 id="medicalHistory"
-                placeholder="e.g., Diabetes, heart condition, high blood pressure, or 'None'"
+                placeholder="e.g., Diabetes, heart condition, high blood pressure, or write 'None' if no conditions"
                 value={formData.medicalHistory}
                 onChange={(e) => setFormData(prev => ({ ...prev, medicalHistory: e.target.value }))}
                 className="mt-2"
+                required
               />
             </div>
 
             <div>
-              <Label htmlFor="currentMedications">Current Medications</Label>
-              <p className="text-sm text-gray-600 mb-2">List all medications you're currently taking</p>
+              <Label htmlFor="currentMedications">Current Medications *</Label>
+              <p className="text-sm text-gray-600 mb-2">List all medications you're currently taking (required for drug interaction checking)</p>
               <Textarea
                 id="currentMedications"
-                placeholder="e.g., Aspirin 75mg daily, Metformin 500mg twice daily, or 'None'"
+                placeholder="e.g., Aspirin 75mg daily, Metformin 500mg twice daily, or write 'None' if no medications"
                 value={formData.currentMedications}
                 onChange={(e) => setFormData(prev => ({ ...prev, currentMedications: e.target.value }))}
                 className="mt-2"
+                required
               />
             </div>
 
             <div>
-              <Label htmlFor="allergies">Allergies</Label>
-              <p className="text-sm text-gray-600 mb-2">List any allergies, especially to medications or dental materials</p>
+              <Label htmlFor="allergies">Allergies *</Label>
+              <p className="text-sm text-gray-600 mb-2">List any allergies, especially to medications or dental materials (required for safety)</p>
               <Textarea
                 id="allergies"
-                placeholder="e.g., Penicillin, latex, lidocaine, or 'None known'"
+                placeholder="e.g., Penicillin, latex, lidocaine, or write 'None known' if no allergies"
                 value={formData.allergies}
                 onChange={(e) => setFormData(prev => ({ ...prev, allergies: e.target.value }))}
                 className="mt-2"
+                required
               />
             </div>
 
@@ -347,7 +358,10 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
               <Button variant="outline" onClick={() => setCurrentStep(2)}>
                 Back
               </Button>
-              <Button onClick={() => setCurrentStep(4)}>
+              <Button 
+                onClick={() => setCurrentStep(4)}
+                disabled={!formData.medicalHistory.trim() || !formData.currentMedications.trim() || !formData.allergies.trim()}
+              >
                 Continue to Lifestyle Factors
               </Button>
             </div>
