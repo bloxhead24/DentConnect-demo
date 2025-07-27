@@ -316,42 +316,237 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
             </div>
 
             <div>
-              <Label htmlFor="medicalHistory">Medical History *</Label>
-              <p className="text-sm text-gray-600 mb-2">Please list any significant medical conditions (required for patient safety)</p>
-              <Textarea
-                id="medicalHistory"
-                placeholder="e.g., Diabetes, heart condition, high blood pressure, or write 'None' if no conditions"
-                value={formData.medicalHistory}
-                onChange={(e) => setFormData(prev => ({ ...prev, medicalHistory: e.target.value }))}
-                className="mt-2"
-                required
-              />
+              <Label className="text-base font-medium">Medical History *</Label>
+              <p className="text-sm text-gray-600 mb-3">Select any conditions that apply to you (check all that apply)</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {[
+                  { id: 'none', label: 'No medical conditions' },
+                  { id: 'hypertension', label: 'High blood pressure' },
+                  { id: 'diabetes', label: 'Diabetes' },
+                  { id: 'heart-disease', label: 'Heart disease' },
+                  { id: 'asthma', label: 'Asthma/Breathing problems' },
+                  { id: 'arthritis', label: 'Arthritis' },
+                  { id: 'cancer', label: 'Cancer (past or current)' },
+                  { id: 'kidney-disease', label: 'Kidney disease' },
+                  { id: 'liver-disease', label: 'Liver disease' },
+                  { id: 'stroke', label: 'Stroke' },
+                  { id: 'mental-health', label: 'Mental health conditions' },
+                  { id: 'other', label: 'Other medical condition' }
+                ].map((condition) => (
+                  <div key={condition.id} className="flex items-center space-x-2">
+                    <Checkbox 
+                      id={condition.id}
+                      checked={formData.medicalHistory.includes(condition.label)}
+                      onCheckedChange={(checked) => {
+                        if (condition.id === 'none') {
+                          // If "none" is selected, clear all other selections
+                          setFormData(prev => ({ 
+                            ...prev, 
+                            medicalHistory: checked ? condition.label : ''
+                          }));
+                        } else {
+                          // If any other condition is selected, remove "none" and add/remove the condition
+                          setFormData(prev => {
+                            let conditions = prev.medicalHistory.split(', ').filter(c => c && c !== 'No medical conditions');
+                            if (checked) {
+                              conditions.push(condition.label);
+                            } else {
+                              conditions = conditions.filter(c => c !== condition.label);
+                            }
+                            return { 
+                              ...prev, 
+                              medicalHistory: conditions.length > 0 ? conditions.join(', ') : ''
+                            };
+                          });
+                        }
+                      }}
+                    />
+                    <Label htmlFor={condition.id} className="text-sm cursor-pointer">
+                      {condition.label}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+              {formData.medicalHistory.includes('Other medical condition') && (
+                <div className="mt-3">
+                  <Label htmlFor="otherMedical" className="text-sm">Please specify other medical condition:</Label>
+                  <Input
+                    id="otherMedical"
+                    placeholder="Describe your medical condition"
+                    className="mt-1"
+                    onChange={(e) => {
+                      const otherCondition = e.target.value;
+                      setFormData(prev => {
+                        let conditions = prev.medicalHistory.split(', ').filter(c => c && !c.startsWith('Other:'));
+                        if (otherCondition.trim()) {
+                          conditions = conditions.filter(c => c !== 'Other medical condition');
+                          conditions.push(`Other: ${otherCondition}`);
+                        }
+                        return { 
+                          ...prev, 
+                          medicalHistory: conditions.join(', ')
+                        };
+                      });
+                    }}
+                  />
+                </div>
+              )}
             </div>
 
             <div>
-              <Label htmlFor="currentMedications">Current Medications *</Label>
-              <p className="text-sm text-gray-600 mb-2">List all medications you're currently taking (required for drug interaction checking)</p>
-              <Textarea
-                id="currentMedications"
-                placeholder="e.g., Aspirin 75mg daily, Metformin 500mg twice daily, or write 'None' if no medications"
-                value={formData.currentMedications}
-                onChange={(e) => setFormData(prev => ({ ...prev, currentMedications: e.target.value }))}
-                className="mt-2"
-                required
-              />
+              <Label className="text-base font-medium">Current Medications *</Label>
+              <p className="text-sm text-gray-600 mb-3">Select any medications you're currently taking (check all that apply)</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {[
+                  { id: 'none-meds', label: 'No current medications' },
+                  { id: 'blood-pressure', label: 'Blood pressure medication' },
+                  { id: 'diabetes-meds', label: 'Diabetes medication' },
+                  { id: 'heart-meds', label: 'Heart medication' },
+                  { id: 'blood-thinner', label: 'Blood thinner (Warfarin, Aspirin)' },
+                  { id: 'pain-relief', label: 'Pain relief (Ibuprofen, Paracetamol)' },
+                  { id: 'antibiotics', label: 'Antibiotics' },
+                  { id: 'antidepressants', label: 'Antidepressants' },
+                  { id: 'contraceptive', label: 'Contraceptive pill' },
+                  { id: 'asthma-inhaler', label: 'Asthma inhaler' },
+                  { id: 'supplements', label: 'Vitamins/Supplements' },
+                  { id: 'other-meds', label: 'Other medication' }
+                ].map((medication) => (
+                  <div key={medication.id} className="flex items-center space-x-2">
+                    <Checkbox 
+                      id={medication.id}
+                      checked={formData.currentMedications.includes(medication.label)}
+                      onCheckedChange={(checked) => {
+                        if (medication.id === 'none-meds') {
+                          // If "none" is selected, clear all other selections
+                          setFormData(prev => ({ 
+                            ...prev, 
+                            currentMedications: checked ? medication.label : ''
+                          }));
+                        } else {
+                          // If any other medication is selected, remove "none" and add/remove the medication
+                          setFormData(prev => {
+                            let medications = prev.currentMedications.split(', ').filter(c => c && c !== 'No current medications');
+                            if (checked) {
+                              medications.push(medication.label);
+                            } else {
+                              medications = medications.filter(c => c !== medication.label);
+                            }
+                            return { 
+                              ...prev, 
+                              currentMedications: medications.length > 0 ? medications.join(', ') : ''
+                            };
+                          });
+                        }
+                      }}
+                    />
+                    <Label htmlFor={medication.id} className="text-sm cursor-pointer">
+                      {medication.label}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+              {formData.currentMedications.includes('Other medication') && (
+                <div className="mt-3">
+                  <Label htmlFor="otherMedication" className="text-sm">Please specify other medication:</Label>
+                  <Input
+                    id="otherMedication"
+                    placeholder="Name and dosage of medication"
+                    className="mt-1"
+                    onChange={(e) => {
+                      const otherMedication = e.target.value;
+                      setFormData(prev => {
+                        let medications = prev.currentMedications.split(', ').filter(c => c && !c.startsWith('Other:'));
+                        if (otherMedication.trim()) {
+                          medications = medications.filter(c => c !== 'Other medication');
+                          medications.push(`Other: ${otherMedication}`);
+                        }
+                        return { 
+                          ...prev, 
+                          currentMedications: medications.join(', ')
+                        };
+                      });
+                    }}
+                  />
+                </div>
+              )}
             </div>
 
             <div>
-              <Label htmlFor="allergies">Allergies *</Label>
-              <p className="text-sm text-gray-600 mb-2">List any allergies, especially to medications or dental materials (required for safety)</p>
-              <Textarea
-                id="allergies"
-                placeholder="e.g., Penicillin, latex, lidocaine, or write 'None known' if no allergies"
-                value={formData.allergies}
-                onChange={(e) => setFormData(prev => ({ ...prev, allergies: e.target.value }))}
-                className="mt-2"
-                required
-              />
+              <Label className="text-base font-medium">Allergies *</Label>
+              <p className="text-sm text-gray-600 mb-3">Select any allergies you have (check all that apply)</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {[
+                  { id: 'no-allergies', label: 'No known allergies' },
+                  { id: 'penicillin', label: 'Penicillin' },
+                  { id: 'latex', label: 'Latex' },
+                  { id: 'lidocaine', label: 'Lidocaine (local anesthetic)' },
+                  { id: 'aspirin', label: 'Aspirin' },
+                  { id: 'ibuprofen', label: 'Ibuprofen' },
+                  { id: 'codeine', label: 'Codeine' },
+                  { id: 'metal-allergy', label: 'Metal allergies (nickel, etc.)' },
+                  { id: 'food-allergies', label: 'Food allergies' },
+                  { id: 'seasonal', label: 'Seasonal allergies' },
+                  { id: 'skin-allergies', label: 'Skin allergies/Eczema' },
+                  { id: 'other-allergies', label: 'Other allergies' }
+                ].map((allergy) => (
+                  <div key={allergy.id} className="flex items-center space-x-2">
+                    <Checkbox 
+                      id={allergy.id}
+                      checked={formData.allergies.includes(allergy.label)}
+                      onCheckedChange={(checked) => {
+                        if (allergy.id === 'no-allergies') {
+                          // If "no allergies" is selected, clear all other selections
+                          setFormData(prev => ({ 
+                            ...prev, 
+                            allergies: checked ? allergy.label : ''
+                          }));
+                        } else {
+                          // If any other allergy is selected, remove "no allergies" and add/remove the allergy
+                          setFormData(prev => {
+                            let allergies = prev.allergies.split(', ').filter(c => c && c !== 'No known allergies');
+                            if (checked) {
+                              allergies.push(allergy.label);
+                            } else {
+                              allergies = allergies.filter(c => c !== allergy.label);
+                            }
+                            return { 
+                              ...prev, 
+                              allergies: allergies.length > 0 ? allergies.join(', ') : ''
+                            };
+                          });
+                        }
+                      }}
+                    />
+                    <Label htmlFor={allergy.id} className="text-sm cursor-pointer">
+                      {allergy.label}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+              {formData.allergies.includes('Other allergies') && (
+                <div className="mt-3">
+                  <Label htmlFor="otherAllergies" className="text-sm">Please specify other allergies:</Label>
+                  <Input
+                    id="otherAllergies"
+                    placeholder="Describe your allergies"
+                    className="mt-1"
+                    onChange={(e) => {
+                      const otherAllergy = e.target.value;
+                      setFormData(prev => {
+                        let allergies = prev.allergies.split(', ').filter(c => c && !c.startsWith('Other:'));
+                        if (otherAllergy.trim()) {
+                          allergies = allergies.filter(c => c !== 'Other allergies');
+                          allergies.push(`Other: ${otherAllergy}`);
+                        }
+                        return { 
+                          ...prev, 
+                          allergies: allergies.join(', ')
+                        };
+                      });
+                    }}
+                  />
+                </div>
+              )}
             </div>
 
             <div className="flex justify-between">
