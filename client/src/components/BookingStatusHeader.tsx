@@ -116,7 +116,12 @@ export function BookingStatusHeader() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setLocation('/booking-status')}
+              onClick={() => {
+                console.log('BookingStatusHeader: Navigating to /booking-status');
+                console.log('Current userId:', currentUserId);
+                console.log('Latest booking:', latestBooking);
+                setLocation('/booking-status');
+              }}
               className="ml-auto shrink-0 text-xs h-8 px-3 border-gray-300 hover:bg-gray-50"
             >
               <ExternalLink className="w-3 h-3 mr-1" />
