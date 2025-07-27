@@ -796,6 +796,44 @@ export class MemStorage implements IStorage {
     
     return assessment;
   }
+
+  async approveBooking(bookingId: number, approvedBy: string): Promise<Booking> {
+    const existingBooking = this.bookings.get(bookingId);
+    if (!existingBooking) {
+      throw new Error(`Booking with ID ${bookingId} not found`);
+    }
+    
+    const updatedBooking: Booking = {
+      ...existingBooking,
+      approvalStatus: 'approved',
+      approvedBy: approvedBy,
+      approvedAt: new Date(),
+      updatedAt: new Date(),
+    };
+    
+    this.bookings.set(bookingId, updatedBooking);
+    console.log(`[MemStorage] Approved booking ${bookingId} by ${approvedBy}`);
+    return updatedBooking;
+  }
+
+  async rejectBooking(bookingId: number, rejectedBy: string): Promise<Booking> {
+    const existingBooking = this.bookings.get(bookingId);
+    if (!existingBooking) {
+      throw new Error(`Booking with ID ${bookingId} not found`);
+    }
+    
+    const updatedBooking: Booking = {
+      ...existingBooking,
+      approvalStatus: 'rejected',
+      rejectedBy: rejectedBy,
+      rejectedAt: new Date(),
+      updatedAt: new Date(),
+    };
+    
+    this.bookings.set(bookingId, updatedBooking);
+    console.log(`[MemStorage] Rejected booking ${bookingId} by ${rejectedBy}`);
+    return updatedBooking;
+  }
 }
 
 import { db } from "./db";
