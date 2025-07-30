@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, MapPin, Clock, AlertCircle, CheckCircle, XCircle, Navigation, Phone } from "lucide-react";
+import { Search, MapPin, Clock, AlertCircle, CheckCircle, XCircle, Navigation, Phone, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { BookingFlow } from "@/components/BookingFlow";
+import { cn } from "@/lib/utils";
 
 interface DentalQuestion {
   id: string;
@@ -65,7 +66,7 @@ interface OpenSearchFlowProps {
 }
 
 export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
-  const [currentStep, setCurrentStep] = useState<"loading" | "questions" | "searching" | "result" | "booking">("loading");
+  const [currentStep, setCurrentStep] = useState<"loading" | "questions" | "searching" | "result" | "booking" | "no-appointments">("loading");
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [searchProgress, setSearchProgress] = useState(0);
@@ -89,12 +90,18 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
   }, [currentStep]);
 
   useEffect(() => {
-    // Searching animation with real appointments
-    if (currentStep === "searching" && availableAppointments.length > 0) {
+    // Searching animation
+    if (currentStep === "searching") {
       const interval = setInterval(() => {
         setSearchProgress(prev => {
           if (prev >= 100) {
             clearInterval(interval);
+            
+            // Check if we have any appointments
+            if (!availableAppointments || availableAppointments.length === 0) {
+              setCurrentStep("no-appointments");
+              return 100;
+            }
             
             // Find the best matching appointment based on urgency and distance
             const urgencyScore = calculateUrgencyScore(answers);
@@ -105,12 +112,7 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
               setCurrentStep("result");
             } else {
               // No appointments found
-              toast({
-                title: "No appointments available",
-                description: "Unfortunately, there are no appointments available at this time. Please try again later.",
-                variant: "destructive"
-              });
-              onClose();
+              setCurrentStep("no-appointments");
             }
             return 100;
           }
@@ -120,7 +122,7 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
 
       return () => clearInterval(interval);
     }
-  }, [currentStep, availableAppointments, answers, toast, onClose]);
+  }, [currentStep, availableAppointments, answers]);
 
   // Helper function to calculate urgency score
   const calculateUrgencyScore = (answers: Record<string, string>) => {
@@ -660,6 +662,86 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
                   </Button>
                 </div>
               </div>
+            </Card>
+          </motion.div>
+        )}
+
+        {/* No Appointments Found */}
+        {currentStep === "no-appointments" && (
+          <motion.div
+            key="no-appointments"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.5 }}
+            className="w-full max-w-md"
+          >
+            <Card className="p-8 text-center">
+              <div className="relative w-24 h-24 mx-auto mb-6">
+                <div className="absolute inset-0 bg-gray-100 rounded-full flex items-center justify-center">
+                  <AlertCircle className="w-12 h-12 text-gray-400" />
+                </div>
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                  className="absolute inset-0"
+                >
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3 h-3 bg-gray-300 rounded-full" />
+                </motion.div>
+              </div>
+              
+              <h3 className="text-2xl font-semibold mb-3 text-gray-800">No Appointments Available</h3>
+              <p className="text-gray-600 mb-6 leading-relaxed">
+                We couldn't find any available appointments at this moment. 
+                This could be due to high demand or limited availability.
+              </p>
+              
+              <div className="space-y-4 text-left bg-gray-50 rounded-lg p-4 mb-6">
+                <h4 className="font-medium text-gray-800">What you can do:</h4>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-teal-600 mt-0.5 flex-shrink-0" />
+                    <span>Try searching again in a few minutes</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-teal-600 mt-0.5 flex-shrink-0" />
+                    <span>Contact practices directly using the map view</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-teal-600 mt-0.5 flex-shrink-0" />
+                    <span>Join the waiting list for priority notifications</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-teal-600 mt-0.5 flex-shrink-0" />
+                    <span>Consider virtual consultation options</span>
+                  </li>
+                </ul>
+              </div>
+              
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => {
+                    setCurrentStep("questions");
+                    setCurrentQuestionIndex(0);
+                    setSearchProgress(0);
+                    setAnswers({});
+                  }}
+                  className="flex-1 bg-teal-600 hover:bg-teal-700"
+                >
+                  Try Again
+                </Button>
+                <Button
+                  onClick={onClose}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  Close
+                </Button>
+              </div>
+              
+              <p className="text-xs text-gray-500 mt-4">
+                New appointments are added throughout the day as cancellations occur
+              </p>
             </Card>
           </motion.div>
         )}
