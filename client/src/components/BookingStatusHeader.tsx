@@ -119,7 +119,7 @@ export function BookingStatusHeader() {
   return (
     <div className="fixed bottom-24 right-6 z-50 group">
       {/* Status Label - Always visible */}
-      <div className="absolute -top-8 right-0 text-sm font-medium text-gray-700 whitespace-nowrap">
+      <div className="absolute -top-10 right-0 bg-white px-3 py-1 rounded-full shadow-md text-sm font-semibold text-gray-800 whitespace-nowrap">
         Appointment Status
       </div>
       
