@@ -118,6 +118,13 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+✓ **ROYAL COLLEGE BADGE HOVER INVISIBILITY** (July 30, 2025)
+→ **ENHANCED USER EXPERIENCE**: Royal College of Surgeons badge now becomes invisible on hover
+→ **CLICKTHROUGH FUNCTIONALITY**: Users can now click elements behind the badge when hovering over it
+→ **SMOOTH TRANSITIONS**: Added opacity transition for elegant fade effect on hover
+→ **POINTER EVENTS CONTROL**: Badge uses pointer-events-none by default, enabling pointer-events on hover
+→ **APPLIES TO ALL BADGES**: Updated both RoyalCollegeBadge component and DentistDashboard badge
+
 ✓ **COMPREHENSIVE APPOINTMENT MANAGEMENT SYSTEM WITH FEE TRACKING** (July 30, 2025)
 → **APPOINTMENT MANAGEMENT TAB**: Created user-friendly AppointmentManagement.tsx component with calendar view and booking details
 → **FEE COLLECTION TRACKING**: Added £5 booking fee tracking with checkbox system to mark fees as collected after appointments
