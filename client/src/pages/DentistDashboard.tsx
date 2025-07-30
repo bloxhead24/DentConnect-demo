@@ -57,7 +57,13 @@ export default function DentistDashboard() {
   
   // Get logged-in user info
   const userStr = sessionStorage.getItem('dentconnect_user');
-  const user = userStr ? JSON.parse(userStr) : null;
+  let user = null;
+  try {
+    user = userStr ? JSON.parse(userStr) : null;
+  } catch (error) {
+    console.error('Error parsing user data:', error);
+    user = null;
+  }
   
   const handleLogout = () => {
     sessionStorage.removeItem('dentconnect_user');

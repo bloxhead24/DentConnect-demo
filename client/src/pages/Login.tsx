@@ -6,7 +6,7 @@ import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { useToast } from "../hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { AlertCircle, User, Stethoscope, Mail, Lock, Phone, Calendar, GraduationCap, Award, CheckCircle2, Loader2 } from "lucide-react";
+import { AlertCircle, User, Stethoscope, Mail, Lock, Phone, Calendar, GraduationCap, Award, CheckCircle2, Loader2, Shield } from "lucide-react";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { Separator } from "../components/ui/separator";
 import { useForm } from "react-hook-form";
@@ -98,17 +98,25 @@ export default function Login() {
   const handlePatientLogin = async (data: PatientLoginData) => {
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+          userType: 'patient'
+        }),
+      });
       
-      // For demo purposes, accept any email/password
-      sessionStorage.setItem('dentconnect_user', JSON.stringify({
-        id: 1,
-        email: data.email,
-        userType: 'patient',
-        firstName: 'Demo',
-        lastName: 'Patient'
-      }));
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.message || 'Login failed');
+      }
+      
+      // Store user data and token
+      sessionStorage.setItem('dentconnect_user', JSON.stringify(result.user));
+      sessionStorage.setItem('dentconnect_token', result.token);
       
       toast({
         title: "Welcome back!",
@@ -116,10 +124,10 @@ export default function Login() {
       });
       
       setLocation('/');
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Login failed",
-        description: "Please check your credentials and try again",
+        description: error.message || "Please check your credentials and try again",
         variant: "destructive",
       });
     } finally {
@@ -130,29 +138,36 @@ export default function Login() {
   const handleDentistLogin = async (data: DentistLoginData) => {
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+          userType: 'dentist'
+        }),
+      });
       
-      // For demo purposes, accept any email/password
-      sessionStorage.setItem('dentconnect_user', JSON.stringify({
-        id: 1,
-        email: data.email,
-        userType: 'dentist',
-        firstName: 'Dr. Richard',
-        lastName: 'Thompson',
-        practiceId: 1
-      }));
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.message || 'Login failed');
+      }
+      
+      // Store user data and token
+      sessionStorage.setItem('dentconnect_user', JSON.stringify(result.user));
+      sessionStorage.setItem('dentconnect_token', result.token);
       
       toast({
-        title: "Welcome back, Dr. Thompson!",
+        title: `Welcome back, ${result.user.firstName}!`,
         description: "Redirecting to your dashboard...",
       });
       
       setLocation('/dentist-dashboard');
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Login failed",
-        description: "Please check your credentials and try again",
+        description: error.message || "Please check your credentials and try again",
         variant: "destructive",
       });
     } finally {
@@ -210,36 +225,38 @@ export default function Login() {
   const handleDemoLogin = async (type: 'patient' | 'dentist') => {
     setIsLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
+      const credentials = type === 'patient' 
+        ? { email: 'patient@demo.com', password: 'DemoPassword123!', userType: 'patient' }
+        : { email: 'dentist@demo.com', password: 'DemoPassword123!', userType: 'dentist' };
       
-      if (type === 'patient') {
-        sessionStorage.setItem('dentconnect_user', JSON.stringify({
-          id: 1,
-          email: 'demo.patient@example.com',
-          userType: 'patient',
-          firstName: 'Demo',
-          lastName: 'Patient'
-        }));
-        toast({
-          title: "Demo mode activated",
-          description: "Logged in as demo patient",
-        });
-        setLocation('/');
-      } else {
-        sessionStorage.setItem('dentconnect_user', JSON.stringify({
-          id: 1,
-          email: 'dr.thompson@newcastle-dental.com',
-          userType: 'dentist',
-          firstName: 'Dr. Richard',
-          lastName: 'Thompson',
-          practiceId: 1
-        }));
-        toast({
-          title: "Demo mode activated",
-          description: "Logged in as Dr. Richard Thompson",
-        });
-        setLocation('/dentist-dashboard');
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials),
+      });
+      
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.message || 'Demo login failed');
       }
+      
+      // Store user data and token
+      sessionStorage.setItem('dentconnect_user', JSON.stringify(result.user));
+      sessionStorage.setItem('dentconnect_token', result.token);
+      
+      toast({
+        title: type === 'patient' ? "Demo mode activated" : "Welcome Dr. Thompson!",
+        description: type === 'patient' ? "Logged in as demo patient" : "Logged in as Dr. Richard Thompson",
+      });
+      
+      setLocation(type === 'patient' ? '/' : '/dentist-dashboard');
+    } catch (error: any) {
+      toast({
+        title: "Demo login failed",
+        description: error.message || "Please try again later",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -636,7 +653,22 @@ export default function Login() {
 
         {/* Footer */}
         <div className="mt-8 text-center text-sm text-gray-600">
-          <p>By signing up, you agree to our Terms of Service and Privacy Policy</p>
+          <p>
+            By signing up, you agree to our Terms of Service and{' '}
+            <Link href="/privacy-policy" className="text-teal-600 hover:underline">
+              Privacy Policy
+            </Link>
+          </p>
+          <div className="mt-4 flex items-center justify-center space-x-4">
+            <Link href="/privacy-policy" className="text-sm text-teal-600 hover:underline flex items-center gap-1">
+              <Shield className="h-4 w-4" />
+              View Security Features
+            </Link>
+            <span className="text-gray-400">|</span>
+            <Link href="/security-test" className="text-sm text-gray-600 hover:underline">
+              Test Security Features
+            </Link>
+          </div>
         </div>
       </div>
     </div>

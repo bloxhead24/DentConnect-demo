@@ -1,18 +1,24 @@
 import { 
   users, practices, treatments, dentists, appointments, bookings, triageAssessments, callbackRequests,
+  auditLogs, dataProcessingRecords,
   type User, type InsertUser, type Practice, type InsertPractice,
   type Treatment, type InsertTreatment, type Dentist, type InsertDentist,
   type Appointment, type InsertAppointment,
   type Booking, type InsertBooking, type CallbackRequest, type InsertCallbackRequest,
   type TriageAssessment, type InsertTriageAssessment,
+  type AuditLog, type InsertAuditLog, type DataProcessingRecord, type InsertDataProcessingRecord,
   type PracticeWithAppointments, type BookingWithDetails
 } from "@shared/schema";
+import { hashPassword } from "./auth-utils";
 
 export interface IStorage {
   // User operations
   getUser(id: number): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUser(id: number, updates: Partial<User>): Promise<User>;
+  authenticateUser(email: string, password: string): Promise<User | null>;
+  updateLoginAttempts(email: string, success: boolean, ip: string): Promise<void>;
   
   // Practice operations
   getPractices(): Promise<Practice[]>;
@@ -33,6 +39,7 @@ export interface IStorage {
   getAvailableAppointments(practiceId: number, date?: Date): Promise<Appointment[]>;
   bookAppointment(appointmentId: number, userId: number): Promise<Appointment>;
   createAppointment(appointment: InsertAppointment): Promise<Appointment>;
+  getPracticeAppointments(practiceId: number): Promise<Appointment[]>;
   
   // Booking operations
   createBooking(booking: InsertBooking): Promise<Booking>;
@@ -52,6 +59,15 @@ export interface IStorage {
   getTodaysCallbackRequests(practiceId: number): Promise<any[]>;
   getPreviousDaysCallbackRequests(practiceId: number, days: number): Promise<any[]>;
   updateCallbackRequestStatus(requestId: number, status: string, notes?: string): Promise<CallbackRequest>;
+  
+  // Audit logging operations
+  createAuditLog(log: InsertAuditLog): Promise<AuditLog>;
+  getAuditLogs(filters?: { userId?: number; action?: string; resourceType?: string; startDate?: Date; endDate?: Date }): Promise<AuditLog[]>;
+  
+  // GDPR operations
+  exportUserData(userId: number): Promise<any>;
+  deleteUserData(userId: number): Promise<void>;
+  updateGDPRConsent(userId: number, consent: { gdpr: boolean; marketing: boolean }): Promise<User>;
 }
 
 export class MemStorage implements IStorage {
@@ -63,6 +79,8 @@ export class MemStorage implements IStorage {
   private bookings: Map<number, Booking> = new Map();
   private triageAssessments: Map<number, TriageAssessment> = new Map();
   private callbackRequests: Map<number, CallbackRequest> = new Map();
+  private auditLogs: Map<number, AuditLog> = new Map();
+  private dataProcessingRecords: Map<number, DataProcessingRecord> = new Map();
   
   private currentUserId = 1;
   private currentPracticeId = 1;
@@ -71,9 +89,48 @@ export class MemStorage implements IStorage {
   private currentAppointmentId = 1;
   private currentBookingId = 1;
   private currentCallbackRequestId = 1;
+  private currentAuditLogId = 1;
+  private currentDataProcessingRecordId = 1;
 
   constructor() {
     this.initializeData();
+    this.initializeDemoUsers();
+  }
+
+  private async initializeDemoUsers() {
+    try {
+      // Create demo patient account
+      await this.createUser({
+        email: 'patient@demo.com',
+        password: 'DemoPassword123!',
+        firstName: 'Demo',
+        lastName: 'Patient',
+        phone: '07123456789',
+        dateOfBirth: '1985-03-15',
+        userType: 'patient',
+        nhsNumber: '9434765870',
+        gdprConsentGiven: true,
+        marketingConsentGiven: false
+      });
+
+      // Create demo dentist account (Dr. Richard Thompson)
+      await this.createUser({
+        email: 'dentist@demo.com',
+        password: 'DemoPassword123!',
+        firstName: 'Dr. Richard',
+        lastName: 'Thompson',
+        phone: '0191 232 4567',
+        dateOfBirth: '1975-08-20',
+        userType: 'dentist',
+        gdcNumber: '83457',
+        gdprConsentGiven: true,
+        marketingConsentGiven: false
+      });
+
+      console.log('Demo users initialized successfully');
+    } catch (error) {
+      console.error('Error initializing demo users:', error);
+    }
   }
 
   private initializeData() {
@@ -510,10 +567,18 @@ export class MemStorage implements IStorage {
     return Array.from(this.users.values()).find(user => user.email === email);
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
+  async createUser(insertUser: InsertUser & { password: string }): Promise<User> {
+    // Hash the password before storing
+    const passwordHash = await hashPassword(insertUser.password);
+    
+    // Set GDPR data retention date (2 years from signup)
+    const dataRetentionDate = new Date();
+    dataRetentionDate.setFullYear(dataRetentionDate.getFullYear() + 2);
+    
     const user: User = {
       ...insertUser,
       id: this.currentUserId++,
+      passwordHash,
       createdAt: new Date(),
       updatedAt: new Date(),
       firstName: insertUser.firstName || null,
@@ -521,16 +586,36 @@ export class MemStorage implements IStorage {
       phone: insertUser.phone || null,
       dateOfBirth: insertUser.dateOfBirth || null,
       userType: insertUser.userType || 'patient',
+      nhsNumber: insertUser.nhsNumber || null,
+      gdcNumber: insertUser.gdcNumber || null,
+      emailVerified: false,
+      emailVerificationToken: null,
+      passwordResetToken: null,
+      passwordResetExpires: null,
+      twoFactorSecret: null,
+      twoFactorEnabled: false,
+      failedLoginAttempts: 0,
+      accountLockedUntil: null,
+      lastLoginAt: null,
+      lastLoginIp: null,
       gdprConsentGiven: insertUser.gdprConsentGiven || false,
-      gdprConsentDate: insertUser.gdprConsentDate || null,
+      gdprConsentDate: insertUser.gdprConsentGiven ? new Date() : null,
       marketingConsentGiven: insertUser.marketingConsentGiven || false,
-      marketingConsentDate: insertUser.marketingConsentDate || null,
-      dataRetentionDate: insertUser.dataRetentionDate || null,
+      marketingConsentDate: insertUser.marketingConsentGiven ? new Date() : null,
+      dataRetentionDate: dataRetentionDate,
+      dataExportRequested: false,
+      dataExportRequestedAt: null,
+      accountDeletionRequested: false,
+      accountDeletionRequestedAt: null,
       emergencyContact: insertUser.emergencyContact || null,
       medicalConditions: insertUser.medicalConditions || null,
       medications: insertUser.medications || null,
       allergies: insertUser.allergies || null,
     };
+    
+    // Remove password from user object before storing
+    const { password, ...userWithoutPassword } = insertUser;
+    
     this.users.set(user.id, user);
     return user;
   }
@@ -983,6 +1068,172 @@ export class MemStorage implements IStorage {
       } : null,
       triageAssessment: triageAssessment || null,
     };
+  }
+
+  // New authentication and security methods
+  async updateUser(id: number, updates: Partial<User>): Promise<User> {
+    const user = this.users.get(id);
+    if (!user) {
+      throw new Error(`User with ID ${id} not found`);
+    }
+    
+    const updatedUser = {
+      ...user,
+      ...updates,
+      updatedAt: new Date()
+    };
+    
+    this.users.set(id, updatedUser);
+    return updatedUser;
+  }
+
+  async authenticateUser(email: string, password: string): Promise<User | null> {
+    const user = await this.getUserByEmail(email);
+    if (!user) return null;
+    
+    // Check if account is locked
+    if (user.accountLockedUntil && new Date() < user.accountLockedUntil) {
+      return null;
+    }
+    
+    // Verify password
+    const { verifyPassword } = await import('./auth-utils');
+    const isValid = await verifyPassword(password, user.passwordHash);
+    
+    if (!isValid) return null;
+    
+    return user;
+  }
+
+  async updateLoginAttempts(email: string, success: boolean, ip: string): Promise<void> {
+    const user = await this.getUserByEmail(email);
+    if (!user) return;
+    
+    if (success) {
+      // Reset failed attempts on successful login
+      await this.updateUser(user.id, {
+        failedLoginAttempts: 0,
+        accountLockedUntil: null,
+        lastLoginAt: new Date(),
+        lastLoginIp: ip
+      });
+    } else {
+      // Increment failed attempts
+      const failedAttempts = user.failedLoginAttempts + 1;
+      const updates: Partial<User> = {
+        failedLoginAttempts: failedAttempts
+      };
+      
+      // Lock account after 5 failed attempts
+      if (failedAttempts >= 5) {
+        const { calculateLockoutTime } = await import('./auth-utils');
+        updates.accountLockedUntil = calculateLockoutTime();
+      }
+      
+      await this.updateUser(user.id, updates);
+    }
+  }
+
+  // Audit logging
+  async createAuditLog(log: InsertAuditLog): Promise<AuditLog> {
+    const auditLog: AuditLog = {
+      ...log,
+      id: this.currentAuditLogId++,
+      createdAt: log.createdAt || new Date()
+    };
+    
+    this.auditLogs.set(auditLog.id, auditLog);
+    return auditLog;
+  }
+
+  async getAuditLogs(filters?: { 
+    userId?: number; 
+    action?: string; 
+    resourceType?: string; 
+    startDate?: Date; 
+    endDate?: Date 
+  }): Promise<AuditLog[]> {
+    let logs = Array.from(this.auditLogs.values());
+    
+    if (filters) {
+      if (filters.userId) {
+        logs = logs.filter(log => log.userId === filters.userId);
+      }
+      if (filters.action) {
+        logs = logs.filter(log => log.action === filters.action);
+      }
+      if (filters.resourceType) {
+        logs = logs.filter(log => log.resourceType === filters.resourceType);
+      }
+      if (filters.startDate) {
+        logs = logs.filter(log => log.createdAt >= filters.startDate!);
+      }
+      if (filters.endDate) {
+        logs = logs.filter(log => log.createdAt <= filters.endDate!);
+      }
+    }
+    
+    return logs.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  }
+
+  // GDPR compliance methods
+  async exportUserData(userId: number): Promise<any> {
+    const user = await this.getUser(userId);
+    if (!user) throw new Error('User not found');
+    
+    // Collect all user data
+    const userData = {
+      personalInfo: user,
+      bookings: await this.getUserBookings(userId),
+      appointments: Array.from(this.appointments.values()).filter(a => a.userId === userId),
+      triageAssessments: Array.from(this.triageAssessments.values()).filter(t => t.userId === userId),
+      callbackRequests: Array.from(this.callbackRequests.values()).filter(c => c.userId === userId),
+      auditLogs: Array.from(this.auditLogs.values()).filter(a => a.userId === userId),
+      exportedAt: new Date()
+    };
+    
+    // Mark data export as requested
+    await this.updateUser(userId, {
+      dataExportRequested: true,
+      dataExportRequestedAt: new Date()
+    });
+    
+    return userData;
+  }
+
+  async deleteUserData(userId: number): Promise<void> {
+    // Mark for deletion rather than immediate deletion (soft delete)
+    await this.updateUser(userId, {
+      accountDeletionRequested: true,
+      accountDeletionRequestedAt: new Date()
+    });
+    
+    // In production, this would schedule deletion after 30 days
+    // For demo, we'll just mark it as requested
+  }
+
+  async updateGDPRConsent(userId: number, consent: { gdpr: boolean; marketing: boolean }): Promise<User> {
+    const updates: Partial<User> = {
+      gdprConsentGiven: consent.gdpr,
+      gdprConsentDate: consent.gdpr ? new Date() : null,
+      marketingConsentGiven: consent.marketing,
+      marketingConsentDate: consent.marketing ? new Date() : null
+    };
+    
+    if (consent.gdpr) {
+      // Reset data retention date when consent is given
+      const retentionDate = new Date();
+      retentionDate.setFullYear(retentionDate.getFullYear() + 2);
+      updates.dataRetentionDate = retentionDate;
+    }
+    
+    return this.updateUser(userId, updates);
+  }
+
+  async getPracticeAppointments(practiceId: number): Promise<Appointment[]> {
+    return Array.from(this.appointments.values()).filter(
+      appointment => appointment.practiceId === practiceId
+    );
   }
 }
 

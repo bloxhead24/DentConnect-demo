@@ -79,6 +79,8 @@ import PatientSignup from "./pages/PatientSignup";
 import DentistDashboard from "./pages/DentistDashboard";
 import BookingStatusPage from "./pages/BookingStatusPage";
 import Login from "./pages/Login";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import SecurityTest from "./pages/SecurityTest";
 import { AuthGuard } from "./components/AuthGuard";
 
 function Router() {
@@ -86,6 +88,8 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/login" component={Login} />
+      <Route path="/privacy-policy" component={PrivacyPolicy} />
+      <Route path="/security-test" component={SecurityTest} />
       <Route path="/early-access" component={EarlyAccessForm} />
       <Route path="/dentist-signup" component={DentistSignup} />
       <Route path="/patient-signup" component={PatientSignup} />

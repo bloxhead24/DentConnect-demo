@@ -5,17 +5,35 @@ import { z } from "zod";
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   email: varchar("email", { length: 255 }).notNull().unique(),
+  passwordHash: varchar("password_hash", { length: 255 }).notNull(), // Bcrypt hashed password
   firstName: varchar("first_name", { length: 100 }),
   lastName: varchar("last_name", { length: 100 }),
   phone: varchar("phone", { length: 20 }),
   dateOfBirth: varchar("date_of_birth", { length: 10 }),
   userType: varchar("user_type", { length: 20 }).notNull().default("patient"), // patient or dentist
+  // NHS Digital & Security Compliance
+  nhsNumber: varchar("nhs_number", { length: 20 }), // NHS number for patients
+  gdcNumber: varchar("gdc_number", { length: 20 }), // GDC number for dentists
+  emailVerified: boolean("email_verified").default(false),
+  emailVerificationToken: varchar("email_verification_token", { length: 255 }),
+  passwordResetToken: varchar("password_reset_token", { length: 255 }),
+  passwordResetExpires: timestamp("password_reset_expires"),
+  twoFactorSecret: varchar("two_factor_secret", { length: 255 }), // For 2FA
+  twoFactorEnabled: boolean("two_factor_enabled").default(false),
+  failedLoginAttempts: integer("failed_login_attempts").default(0),
+  accountLockedUntil: timestamp("account_locked_until"),
+  lastLoginAt: timestamp("last_login_at"),
+  lastLoginIp: varchar("last_login_ip", { length: 45 }), // IPv6 support
   // GDPR Compliance
   gdprConsentGiven: boolean("gdpr_consent_given").default(false),
   gdprConsentDate: timestamp("gdpr_consent_date"),
   marketingConsentGiven: boolean("marketing_consent_given").default(false),
   marketingConsentDate: timestamp("marketing_consent_date"),
   dataRetentionDate: timestamp("data_retention_date"),
+  dataExportRequested: boolean("data_export_requested").default(false),
+  dataExportRequestedAt: timestamp("data_export_requested_at"),
+  accountDeletionRequested: boolean("account_deletion_requested").default(false),
+  accountDeletionRequestedAt: timestamp("account_deletion_requested_at"),
   // Clinical Data
   emergencyContact: varchar("emergency_contact", { length: 255 }),
   medicalConditions: text("medical_conditions"),
@@ -179,6 +197,28 @@ export const callbackRequests = pgTable("callback_requests", {
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
+  updatedAt: true,
+  passwordHash: true, // We'll handle password hashing separately
+  emailVerified: true,
+  emailVerificationToken: true,
+  passwordResetToken: true,
+  passwordResetExpires: true,
+  twoFactorSecret: true,
+  twoFactorEnabled: true,
+  failedLoginAttempts: true,
+  accountLockedUntil: true,
+  lastLoginAt: true,
+  lastLoginIp: true,
+  dataExportRequested: true,
+  dataExportRequestedAt: true,
+  accountDeletionRequested: true,
+  accountDeletionRequestedAt: true,
+}).extend({
+  password: z.string().min(8, "Password must be at least 8 characters")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number")
+    .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character"),
 });
 
 export const insertPracticeSchema = createInsertSchema(practices).omit({

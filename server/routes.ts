@@ -104,61 +104,231 @@ export async function registerRoutes(app: Express): Promise<Server> {
     app.use(apiRateLimiter);
   }
 
+  // Import auth utilities
+  const { generateToken, getClientIp, createAuditLogEntry } = await import('./auth-utils');
+
   // Authentication routes
   app.post("/api/auth/login", async (req, res) => {
     try {
       const { email, password, userType } = req.body;
+      const clientIp = getClientIp(req);
       
-      // For demo purposes, accept any credentials and return mock user data
-      // In production, this would validate against a database with hashed passwords
-      
-      let userData;
-      if (userType === 'dentist') {
-        userData = {
-          id: 1,
-          email: email,
-          firstName: 'Dr. Richard',
-          lastName: 'Thompson',
-          userType: 'dentist',
-          practiceId: 1
-        };
-      } else {
-        userData = {
-          id: 1,
-          email: email,
-          firstName: 'Demo',
-          lastName: 'Patient',
-          userType: 'patient'
-        };
+      // Validate input
+      if (!email || !password) {
+        return res.status(400).json({ message: "Email and password are required" });
       }
+      
+      // Authenticate user with secure password verification
+      const user = await storage.authenticateUser(email, password);
+      
+      if (!user) {
+        // Update failed login attempts
+        await storage.updateLoginAttempts(email, false, clientIp);
+        
+        // Log failed login attempt
+        await storage.createAuditLog(
+          createAuditLogEntry('login_failed', 'authentication', undefined, email, undefined, { userType }, req)
+        );
+        
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+      
+      // Check if user type matches
+      if (user.userType !== userType) {
+        return res.status(401).json({ message: `Please use the ${user.userType} login form` });
+      }
+      
+      // Update successful login
+      await storage.updateLoginAttempts(email, true, clientIp);
+      
+      // Generate JWT token
+      const token = generateToken({
+        userId: user.id,
+        email: user.email,
+        userType: user.userType
+      });
+      
+      // Log successful login
+      await storage.createAuditLog(
+        createAuditLogEntry('login', 'authentication', user.id, user.email, undefined, { userType }, req)
+      );
+      
+      // Return user data without sensitive information
+      const { passwordHash, emailVerificationToken, passwordResetToken, twoFactorSecret, ...userData } = user;
+      
+      res.json({
+        user: userData,
+        token
+      });
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ message: "An error occurred during login" });
+    }
+  });
+
+  app.post("/api/auth/logout", async (req, res) => {
+    try {
+      // Get user from token/session
+      const authHeader = req.headers.authorization;
+      const token = authHeader?.split(' ')[1];
+      
+      // Log logout event
+      if (token) {
+        const { verifyToken } = await import('./auth-utils');
+        try {
+          const decoded = verifyToken(token);
+          await storage.createAuditLog(
+            createAuditLogEntry('logout', 'authentication', decoded.userId, decoded.email, undefined, {}, req)
+          );
+        } catch (error) {
+          // Token might be invalid, log without user info
+          await storage.createAuditLog(
+            createAuditLogEntry('logout', 'authentication', undefined, undefined, undefined, {}, req)
+          );
+        }
+      }
+      
+      res.json({ message: "Logged out successfully" });
+    } catch (error) {
+      console.error("Logout error:", error);
+      res.status(500).json({ message: "An error occurred during logout" });
+    }
+  });
+
+  // Signup route for patients and dentists
+  app.post("/api/auth/signup", async (req, res) => {
+    try {
+      const { 
+        email, password, firstName, lastName, phone, dateOfBirth, 
+        userType, gdprConsent, marketingConsent, nhsNumber, gdcNumber 
+      } = req.body;
+      
+      const clientIp = getClientIp(req);
+      
+      // Validate required fields
+      if (!email || !password || !firstName || !lastName || !userType) {
+        return res.status(400).json({ 
+          message: "Email, password, first name, last name, and user type are required" 
+        });
+      }
+      
+      // Validate GDPR consent
+      if (!gdprConsent) {
+        return res.status(400).json({ 
+          message: "You must accept our privacy policy to create an account" 
+        });
+      }
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(409).json({ message: "An account with this email already exists" });
+      }
+      
+      // Validate password strength
+      const { validatePasswordStrength } = await import('./auth-utils');
+      const passwordValidation = validatePasswordStrength(password);
+      if (!passwordValidation.valid) {
+        return res.status(400).json({ 
+          message: "Password does not meet security requirements",
+          errors: passwordValidation.errors 
+        });
+      }
+      
+      // Validate NHS number for patients
+      if (userType === 'patient' && nhsNumber) {
+        const { validateNHSNumber } = await import('./auth-utils');
+        if (!validateNHSNumber(nhsNumber)) {
+          return res.status(400).json({ message: "Invalid NHS number format" });
+        }
+      }
+      
+      // Validate GDC number for dentists
+      if (userType === 'dentist' && gdcNumber) {
+        const { validateGDCNumber } = await import('./auth-utils');
+        if (!validateGDCNumber(gdcNumber)) {
+          return res.status(400).json({ message: "Invalid GDC number format" });
+        }
+      }
+      
+      // Create user with hashed password
+      const newUser = await storage.createUser({
+        email,
+        password, // Will be hashed in storage
+        firstName,
+        lastName,
+        phone,
+        dateOfBirth,
+        userType,
+        nhsNumber: userType === 'patient' ? nhsNumber : null,
+        gdcNumber: userType === 'dentist' ? gdcNumber : null,
+        gdprConsentGiven: gdprConsent,
+        marketingConsentGiven: marketingConsent || false
+      });
+      
+      // Generate email verification token
+      const { generateEmailVerificationToken } = await import('./auth-utils');
+      const verificationToken = generateEmailVerificationToken();
+      await storage.updateUser(newUser.id, { emailVerificationToken: verificationToken });
+      
+      // Generate JWT token
+      const token = generateToken({
+        userId: newUser.id,
+        email: newUser.email,
+        userType: newUser.userType
+      });
+      
+      // Log signup event
+      await storage.createAuditLog(
+        createAuditLogEntry('signup', 'user', newUser.id, newUser.email, newUser.id, { userType }, req)
+      );
+      
+      // Return user data without sensitive information
+      const { passwordHash, emailVerificationToken, passwordResetToken, twoFactorSecret, ...userData } = newUser;
+      
+      res.status(201).json({
+        user: userData,
+        token,
+        message: "Account created successfully. Please check your email to verify your account."
+      });
+    } catch (error) {
+      console.error("Signup error:", error);
+      res.status(500).json({ message: "An error occurred during signup" });
+    }
+  });
+
+  app.get("/api/auth/me", async (req, res) => {
+    try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ message: "No valid authentication token provided" });
+      }
+      
+      const token = authHeader.split(' ')[1];
+      
+      // Verify token
+      const { verifyToken } = await import('./auth-utils');
+      let decoded;
+      try {
+        decoded = verifyToken(token);
+      } catch (error) {
+        return res.status(401).json({ message: "Invalid or expired token" });
+      }
+      
+      // Get user from database
+      const user = await storage.getUser(decoded.userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Return user data without sensitive information
+      const { passwordHash, emailVerificationToken, passwordResetToken, twoFactorSecret, ...userData } = user;
       
       res.json(userData);
     } catch (error) {
-      console.error("Login error:", error);
-      res.status(401).json({ message: "Invalid credentials" });
+      console.error("Auth check error:", error);
+      res.status(500).json({ message: "An error occurred during authentication check" });
     }
-  });
-
-  app.post("/api/auth/logout", (req, res) => {
-    // In production, this would invalidate sessions/tokens
-    res.json({ message: "Logged out successfully" });
-  });
-
-  app.get("/api/auth/me", (req, res) => {
-    // In production, this would check session/token and return user data
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return res.status(401).json({ message: "Not authenticated" });
-    }
-    
-    // For demo, return mock user data
-    res.json({
-      id: 1,
-      email: 'demo@example.com',
-      firstName: 'Demo',
-      lastName: 'User',
-      userType: 'patient'
-    });
   });
 
   // Practice routes

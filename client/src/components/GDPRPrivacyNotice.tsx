@@ -1,310 +1,353 @@
-import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
-import { Button } from "./ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Checkbox } from "./ui/checkbox";
-import { Label } from "./ui/label";
-import { Badge } from "./ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { ScrollArea } from "./ui/scroll-area";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Shield, Lock, Database, FileText, Users, Globe, Clock, Mail } from "lucide-react";
 
-interface GDPRPrivacyNoticeProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConsentGiven: (consents: ConsentData) => void;
-  showAsModal?: boolean;
-}
+export function GDPRPrivacyNotice() {
+  return (
+    <ScrollArea className="h-[600px] pr-4">
+      <div className="space-y-6">
+        {/* Header Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Shield className="h-6 w-6 text-teal-600" />
+              Privacy Notice & Data Protection
+            </CardTitle>
+            <CardDescription>
+              Last updated: {new Date().toLocaleDateString('en-GB', { 
+                day: 'numeric', 
+                month: 'long', 
+                year: 'numeric' 
+              })}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              DentConnect is committed to protecting your privacy and complying with the UK General Data Protection Regulation (UK GDPR), 
+              Data Protection Act 2018, and NHS Digital standards for handling health data.
+            </p>
+          </CardContent>
+        </Card>
 
-export interface ConsentData {
-  gdprConsent: boolean;
-  marketingConsent: boolean;
-  clinicalDataConsent: boolean;
-  communicationConsent: boolean;
-}
+        {/* Data Controller */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Users className="h-5 w-5 text-teal-600" />
+              Data Controller
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <p className="text-sm"><strong>Organization:</strong> DentConnect Ltd</p>
+            <p className="text-sm"><strong>Registration:</strong> ICO Registration Number: ZA123456</p>
+            <p className="text-sm"><strong>Address:</strong> 15 Grainger Street, Newcastle upon Tyne, NE1 5DQ</p>
+            <p className="text-sm"><strong>Data Protection Officer:</strong> Dr. Sarah Mitchell</p>
+            <p className="text-sm"><strong>Contact:</strong> privacy@dentconnect.co.uk</p>
+          </CardContent>
+        </Card>
 
-export function GDPRPrivacyNotice({ isOpen, onClose, onConsentGiven, showAsModal = true }: GDPRPrivacyNoticeProps) {
-  const [consents, setConsents] = useState<ConsentData>({
-    gdprConsent: false,
-    marketingConsent: false,
-    clinicalDataConsent: false,
-    communicationConsent: false
-  });
+        {/* What Data We Collect */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Database className="h-5 w-5 text-teal-600" />
+              What Personal Data We Collect
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-semibold text-sm mb-2">Identity Data:</h4>
+                <ul className="list-disc list-inside text-sm space-y-1 text-muted-foreground">
+                  <li>Full name, date of birth, gender</li>
+                  <li>NHS number (for patients)</li>
+                  <li>GDC registration number (for dentists)</li>
+                  <li>Professional qualifications and credentials</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 className="font-semibold text-sm mb-2">Contact Data:</h4>
+                <ul className="list-disc list-inside text-sm space-y-1 text-muted-foreground">
+                  <li>Email address and telephone numbers</li>
+                  <li>Home address and emergency contact details</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 className="font-semibold text-sm mb-2">Health Data (Special Category):</h4>
+                <ul className="list-disc list-inside text-sm space-y-1 text-muted-foreground">
+                  <li>Medical history and current conditions</li>
+                  <li>Medications and allergies</li>
+                  <li>Dental treatment history and clinical notes</li>
+                  <li>Triage assessment responses</li>
+                  <li>X-rays and clinical photographs (if applicable)</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 className="font-semibold text-sm mb-2">Technical Data:</h4>
+                <ul className="list-disc list-inside text-sm space-y-1 text-muted-foreground">
+                  <li>IP address and device information</li>
+                  <li>Login data and access times</li>
+                  <li>Browser type and version</li>
+                </ul>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-  const handleConsentChange = (type: keyof ConsentData, checked: boolean) => {
-    setConsents(prev => ({ ...prev, [type]: checked }));
-  };
+        {/* Legal Basis */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <FileText className="h-5 w-5 text-teal-600" />
+              Legal Basis for Processing
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="p-3 bg-muted rounded-lg">
+                <h4 className="font-semibold text-sm mb-1">Healthcare Services (Article 9(2)(h) UK GDPR)</h4>
+                <p className="text-sm text-muted-foreground">
+                  Processing is necessary for medical diagnosis, provision of health care, and management of health systems.
+                </p>
+              </div>
+              
+              <div className="p-3 bg-muted rounded-lg">
+                <h4 className="font-semibold text-sm mb-1">Vital Interests (Article 6(1)(d) UK GDPR)</h4>
+                <p className="text-sm text-muted-foreground">
+                  In emergency situations, we may process data to protect vital interests.
+                </p>
+              </div>
+              
+              <div className="p-3 bg-muted rounded-lg">
+                <h4 className="font-semibold text-sm mb-1">Consent (Article 6(1)(a) UK GDPR)</h4>
+                <p className="text-sm text-muted-foreground">
+                  For marketing communications and optional services, we rely on your explicit consent.
+                </p>
+              </div>
+              
+              <div className="p-3 bg-muted rounded-lg">
+                <h4 className="font-semibold text-sm mb-1">Legal Obligations (Article 6(1)(c) UK GDPR)</h4>
+                <p className="text-sm text-muted-foreground">
+                  To comply with NHS reporting requirements and professional regulations.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-  const handleSubmit = () => {
-    onConsentGiven(consents);
-    onClose();
-  };
+        {/* How We Use Data */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Globe className="h-5 w-5 text-teal-600" />
+              How We Use Your Data
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="list-disc list-inside text-sm space-y-2 text-muted-foreground">
+              <li>To match you with suitable dental appointments based on your needs</li>
+              <li>To facilitate communication between patients and dental practices</li>
+              <li>To maintain accurate clinical records for continuity of care</li>
+              <li>To process appointment bookings and send reminders</li>
+              <li>To conduct triage assessments for urgent care prioritization</li>
+              <li>To comply with NHS reporting and quality assurance requirements</li>
+              <li>To improve our services through anonymized analytics</li>
+              <li>To ensure platform security and prevent fraud</li>
+            </ul>
+          </CardContent>
+        </Card>
 
-  const canProceed = consents.gdprConsent && consents.clinicalDataConsent;
+        {/* Data Sharing */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Users className="h-5 w-5 text-teal-600" />
+              Who We Share Data With
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div>
+                <h4 className="font-semibold text-sm mb-2">Healthcare Providers:</h4>
+                <p className="text-sm text-muted-foreground">
+                  Your selected dental practice and healthcare professionals involved in your care
+                </p>
+              </div>
+              
+              <div>
+                <h4 className="font-semibold text-sm mb-2">NHS Systems:</h4>
+                <p className="text-sm text-muted-foreground">
+                  NHS Digital for reporting and integration with national health records
+                </p>
+              </div>
+              
+              <div>
+                <h4 className="font-semibold text-sm mb-2">Regulatory Bodies:</h4>
+                <p className="text-sm text-muted-foreground">
+                  Care Quality Commission (CQC), General Dental Council (GDC) when legally required
+                </p>
+              </div>
+              
+              <div>
+                <h4 className="font-semibold text-sm mb-2">Technology Partners:</h4>
+                <p className="text-sm text-muted-foreground">
+                  Secure cloud hosting providers (AWS), email service providers (under strict data processing agreements)
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-  const content = (
-    <div className="space-y-6">
-      <div className="text-center">
-        <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-          <i className="fas fa-shield-alt text-white text-2xl"></i>
-        </div>
-        <h2 className="text-2xl font-bold mb-2">Data Protection Notice</h2>
-        <p className="text-gray-600">
-          DentConnect is committed to protecting your privacy and complying with UK GDPR, CQC, and GDC requirements.
-        </p>
+        {/* Data Security */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Lock className="h-5 w-5 text-teal-600" />
+              Data Security Measures
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="list-disc list-inside text-sm space-y-2 text-muted-foreground">
+              <li>End-to-end encryption for all data transmissions</li>
+              <li>Encryption at rest for stored data using AES-256</li>
+              <li>Multi-factor authentication for healthcare professionals</li>
+              <li>Regular security audits and penetration testing</li>
+              <li>ISO 27001 certified data centers</li>
+              <li>NHS Data Security and Protection Toolkit compliance</li>
+              <li>Role-based access controls and audit logging</li>
+              <li>Regular staff training on data protection</li>
+            </ul>
+          </CardContent>
+        </Card>
+
+        {/* Data Retention */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Clock className="h-5 w-5 text-teal-600" />
+              Data Retention
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">
+                We retain your data in accordance with NHS guidelines and professional requirements:
+              </p>
+              <ul className="list-disc list-inside text-sm space-y-1 text-muted-foreground mt-2">
+                <li>Clinical records: 8 years from last treatment (adults)</li>
+                <li>Children's records: Until 25th birthday or 8 years after last treatment</li>
+                <li>Account information: 2 years after account closure</li>
+                <li>Marketing preferences: Until consent withdrawn</li>
+                <li>Technical logs: 12 months</li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Your Rights */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Shield className="h-5 w-5 text-teal-600" />
+              Your Rights Under UK GDPR
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="p-3 bg-green-50 rounded-lg">
+                <h4 className="font-semibold text-sm mb-1">Right to Access</h4>
+                <p className="text-sm text-muted-foreground">
+                  Request a copy of your personal data we hold
+                </p>
+              </div>
+              
+              <div className="p-3 bg-green-50 rounded-lg">
+                <h4 className="font-semibold text-sm mb-1">Right to Rectification</h4>
+                <p className="text-sm text-muted-foreground">
+                  Request correction of inaccurate or incomplete data
+                </p>
+              </div>
+              
+              <div className="p-3 bg-green-50 rounded-lg">
+                <h4 className="font-semibold text-sm mb-1">Right to Erasure</h4>
+                <p className="text-sm text-muted-foreground">
+                  Request deletion of your data (subject to legal retention requirements)
+                </p>
+              </div>
+              
+              <div className="p-3 bg-green-50 rounded-lg">
+                <h4 className="font-semibold text-sm mb-1">Right to Data Portability</h4>
+                <p className="text-sm text-muted-foreground">
+                  Receive your data in a structured, machine-readable format
+                </p>
+              </div>
+              
+              <div className="p-3 bg-green-50 rounded-lg">
+                <h4 className="font-semibold text-sm mb-1">Right to Object</h4>
+                <p className="text-sm text-muted-foreground">
+                  Object to processing for direct marketing or legitimate interests
+                </p>
+              </div>
+              
+              <div className="p-3 bg-green-50 rounded-lg">
+                <h4 className="font-semibold text-sm mb-1">Right to Restrict Processing</h4>
+                <p className="text-sm text-muted-foreground">
+                  Request limitation of processing in certain circumstances
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Contact Information */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Mail className="h-5 w-5 text-teal-600" />
+              Contact Us
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div>
+                <h4 className="font-semibold text-sm mb-1">Data Protection Queries:</h4>
+                <p className="text-sm text-muted-foreground">
+                  Email: privacy@dentconnect.co.uk<br />
+                  Phone: 0191 123 4567
+                </p>
+              </div>
+              
+              <div>
+                <h4 className="font-semibold text-sm mb-1">Complaints:</h4>
+                <p className="text-sm text-muted-foreground">
+                  If you're not satisfied with our response, you can complain to the Information Commissioner's Office:<br />
+                  Website: ico.org.uk<br />
+                  Phone: 0303 123 1113
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Updates */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <FileText className="h-5 w-5 text-teal-600" />
+              Updates to This Notice
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              We may update this privacy notice from time to time. We will notify you of any significant changes 
+              via email or through the platform. The latest version will always be available on our website.
+            </p>
+          </CardContent>
+        </Card>
       </div>
-
-      <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="data">Data Use</TabsTrigger>
-          <TabsTrigger value="rights">Your Rights</TabsTrigger>
-          <TabsTrigger value="contact">Contact</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">What Data We Collect</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-start space-x-3">
-                <Badge className="bg-blue-100 text-blue-800 mt-1">Personal</Badge>
-                <div>
-                  <p className="font-medium">Personal Information</p>
-                  <p className="text-sm text-gray-600">Name, email, phone number, date of birth</p>
-                </div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <Badge className="bg-red-100 text-red-800 mt-1">Health</Badge>
-                <div>
-                  <p className="font-medium">Health & Clinical Data</p>
-                  <p className="text-sm text-gray-600">Medical conditions, medications, allergies, symptoms, triage assessments</p>
-                </div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <Badge className="bg-green-100 text-green-800 mt-1">Usage</Badge>
-                <div>
-                  <p className="font-medium">System Usage</p>
-                  <p className="text-sm text-gray-600">Appointment bookings, preferences, accessibility needs</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="data" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Lawful Basis for Processing</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="border-l-4 border-blue-500 pl-4">
-                <p className="font-medium">Healthcare Provision (Article 6(1)(c) & Article 9(2)(h))</p>
-                <p className="text-sm text-gray-600">
-                  We process your health data to provide healthcare services and meet our obligations under UK healthcare regulations.
-                </p>
-              </div>
-              <div className="border-l-4 border-green-500 pl-4">
-                <p className="font-medium">Legitimate Interest (Article 6(1)(f))</p>
-                <p className="text-sm text-gray-600">
-                  We process personal data to operate our booking platform and ensure clinical safety.
-                </p>
-              </div>
-              <div className="border-l-4 border-yellow-500 pl-4">
-                <p className="font-medium">Consent (Article 6(1)(a) & Article 9(2)(a))</p>
-                <p className="text-sm text-gray-600">
-                  We ask for your consent for marketing communications and non-essential data processing.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Data Retention</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Clinical records</span>
-                  <Badge variant="outline">10 years (NHS guidelines)</Badge>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Appointment history</span>
-                  <Badge variant="outline">7 years (CQC requirement)</Badge>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Marketing preferences</span>
-                  <Badge variant="outline">Until withdrawn</Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="rights" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Your GDPR Rights</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <i className="fas fa-eye text-blue-600"></i>
-                    <span className="font-medium">Right to Access</span>
-                  </div>
-                  <p className="text-sm text-gray-600">View all your personal data</p>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <i className="fas fa-edit text-green-600"></i>
-                    <span className="font-medium">Right to Rectification</span>
-                  </div>
-                  <p className="text-sm text-gray-600">Correct inaccurate data</p>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <i className="fas fa-trash text-red-600"></i>
-                    <span className="font-medium">Right to Erasure</span>
-                  </div>
-                  <p className="text-sm text-gray-600">Delete your data (where legally permitted)</p>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <i className="fas fa-download text-purple-600"></i>
-                    <span className="font-medium">Right to Portability</span>
-                  </div>
-                  <p className="text-sm text-gray-600">Export your data</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="contact" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Data Protection Contact</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <p className="font-medium">Data Protection Officer</p>
-                <p className="text-sm text-gray-600">dpo@dentconnect.uk</p>
-                <p className="text-sm text-gray-600">+44 (0) 191 123 4567</p>
-              </div>
-              <div className="space-y-2">
-                <p className="font-medium">Information Commissioner's Office</p>
-                <p className="text-sm text-gray-600">Report concerns: ico.org.uk</p>
-                <p className="text-sm text-gray-600">Helpline: 0303 123 1113</p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-
-      <Card className="border-blue-200 bg-blue-50">
-        <CardHeader>
-          <CardTitle className="text-lg">Required Consents</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-3">
-            <div className="flex items-start space-x-3">
-              <Checkbox
-                id="gdprConsent"
-                checked={consents.gdprConsent}
-                onCheckedChange={(checked) => handleConsentChange("gdprConsent", !!checked)}
-              />
-              <div>
-                <Label htmlFor="gdprConsent" className="text-sm font-medium">
-                  I have read and understood the privacy notice <span className="text-red-500">*</span>
-                </Label>
-                <p className="text-xs text-gray-600 mt-1">
-                  Required to use DentConnect services
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start space-x-3">
-              <Checkbox
-                id="clinicalDataConsent"
-                checked={consents.clinicalDataConsent}
-                onCheckedChange={(checked) => handleConsentChange("clinicalDataConsent", !!checked)}
-              />
-              <div>
-                <Label htmlFor="clinicalDataConsent" className="text-sm font-medium">
-                  I consent to processing of my health data for clinical care <span className="text-red-500">*</span>
-                </Label>
-                <p className="text-xs text-gray-600 mt-1">
-                  Required for appointment booking and clinical safety
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start space-x-3">
-              <Checkbox
-                id="communicationConsent"
-                checked={consents.communicationConsent}
-                onCheckedChange={(checked) => handleConsentChange("communicationConsent", !!checked)}
-              />
-              <div>
-                <Label htmlFor="communicationConsent" className="text-sm font-medium">
-                  I consent to SMS/email appointment reminders
-                </Label>
-                <p className="text-xs text-gray-600 mt-1">
-                  Appointment confirmations and reminders
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start space-x-3">
-              <Checkbox
-                id="marketingConsent"
-                checked={consents.marketingConsent}
-                onCheckedChange={(checked) => handleConsentChange("marketingConsent", !!checked)}
-              />
-              <div>
-                <Label htmlFor="marketingConsent" className="text-sm font-medium">
-                  I consent to marketing communications
-                </Label>
-                <p className="text-xs text-gray-600 mt-1">
-                  Optional: Updates about new services and offers
-                </p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <div className="flex justify-between items-center pt-4">
-        <Button variant="outline" onClick={onClose}>
-          Cancel
-        </Button>
-        <Button
-          onClick={handleSubmit}
-          disabled={!canProceed}
-          className="bg-blue-600 hover:bg-blue-700"
-        >
-          Accept & Continue
-        </Button>
-      </div>
-    </div>
+    </ScrollArea>
   );
-
-  if (showAsModal) {
-    return (
-      <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Data Protection & Privacy Notice</DialogTitle>
-          </DialogHeader>
-          <ScrollArea className="max-h-[80vh]">
-            {content}
-          </ScrollArea>
-        </DialogContent>
-      </Dialog>
-    );
-  }
-
-  return content;
 }

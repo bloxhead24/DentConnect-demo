@@ -35,14 +35,25 @@ export function AuthGuard({ children, requiredUserType, redirectTo = "/login" }:
 
       // Check user type if required
       if (requiredUserType) {
-        const user = JSON.parse(userStr);
-        if (user.userType !== requiredUserType) {
+        try {
+          const user = JSON.parse(userStr);
+          if (user.userType !== requiredUserType) {
+            toast({
+              title: "Access denied",
+              description: `This page is only accessible to ${requiredUserType}s`,
+              variant: "destructive",
+            });
+            setLocation('/');
+            return;
+          }
+        } catch (error) {
+          console.error('Error parsing user data:', error);
           toast({
-            title: "Access denied",
-            description: `This page is only accessible to ${requiredUserType}s`,
+            title: "Authentication error",
+            description: "Please log in again",
             variant: "destructive",
           });
-          setLocation('/');
+          setLocation(redirectTo);
           return;
         }
       }
