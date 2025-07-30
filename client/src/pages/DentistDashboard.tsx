@@ -681,7 +681,7 @@ export default function DentistDashboard() {
       />
 
       {/* Floating Royal College of Surgeons Badge */}
-      <div className="fixed bottom-6 left-6 z-40 animate-in fade-in-50 slide-in-from-bottom-4 duration-1000 hover:opacity-30 hover:-translate-y-20 hover:-translate-x-20 transition-all duration-300">
+      <div className="fixed bottom-6 left-6 z-40 animate-in fade-in-50 slide-in-from-bottom-4 duration-1000 hover:translate-x-[calc(100vw-24rem)] transition-all duration-500 ease-in-out">
         <div className="bg-white/95 backdrop-blur-md border border-blue-200 rounded-2xl px-4 py-3 shadow-xl hover:shadow-2xl transition-all duration-300 max-w-xs">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-full flex items-center justify-center shadow-lg">
