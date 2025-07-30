@@ -81,16 +81,16 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
   });
 
   useEffect(() => {
-    // Initial loading animation - faster
+    // Initial loading animation
     if (currentStep === "loading") {
       setTimeout(() => {
         setCurrentStep("questions");
-      }, 1000); // Reduced from 2000ms
+      }, 1500); // Balanced timing
     }
   }, [currentStep]);
 
   useEffect(() => {
-    // Searching animation - much faster
+    // Searching animation - balanced speed
     if (currentStep === "searching") {
       const interval = setInterval(() => {
         setSearchProgress(prev => {
@@ -116,9 +116,9 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
             }
             return 100;
           }
-          return prev + 10; // Increased from 5 to 10 for faster progress
+          return prev + 6.5; // Balanced progress speed
         });
-      }, 50); // Reduced from 100ms to 50ms
+      }, 80); // Balanced interval timing
 
       return () => clearInterval(interval);
     }
@@ -393,65 +393,92 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
             transition={{ duration: 0.5 }}
             className="text-center w-full max-w-lg"
           >
-            <Card className="p-8 bg-white shadow-lg">
+            <Card className="p-8 bg-gradient-to-br from-white to-teal-50 shadow-xl border-teal-100">
               {/* Enhanced Search Animation with Tooth */}
-              <div className="relative w-24 h-24 mx-auto mb-6">
-                {/* Simple pulse effect */}
+              <div className="relative w-32 h-32 mx-auto mb-8">
+                {/* Multiple pulse layers */}
                 <motion.div
-                  animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.3, 0.5] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute inset-0 bg-teal-100 rounded-full"
+                  animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.1, 0.3] }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute inset-0 bg-teal-200 rounded-full"
+                />
+                <motion.div
+                  animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.2, 0.4] }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+                  className="absolute inset-0 bg-teal-300 rounded-full"
                 />
                 
-                {/* Map pin with tooth icon */}
+                {/* Central circle with gradient */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <MapPin className="w-16 h-16 text-teal-600" />
-                  
-                  {/* Animated tooth inside map pin */}
-                  <motion.div
-                    animate={{ 
-                      y: [-2, 2, -2],
-                      rotate: [-5, 5, -5]
-                    }}
-                    transition={{ 
-                      duration: 3, 
-                      repeat: Infinity, 
-                      ease: "easeInOut" 
-                    }}
-                    className="absolute"
-                  >
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      className="text-white"
+                  <div className="relative w-28 h-28 bg-gradient-to-br from-teal-500 to-teal-600 rounded-full shadow-lg">
+                    {/* Map pin with enhanced styling */}
+                    <MapPin className="absolute inset-0 m-auto w-20 h-20 text-white/80" />
+                    
+                    {/* Animated tooth with glow */}
+                    <motion.div
+                      animate={{ 
+                        y: [-3, 3, -3],
+                        rotate: [-8, 8, -8],
+                        scale: [1, 1.1, 1]
+                      }}
+                      transition={{ 
+                        duration: 2.5, 
+                        repeat: Infinity, 
+                        ease: "easeInOut" 
+                      }}
+                      className="absolute inset-0 flex items-center justify-center"
                     >
-                      <path
-                        d="M12 2C10.5 2 9.5 3 9.5 4.5C9.5 5.5 9 6 8 6C6.5 6 5.5 7 5.5 8.5C5.5 10 6 11 6 13C6 16 7 18 8.5 19.5C9.5 20.5 10.5 21 12 21C13.5 21 14.5 20.5 15.5 19.5C17 18 18 16 18 13C18 11 18.5 10 18.5 8.5C18.5 7 17.5 6 16 6C15 6 14.5 5.5 14.5 4.5C14.5 3 13.5 2 12 2Z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                  </motion.div>
+                      <div className="relative">
+                        <div className="absolute inset-0 blur-sm">
+                          <svg
+                            width="32"
+                            height="32"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            className="text-white/50"
+                          >
+                            <path
+                              d="M12 2C10.5 2 9.5 3 9.5 4.5C9.5 5.5 9 6 8 6C6.5 6 5.5 7 5.5 8.5C5.5 10 6 11 6 13C6 16 7 18 8.5 19.5C9.5 20.5 10.5 21 12 21C13.5 21 14.5 20.5 15.5 19.5C17 18 18 16 18 13C18 11 18.5 10 18.5 8.5C18.5 7 17.5 6 16 6C15 6 14.5 5.5 14.5 4.5C14.5 3 13.5 2 12 2Z"
+                              fill="currentColor"
+                            />
+                          </svg>
+                        </div>
+                        <svg
+                          width="32"
+                          height="32"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          className="text-white relative z-10"
+                        >
+                          <path
+                            d="M12 2C10.5 2 9.5 3 9.5 4.5C9.5 5.5 9 6 8 6C6.5 6 5.5 7 5.5 8.5C5.5 10 6 11 6 13C6 16 7 18 8.5 19.5C9.5 20.5 10.5 21 12 21C13.5 21 14.5 20.5 15.5 19.5C17 18 18 16 18 13C18 11 18.5 10 18.5 8.5C18.5 7 17.5 6 16 6C15 6 14.5 5.5 14.5 4.5C14.5 3 13.5 2 12 2Z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                      </div>
+                    </motion.div>
+                  </div>
                 </div>
                 
-                {/* Orbiting sparkles */}
-                {[0, 120, 240].map((rotation, index) => (
+                {/* Enhanced orbiting elements */}
+                {[0, 90, 180, 270].map((rotation, index) => (
                   <motion.div
                     key={rotation}
                     animate={{ rotate: 360 }}
                     transition={{
-                      duration: 6,
+                      duration: 4,
                       repeat: Infinity,
                       ease: "linear",
-                      delay: index * 2
+                      delay: index * 1
                     }}
                     className="absolute inset-0"
                   >
-                    <div 
-                      className="absolute w-2 h-2 bg-teal-400 rounded-full"
+                    <motion.div 
+                      animate={{ scale: [0.8, 1.2, 0.8] }}
+                      transition={{ duration: 2, repeat: Infinity, delay: index * 0.5 }}
+                      className="absolute w-3 h-3 bg-gradient-to-br from-teal-400 to-teal-500 rounded-full shadow-sm"
                       style={{ 
-                        top: '10%', 
+                        top: '5%', 
                         left: '50%',
                         transform: 'translateX(-50%)'
                       }}
@@ -464,33 +491,88 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                className="text-xl font-medium mb-2 text-gray-800"
+                className="text-2xl font-semibold mb-3 text-gray-800"
               >
-                Finding Your Appointment
+                Finding Your Perfect Match
               </motion.h3>
               
               <motion.p 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
-                className="text-sm text-gray-600 mb-6"
+                className="text-base text-gray-600 mb-8"
               >
-                Searching available appointments near you...
+                We're analyzing <span className="font-semibold text-teal-600">8 practices</span> in your area
               </motion.p>
               
-              {/* Simple Progress Bar */}
-              <div className="mb-6">
-                <Progress value={searchProgress} className="h-2" />
+              {/* Enhanced Progress Bar with gradient */}
+              <div className="mb-8">
+                <div className="flex justify-between text-xs text-gray-500 mb-2">
+                  <span>Searching...</span>
+                  <span>{Math.round(searchProgress)}%</span>
+                </div>
+                <div className="relative">
+                  <Progress value={searchProgress} className="h-3 bg-gray-100" />
+                  <motion.div
+                    animate={{ opacity: [0.5, 1, 0.5] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                    className="absolute inset-0 h-3 bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none"
+                    style={{ width: `${searchProgress}%` }}
+                  />
+                </div>
               </div>
               
-              {/* Simple Status Message */}
-              <div className="text-center">
-                <p className="text-sm text-gray-500">
-                  {searchProgress < 30 ? "Checking availability..." : 
-                   searchProgress < 60 ? "Finding best matches..." :
-                   searchProgress < 90 ? "Finalizing appointment..." :
-                   "Almost ready..."}
-                </p>
+              {/* Enhanced Status Messages with icons */}
+              <div className="space-y-2">
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: searchProgress >= 0 ? 1 : 0, x: 0 }}
+                  className="flex items-center gap-2 text-sm"
+                >
+                  <div className={cn(
+                    "w-4 h-4 rounded-full",
+                    searchProgress >= 25 ? "bg-teal-500" : "bg-gray-300 animate-pulse"
+                  )}>
+                    {searchProgress >= 25 && <Check className="w-4 h-4 text-white p-0.5" />}
+                  </div>
+                  <span className={searchProgress >= 25 ? "text-gray-700" : "text-gray-500"}>
+                    Checking emergency appointments
+                  </span>
+                </motion.div>
+                
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: searchProgress >= 25 ? 1 : 0, x: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="flex items-center gap-2 text-sm"
+                >
+                  <div className={cn(
+                    "w-4 h-4 rounded-full",
+                    searchProgress >= 50 ? "bg-teal-500" : "bg-gray-300 animate-pulse"
+                  )}>
+                    {searchProgress >= 50 && <Check className="w-4 h-4 text-white p-0.5" />}
+                  </div>
+                  <span className={searchProgress >= 50 ? "text-gray-700" : "text-gray-500"}>
+                    Matching with available dentists
+                  </span>
+                </motion.div>
+                
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: searchProgress >= 50 ? 1 : 0, x: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="flex items-center gap-2 text-sm"
+                >
+                  <div className={cn(
+                    "w-4 h-4 rounded-full",
+                    searchProgress >= 75 ? "bg-teal-500" : "bg-gray-300 animate-pulse"
+                  )}>
+                    {searchProgress >= 75 && <Check className="w-4 h-4 text-white p-0.5" />}
+                  </div>
+                  <span className={searchProgress >= 75 ? "text-gray-700" : "text-gray-500"}>
+                    Securing your appointment slot
+                  </span>
+                </motion.div>
               </div>
             </Card>
           </motion.div>
