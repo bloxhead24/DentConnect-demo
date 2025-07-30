@@ -56,7 +56,7 @@ export function BookingStatusHeader() {
       return response.json();
     },
     enabled: !!currentUserId,
-    refetchInterval: 10000, // Refetch every 10 seconds
+    refetchInterval: 2000, // Refetch every 2 seconds for faster updates
   });
 
   // Get the most recent booking

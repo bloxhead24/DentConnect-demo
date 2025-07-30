@@ -104,6 +104,9 @@ export function AppointmentApprovalDashboard({ practiceId }: AppointmentApproval
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/practice/${practiceId}/pending-bookings`] });
       queryClient.invalidateQueries({ queryKey: [`/api/practice/${practiceId}/available-appointments`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/practice/${practiceId}/approved-bookings`] });
+      // Invalidate all user bookings to update patient status immediately
+      queryClient.invalidateQueries({ queryKey: ['/api/users'], exact: false });
     }
   });
 
@@ -120,6 +123,9 @@ export function AppointmentApprovalDashboard({ practiceId }: AppointmentApproval
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/practice/${practiceId}/pending-bookings`] });
       queryClient.invalidateQueries({ queryKey: [`/api/practice/${practiceId}/available-appointments`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/practice/${practiceId}/approved-bookings`] });
+      // Invalidate all user bookings to update patient status immediately
+      queryClient.invalidateQueries({ queryKey: ['/api/users'], exact: false });
     }
   });
 

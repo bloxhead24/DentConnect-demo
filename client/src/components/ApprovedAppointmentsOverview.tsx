@@ -80,12 +80,13 @@ export function ApprovedAppointmentsOverview({ practiceId }: ApprovedAppointment
     setExpandedBookings(newExpanded);
   };
   const { data: allApprovedBookings = [], isLoading } = useQuery<ApprovedBooking[]>({
-    queryKey: ["/api/practice", practiceId, "approved-bookings"],
+    queryKey: [`/api/practice/${practiceId}/approved-bookings`],
     queryFn: async () => {
       const response = await fetch(`/api/practice/${practiceId}/approved-bookings`);
       if (!response.ok) throw new Error('Failed to fetch approved bookings');
       return response.json();
-    }
+    },
+    refetchInterval: 5000 // Refetch every 5 seconds to show updates quickly
   });
 
   // Filter to only show bookings with complete triage assessments
