@@ -23,7 +23,8 @@ import {
   DollarSign,
   Activity,
   Bell,
-  Video
+  Video,
+  LogOut
 } from "lucide-react";
 import PricingManagement from "../components/PricingManagement";
 import { AddSlotFlow } from "../components/AddSlotFlow";
@@ -53,6 +54,15 @@ export default function DentistDashboard() {
   const [selectedPeriod, setSelectedPeriod] = useState<"week" | "month" | "year">("month");
   const [showVirtualConsultation, setShowVirtualConsultation] = useState(false);
   const [showAddSlotFlow, setShowAddSlotFlow] = useState(false);
+  
+  // Get logged-in user info
+  const userStr = sessionStorage.getItem('dentconnect_user');
+  const user = userStr ? JSON.parse(userStr) : null;
+  
+  const handleLogout = () => {
+    sessionStorage.removeItem('dentconnect_user');
+    window.location.href = '/login';
+  };
 
   // Mock data - in real app, these would come from API
   const { data: stats } = useQuery<DashboardStats>({
@@ -131,7 +141,7 @@ export default function DentistDashboard() {
                 <div className="h-8 w-px bg-gray-300" />
                 <div>
                   <h1 className="text-xl font-semibold text-gray-900">Dentist Dashboard</h1>
-                  <p className="text-sm text-gray-500">Welcome back, Dr. Richard Thompson</p>
+                  <p className="text-sm text-gray-500">Welcome back, {user?.firstName} {user?.lastName}</p>
                   <div className="flex items-center space-x-2 mt-1">
                     <span className="text-xs text-gray-400">Practice Connection Tag:</span>
                     <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs">
@@ -170,9 +180,18 @@ export default function DentistDashboard() {
                   <Settings className="h-4 w-4 mr-2" />
                   Settings
                 </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleLogout}
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Logout
+                </Button>
                 <Avatar>
                   <AvatarImage src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 300 300'%3E%3Ccircle cx='150' cy='150' r='150' fill='%234F46E5'/%3E%3Ctext x='150' y='160' text-anchor='middle' dy='.3em' fill='white' font-size='48' font-family='Arial'%3E👨‍⚕️%3C/text%3E%3C/svg%3E" />
-                  <AvatarFallback>DR</AvatarFallback>
+                  <AvatarFallback>{user?.firstName?.[0] || 'D'}{user?.lastName?.[0] || 'R'}</AvatarFallback>
                 </Avatar>
               </div>
             </div>

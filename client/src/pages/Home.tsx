@@ -17,9 +17,12 @@ import { VirtualConsultation } from "../components/VirtualConsultation";
 import { BookingFlow } from "../components/BookingFlow";
 import { BookingStatusHeader } from "../components/BookingStatusHeader";
 import { RoyalCollegeBadge } from "../components/RoyalCollegeBadge";
-import { Stethoscope, Users, MapPin, Clock, Shield, Star, Video } from "lucide-react";
+import { Stethoscope, Users, MapPin, Clock, Shield, Star, Video, LogIn, LogOut, User } from "lucide-react";
+import { useAuth } from "../hooks/useAuth";
+import { Link } from "wouter";
 
 export default function Home() {
+  const { user, logout, isAuthenticated } = useAuth();
   const [currentStep, setCurrentStep] = useState<"treatment" | "accessibility" | "searchmode" | "budget" | "practiceConnect" | "authenticatedDiary" | "map" | "openSearch">("treatment");
   const [selectedTreatment, setSelectedTreatment] = useState<TreatmentType | null>(null);
   const [selectedAccessibility, setSelectedAccessibility] = useState<AccessibilityNeed[]>([]);
@@ -126,15 +129,49 @@ export default function Home() {
               <DentConnectLogo width={180} height={36} className="drop-shadow-sm" />
             </div>
             <div className="flex items-center space-x-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => window.location.href = "/dentist-signup"}
-                className="text-primary hover:bg-primary/10 transition-all duration-300 border-primary/20"
-              >
-                <Users className="h-4 w-4 mr-1" />
-                Join as Dentist
-              </Button>
+              {!isAuthenticated ? (
+                <>
+                  <Link href="/login">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      className="text-primary hover:bg-primary/10 transition-all duration-300 border-primary/20"
+                    >
+                      <LogIn className="h-4 w-4 mr-1" />
+                      Login
+                    </Button>
+                  </Link>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => window.location.href = "/dentist-signup"}
+                    className="text-primary hover:bg-primary/10 transition-all duration-300 border-primary/20"
+                  >
+                    <Users className="h-4 w-4 mr-1" />
+                    Join as Dentist
+                  </Button>
+                </>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-2 px-3 py-1 bg-primary/10 rounded-lg">
+                    <User className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-medium text-gray-700">
+                      {user?.firstName} {user?.lastName}
+                    </span>
+                    {user?.userType === 'dentist' && (
+                      <Badge variant="secondary" className="text-xs">Dentist</Badge>
+                    )}
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={logout}
+                    className="text-gray-600 hover:text-red-600"
+                  >
+                    <LogOut className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
               
               {/* Professional Early Access Button */}
               <Button 
@@ -146,14 +183,37 @@ export default function Home() {
                 Early Access
               </Button>
               
-              <div className="flex items-center space-x-1">
+              <div className="flex items-center space-x-2">
                 <button className="p-2 rounded-xl hover:bg-primary/10 transition-all duration-300 group relative">
                   <i className="fas fa-bell text-gray-600 group-hover:text-primary text-sm"></i>
                   <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full opacity-80"></div>
                 </button>
-                <button className="p-2 rounded-xl hover:bg-primary/10 transition-all duration-300 group">
-                  <i className="fas fa-user text-gray-600 group-hover:text-primary text-sm"></i>
-                </button>
+                {isAuthenticated ? (
+                  <>
+                    <Link href={user?.userType === 'dentist' ? '/dentist-dashboard' : '/booking-status'}>
+                      <Button variant="outline" size="sm" className="flex items-center space-x-2">
+                        <User className="h-4 w-4" />
+                        <span className="hidden sm:inline">{user?.firstName || 'My Account'}</span>
+                      </Button>
+                    </Link>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={logout}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <LogOut className="h-4 w-4 sm:mr-2" />
+                      <span className="hidden sm:inline">Logout</span>
+                    </Button>
+                  </>
+                ) : (
+                  <Link href="/login">
+                    <Button variant="outline" size="sm" className="flex items-center space-x-2">
+                      <LogIn className="h-4 w-4" />
+                      <span className="hidden sm:inline">Login</span>
+                    </Button>
+                  </Link>
+                )}
               </div>
             </div>
           </div>

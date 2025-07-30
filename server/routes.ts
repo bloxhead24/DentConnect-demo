@@ -55,6 +55,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.sendFile(path.join(__dirname, "..", "test-map.html"));
   });
 
+  // Serve auth test page
+  app.get("/test-auth", (req, res) => {
+    res.sendFile(path.join(__dirname, "..", "test-auth.html"));
+  });
+
   // Test CSP in production mode endpoint
   app.get("/test-csp", (req, res) => {
     const nonce = res.locals.nonce || 'no-nonce';
@@ -98,6 +103,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     app.use(validateInput);
     app.use(apiRateLimiter);
   }
+
+  // Authentication routes
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { email, password, userType } = req.body;
+      
+      // For demo purposes, accept any credentials and return mock user data
+      // In production, this would validate against a database with hashed passwords
+      
+      let userData;
+      if (userType === 'dentist') {
+        userData = {
+          id: 1,
+          email: email,
+          firstName: 'Dr. Richard',
+          lastName: 'Thompson',
+          userType: 'dentist',
+          practiceId: 1
+        };
+      } else {
+        userData = {
+          id: 1,
+          email: email,
+          firstName: 'Demo',
+          lastName: 'Patient',
+          userType: 'patient'
+        };
+      }
+      
+      res.json(userData);
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(401).json({ message: "Invalid credentials" });
+    }
+  });
+
+  app.post("/api/auth/logout", (req, res) => {
+    // In production, this would invalidate sessions/tokens
+    res.json({ message: "Logged out successfully" });
+  });
+
+  app.get("/api/auth/me", (req, res) => {
+    // In production, this would check session/token and return user data
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+    
+    // For demo, return mock user data
+    res.json({
+      id: 1,
+      email: 'demo@example.com',
+      firstName: 'Demo',
+      lastName: 'User',
+      userType: 'patient'
+    });
+  });
 
   // Practice routes
   app.get("/api/practices", async (req, res) => {

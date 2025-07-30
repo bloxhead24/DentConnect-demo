@@ -8,17 +8,25 @@ import { PasswordProtection } from "./components/PasswordProtection";
 import NotFound from "./pages/not-found";
 
 // Error boundary component
-class ErrorBoundary extends React.Component {
-  constructor(props) {
+interface ErrorBoundaryState {
+  hasError: boolean;
+}
+
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+}
+
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError(_error: Error): ErrorBoundaryState {
     return { hasError: true };
   }
 
-  componentDidCatch(error, errorInfo) {
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error("App error:", error, errorInfo);
   }
 
@@ -67,17 +75,30 @@ function LoadingScreen() {
 import Home from "./pages/Home";
 import EarlyAccessForm from "./pages/EarlyAccessForm";
 import DentistSignup from "./pages/DentistSignup";
+import PatientSignup from "./pages/PatientSignup";
 import DentistDashboard from "./pages/DentistDashboard";
 import BookingStatusPage from "./pages/BookingStatusPage";
+import Login from "./pages/Login";
+import { AuthGuard } from "./components/AuthGuard";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/login" component={Login} />
       <Route path="/early-access" component={EarlyAccessForm} />
       <Route path="/dentist-signup" component={DentistSignup} />
-      <Route path="/dentist-dashboard" component={DentistDashboard} />
-      <Route path="/booking-status" component={BookingStatusPage} />
+      <Route path="/patient-signup" component={PatientSignup} />
+      <Route path="/dentist-dashboard">
+        <AuthGuard requiredUserType="dentist">
+          <DentistDashboard />
+        </AuthGuard>
+      </Route>
+      <Route path="/booking-status">
+        <AuthGuard>
+          <BookingStatusPage />
+        </AuthGuard>
+      </Route>
       <Route component={NotFound} />
     </Switch>
   );
