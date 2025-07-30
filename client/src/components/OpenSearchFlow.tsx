@@ -293,25 +293,19 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
           >
             <Card className="p-6">
               <div className="mb-6">
-                <div className="flex justify-between items-center mb-4">
+                <div className="flex justify-between items-center mb-2">
                   <h3 className="text-lg font-semibold">Quick Assessment</h3>
                   <span className="text-sm text-muted-foreground">
                     {currentQuestionIndex + 1} of {dentalQuestions.length}
                   </span>
                 </div>
-                <Progress value={(currentQuestionIndex + 1) / dentalQuestions.length * 100} className="h-2" />
                 
-                {/* Accuracy note for pain assessment */}
-                {currentQuestionIndex === 0 && (
-                  <div className="mt-3 p-2 bg-amber-50 rounded-md">
-                    <div className="flex items-start space-x-2">
-                      <AlertCircle className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
-                      <p className="text-xs text-amber-800">
-                        <span className="font-medium">Important:</span> Please assess your pain level accurately. This helps us connect you to the right level of dental care and ensures you receive appropriate priority.
-                      </p>
-                    </div>
-                  </div>
-                )}
+                {/* Friendly accuracy note throughout assessment */}
+                <p className="text-xs text-gray-600 mb-3">
+                  Your honest answers help us connect you with the right dental care quickly and safely.
+                </p>
+                
+                <Progress value={(currentQuestionIndex + 1) / dentalQuestions.length * 100} className="h-2" />
               </div>
 
               <div className="space-y-4">
