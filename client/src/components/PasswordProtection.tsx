@@ -20,6 +20,8 @@ export function PasswordProtection({ children }: PasswordProtectionProps) {
     const auth = sessionStorage.getItem("demo_authenticated");
     if (auth === "true") {
       setIsAuthenticated(true);
+      // Also set the key that AuthGuard checks
+      sessionStorage.setItem("dentconnect_authenticated", "true");
     }
     setIsLoading(false);
   }, []);
@@ -29,6 +31,7 @@ export function PasswordProtection({ children }: PasswordProtectionProps) {
     
     if (password === "AppleTooth") {
       sessionStorage.setItem("demo_authenticated", "true");
+      sessionStorage.setItem("dentconnect_authenticated", "true");
       setIsAuthenticated(true);
       setError(false);
     } else {

@@ -95,11 +95,7 @@ function Router() {
       <Route path="/early-access" component={EarlyAccessForm} />
       <Route path="/dentist-signup" component={DentistSignup} />
       <Route path="/patient-signup" component={PatientSignup} />
-      <Route path="/dentist-dashboard">
-        <AuthGuard requiredUserType="dentist">
-          <DentistDashboard />
-        </AuthGuard>
-      </Route>
+      <Route path="/dentist-dashboard" component={DentistDashboard} />
       <Route path="/booking-status">
         <AuthGuard>
           <BookingStatusPage />
