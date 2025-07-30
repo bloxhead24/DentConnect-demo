@@ -363,6 +363,29 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
                   </div>
                 </div>
 
+                {/* Map */}
+                <div className="h-48 rounded-lg overflow-hidden border bg-gray-100">
+                  <div className="relative h-full w-full">
+                    {/* Simple static map image */}
+                    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+                      <div className="text-center">
+                        <MapPin className="w-8 h-8 text-teal-600 mx-auto mb-2" />
+                        <p className="text-sm text-gray-600 font-medium">{matchedAppointment.practice.name}</p>
+                        <p className="text-xs text-gray-500">{matchedAppointment.practice.address}</p>
+                      </div>
+                    </div>
+                    {/* Map overlay with location marker */}
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                      <div className="relative">
+                        <div className="absolute inset-0 animate-ping bg-teal-400 rounded-full opacity-75" style={{ width: '48px', height: '48px' }}></div>
+                        <div className="relative bg-teal-600 rounded-full p-2">
+                          <MapPin className="w-4 h-4 text-white" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Dentist Info */}
                 <div className="border-t pt-4">
                   <div className="flex justify-between items-start">
@@ -446,16 +469,24 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
       {/* Booking Flow Modal */}
       {showBookingFlow && matchedAppointment && (
         <BookingFlow
-          appointmentData={{
+          practice={matchedAppointment.practice}
+          appointment={{
             id: matchedAppointment.id,
             practiceId: matchedAppointment.practice?.id || 1,
             dentistId: matchedAppointment.dentist?.id || 1,
             appointmentDate: matchedAppointment.appointment.date,
             appointmentTime: matchedAppointment.appointment.time,
-            treatmentCategory: "emergency",
-            practice: matchedAppointment.practice
+            duration: matchedAppointment.appointment.duration,
+            treatmentType: matchedAppointment.appointment.type,
+            status: "available"
           }}
+          dentist={matchedAppointment.dentist}
+          isOpen={showBookingFlow}
           onClose={() => {
+            setShowBookingFlow(false);
+            onClose();
+          }}
+          onSuccess={() => {
             setShowBookingFlow(false);
             onClose();
           }}
