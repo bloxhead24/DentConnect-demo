@@ -394,7 +394,7 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
             className="text-center w-full max-w-lg"
           >
             <Card className="p-8 bg-white shadow-lg">
-              {/* Simplified Search Animation */}
+              {/* Enhanced Search Animation with Tooth */}
               <div className="relative w-24 h-24 mx-auto mb-6">
                 {/* Simple pulse effect */}
                 <motion.div
@@ -403,10 +403,61 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
                   className="absolute inset-0 bg-teal-100 rounded-full"
                 />
                 
-                {/* Static map pin icon */}
+                {/* Map pin with tooth icon */}
                 <div className="absolute inset-0 flex items-center justify-center">
                   <MapPin className="w-16 h-16 text-teal-600" />
+                  
+                  {/* Animated tooth inside map pin */}
+                  <motion.div
+                    animate={{ 
+                      y: [-2, 2, -2],
+                      rotate: [-5, 5, -5]
+                    }}
+                    transition={{ 
+                      duration: 3, 
+                      repeat: Infinity, 
+                      ease: "easeInOut" 
+                    }}
+                    className="absolute"
+                  >
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      className="text-white"
+                    >
+                      <path
+                        d="M12 2C10.5 2 9.5 3 9.5 4.5C9.5 5.5 9 6 8 6C6.5 6 5.5 7 5.5 8.5C5.5 10 6 11 6 13C6 16 7 18 8.5 19.5C9.5 20.5 10.5 21 12 21C13.5 21 14.5 20.5 15.5 19.5C17 18 18 16 18 13C18 11 18.5 10 18.5 8.5C18.5 7 17.5 6 16 6C15 6 14.5 5.5 14.5 4.5C14.5 3 13.5 2 12 2Z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </motion.div>
                 </div>
+                
+                {/* Orbiting sparkles */}
+                {[0, 120, 240].map((rotation, index) => (
+                  <motion.div
+                    key={rotation}
+                    animate={{ rotate: 360 }}
+                    transition={{
+                      duration: 6,
+                      repeat: Infinity,
+                      ease: "linear",
+                      delay: index * 2
+                    }}
+                    className="absolute inset-0"
+                  >
+                    <div 
+                      className="absolute w-2 h-2 bg-teal-400 rounded-full"
+                      style={{ 
+                        top: '10%', 
+                        left: '50%',
+                        transform: 'translateX(-50%)'
+                      }}
+                    />
+                  </motion.div>
+                ))}
               </div>
               
               <motion.h3 
