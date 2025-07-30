@@ -31,9 +31,23 @@ export function BookingStatusHeader() {
   const [lastStatus, setLastStatus] = useState<string | null>(null);
 
   useEffect(() => {
+    // Check for currentUserId in sessionStorage
     const userId = sessionStorage.getItem('currentUserId');
     if (userId) {
       setCurrentUserId(parseInt(userId));
+    }
+    // Also check if there's a logged in user
+    const userStr = sessionStorage.getItem('dentconnect_user');
+    if (userStr && !userId) {
+      try {
+        const user = JSON.parse(userStr);
+        if (user.id) {
+          setCurrentUserId(user.id);
+          sessionStorage.setItem('currentUserId', user.id.toString());
+        }
+      } catch (e) {
+        console.error('Error parsing user data:', e);
+      }
     }
   }, []);
 
@@ -51,6 +65,17 @@ export function BookingStatusHeader() {
 
   // Get the most recent booking
   const latestBooking = bookings.length > 0 ? bookings[bookings.length - 1] : null;
+
+  // Trigger animation when status changes
+  useEffect(() => {
+    if (latestBooking && latestBooking.approvalStatus) {
+      const currentStatus = latestBooking.approvalStatus;
+      if (lastStatus && lastStatus !== currentStatus) {
+        setAnimationKey(prev => prev + 1);
+      }
+      setLastStatus(currentStatus);
+    }
+  }, [latestBooking?.approvalStatus, lastStatus]);
 
   if (!latestBooking || !currentUserId) {
     return null;
@@ -82,15 +107,6 @@ export function BookingStatusHeader() {
         };
     }
   };
-
-  // Trigger animation when status changes
-  useEffect(() => {
-    const currentStatus = latestBooking.approvalStatus;
-    if (lastStatus && lastStatus !== currentStatus) {
-      setAnimationKey(prev => prev + 1);
-    }
-    setLastStatus(currentStatus);
-  }, [latestBooking.approvalStatus, lastStatus]);
 
   const statusConfig = getStatusConfig(latestBooking.approvalStatus);
   const StatusIcon = statusConfig.icon;
