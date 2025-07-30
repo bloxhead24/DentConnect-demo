@@ -10,9 +10,17 @@ const MAX_LOGIN_ATTEMPTS = 5;
 const LOCKOUT_DURATION = 30 * 60 * 1000; // 30 minutes
 
 // JWT configuration
-const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
+const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = '24h';
 const REFRESH_TOKEN_EXPIRES_IN = '7d';
+
+// Validate JWT secret exists in production
+if (process.env.NODE_ENV === 'production' && !JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is required in production');
+}
+
+// Use a fallback for development only
+const JWT_SIGNING_KEY = JWT_SECRET || (process.env.NODE_ENV === 'development' ? crypto.randomBytes(64).toString('hex') : '');
 
 // Password hashing and verification
 export async function hashPassword(password: string): Promise<string> {
@@ -65,15 +73,15 @@ export function validatePasswordStrength(password: string): { valid: boolean; er
 
 // Token generation
 export function generateToken(payload: any): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+  return jwt.sign(payload, JWT_SIGNING_KEY, { expiresIn: JWT_EXPIRES_IN });
 }
 
 export function generateRefreshToken(payload: any): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRES_IN });
+  return jwt.sign(payload, JWT_SIGNING_KEY, { expiresIn: REFRESH_TOKEN_EXPIRES_IN });
 }
 
 export function verifyToken(token: string): any {
-  return jwt.verify(token, JWT_SECRET);
+  return jwt.verify(token, JWT_SIGNING_KEY);
 }
 
 // Secure random token generation

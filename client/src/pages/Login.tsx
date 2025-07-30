@@ -183,27 +183,30 @@ export default function Login() {
       // Simulate GDC verification
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      const response = await fetch('/api/users', {
+      const response = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: data.email,
+          password: data.password,
           firstName: data.firstName,
           lastName: data.lastName,
+          gdcNumber: data.gdcNumber,
           userType: 'dentist',
-          gdprConsentGiven: true,
+          gdprConsent: true,
+          marketingConsent: false,
         }),
       });
 
-      if (!response.ok) throw new Error('Signup failed');
+      const result = await response.json();
       
-      const user = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message || 'Signup failed');
+      }
       
-      sessionStorage.setItem('dentconnect_user', JSON.stringify({
-        ...user,
-        userType: 'dentist',
-        practiceId: 1
-      }));
+      // Store user data and token
+      sessionStorage.setItem('dentconnect_user', JSON.stringify(result.user));
+      sessionStorage.setItem('dentconnect_token', result.token);
       
       toast({
         title: "Account created successfully!",
@@ -211,14 +214,15 @@ export default function Login() {
       });
       
       setLocation('/dentist-dashboard');
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Signup failed",
-        description: "Please try again later",
+        description: error.message || "Please try again later",
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
+      setShowVerificationInfo(false);
     }
   };
 
