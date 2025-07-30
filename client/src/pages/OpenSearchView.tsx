@@ -9,6 +9,7 @@ import { cn } from "../lib/utils";
 import type { TreatmentType, AccessibilityNeed } from "../lib/types";
 import type { Practice, Appointment, Dentist } from "@shared/schema";
 import { BookingFlow } from "../components/BookingFlow";
+import { OpenSearchFlow } from "../components/OpenSearchFlow";
 
 interface OpenSearchViewProps {
   selectedTreatment: TreatmentType | null;
@@ -36,6 +37,7 @@ export default function OpenSearchView({
   const [showInteractiveMap, setShowInteractiveMap] = useState(false);
   const [showAppointmentDiary, setShowAppointmentDiary] = useState<any>(null);
   const [showEmergencySearch, setShowEmergencySearch] = useState(false);
+  const [showOpenSearchFlow, setShowOpenSearchFlow] = useState(false);
 
   // Mock data for practices with available appointments
   const mockPractices: (Practice & { availableAppointments: Appointment[]; dentists: Dentist[] })[] = [
@@ -216,6 +218,25 @@ export default function OpenSearchView({
               <Badge className="bg-orange-600 text-white">
                 {selectedTreatment?.category || "urgent"}
               </Badge>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Rapid Search Button */}
+        <Card className="mb-6 bg-gradient-to-r from-teal-500 to-teal-600 border-0 shadow-lg">
+          <CardContent className="p-6">
+            <div className="text-center text-white">
+              <h2 className="text-2xl font-bold mb-2">Need Urgent Care?</h2>
+              <p className="mb-4 text-teal-50">Get matched with the nearest available appointment in seconds</p>
+              <Button 
+                size="lg" 
+                variant="secondary"
+                className="bg-white text-teal-600 hover:bg-teal-50 font-semibold"
+                onClick={() => setShowOpenSearchFlow(true)}
+              >
+                <Zap className="w-5 h-5 mr-2" />
+                Start Rapid Search
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -1613,6 +1634,11 @@ src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25'
           )}
         </div>
       </div>
+      
+      {/* Open Search Flow Modal */}
+      {showOpenSearchFlow && (
+        <OpenSearchFlow onClose={() => setShowOpenSearchFlow(false)} />
+      )}
     </div>
   );
 }
