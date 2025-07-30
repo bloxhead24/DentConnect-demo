@@ -118,111 +118,100 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-secondary/5">
-      {/* Booking Status Header */}
+      {/* Booking Status Header - Only show if user has bookings */}
       <BookingStatusHeader />
       
-      {/* Enhanced Mobile-First Header */}
-      <div className="bg-white/90 backdrop-blur-md shadow-lg border-b border-primary/10">
-        <div className="px-4 py-3">
-          <div className="flex items-center justify-between mb-3">
+      {/* Unified Header */}
+      <div className="sticky top-0 z-40 bg-white shadow-md border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo Section */}
             <div className="flex items-center">
-              <DentConnectLogo width={180} height={36} className="drop-shadow-sm" />
+              <Link href="/">
+                <DentConnectLogo width={160} height={32} className="cursor-pointer" />
+              </Link>
             </div>
-            <div className="flex items-center space-x-2">
+            
+            {/* Navigation Section */}
+            <div className="flex items-center space-x-3">
+              {/* Early Access Button - Always visible */}
+              <Button 
+                onClick={() => window.open('https://dentconnect.replit.app/', '_blank')}
+                className="bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 shadow-sm hidden md:flex items-center"
+                size="sm"
+              >
+                <Star className="h-4 w-4 mr-2" />
+                Early Access
+              </Button>
+              
               {!isAuthenticated ? (
                 <>
                   <Link href="/login">
                     <Button 
                       variant="outline" 
                       size="sm"
-                      className="text-primary hover:bg-primary/10 transition-all duration-300 border-primary/20"
+                      className="text-primary border-primary hover:bg-primary hover:text-white transition-all duration-200"
                     >
-                      <LogIn className="h-4 w-4 mr-1" />
-                      Login
+                      <LogIn className="h-4 w-4 mr-2" />
+                      <span className="hidden sm:inline">Login</span>
                     </Button>
                   </Link>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => window.location.href = "/dentist-signup"}
-                    className="text-primary hover:bg-primary/10 transition-all duration-300 border-primary/20"
-                  >
-                    <Users className="h-4 w-4 mr-1" />
-                    Join as Dentist
-                  </Button>
+                  <Link href="/dentist-signup">
+                    <Button 
+                      size="sm"
+                      className="bg-primary text-white hover:bg-primary/90 transition-all duration-200"
+                    >
+                      <Users className="h-4 w-4 mr-2" />
+                      <span className="hidden sm:inline">Join as Dentist</span>
+                    </Button>
+                  </Link>
                 </>
               ) : (
-                <div className="flex items-center space-x-2">
-                  <div className="flex items-center space-x-2 px-3 py-1 bg-primary/10 rounded-lg">
-                    <User className="h-4 w-4 text-primary" />
+                <div className="flex items-center space-x-3">
+                  {/* User Info */}
+                  <div className="hidden md:flex items-center space-x-2 px-3 py-1.5 bg-gray-100 rounded-lg">
+                    <User className="h-4 w-4 text-gray-600" />
                     <span className="text-sm font-medium text-gray-700">
                       {user?.firstName} {user?.lastName}
                     </span>
                     {user?.userType === 'dentist' && (
-                      <Badge variant="secondary" className="text-xs">Dentist</Badge>
+                      <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800">
+                        Dentist
+                      </Badge>
                     )}
                   </div>
+                  
+                  {/* Dentist Dashboard Link - Only show for dentists */}
+                  {user?.userType === 'dentist' && (
+                    <Link href="/dentist-dashboard">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        className="text-primary border-primary hover:bg-primary hover:text-white transition-all duration-200"
+                      >
+                        <Stethoscope className="h-4 w-4 mr-2" />
+                        <span className="hidden sm:inline">Dashboard</span>
+                      </Button>
+                    </Link>
+                  )}
+                  
+                  {/* Logout Button */}
                   <Button 
                     variant="ghost" 
                     size="sm"
                     onClick={logout}
-                    className="text-gray-600 hover:text-red-600"
+                    className="text-gray-600 hover:text-red-600 hover:bg-red-50 transition-all duration-200"
                   >
-                    <LogOut className="h-4 w-4" />
+                    <LogOut className="h-4 w-4 mr-2" />
+                    <span className="hidden sm:inline">Logout</span>
                   </Button>
                 </div>
               )}
-              
-              {/* Professional Early Access Button */}
-              <Button 
-                onClick={() => window.open('https://dentconnect.replit.app/', '_blank')}
-                className="bg-blue-600 text-white hover:bg-blue-700 transition-all duration-300 shadow-sm hover:shadow-md border-0"
-                size="sm"
-              >
-                <i className="fas fa-star mr-2"></i>
-                Early Access
-              </Button>
-              
-              <div className="flex items-center space-x-2">
-                <button className="p-2 rounded-xl hover:bg-primary/10 transition-all duration-300 group relative">
-                  <i className="fas fa-bell text-gray-600 group-hover:text-primary text-sm"></i>
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full opacity-80"></div>
-                </button>
-                {isAuthenticated ? (
-                  <>
-                    <Link href={user?.userType === 'dentist' ? '/dentist-dashboard' : '/booking-status'}>
-                      <Button variant="outline" size="sm" className="flex items-center space-x-2">
-                        <User className="h-4 w-4" />
-                        <span className="hidden sm:inline">{user?.firstName || 'My Account'}</span>
-                      </Button>
-                    </Link>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={logout}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <LogOut className="h-4 w-4 sm:mr-2" />
-                      <span className="hidden sm:inline">Logout</span>
-                    </Button>
-                  </>
-                ) : (
-                  <Link href="/login">
-                    <Button variant="outline" size="sm" className="flex items-center space-x-2">
-                      <LogIn className="h-4 w-4" />
-                      <span className="hidden sm:inline">Login</span>
-                    </Button>
-                  </Link>
-                )}
-              </div>
             </div>
           </div>
-          
-
         </div>
-        
-        {/* Progress Indicator for Mobile */}
-        <div className="px-4 pb-2">
+      {/* Progress Indicator for Mobile */}
+      <div className="bg-white/80 backdrop-blur-sm border-b border-gray-100 px-4 py-2">
           <div className="flex items-center justify-between text-xs text-gray-500">
             <div className={`flex items-center space-x-1 ${currentStep === "treatment" ? "text-primary font-medium" : ""}`}>
               <div className={`w-2 h-2 rounded-full ${currentStep === "treatment" ? "bg-primary" : "bg-gray-300"}`}></div>

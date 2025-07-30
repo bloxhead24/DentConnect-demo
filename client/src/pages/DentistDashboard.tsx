@@ -139,72 +139,62 @@ export default function DentistDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Enhanced Header with Navigation and Badges */}
-      <div className="bg-white shadow-sm border-b">
+      {/* Simplified Header */}
+      <div className="bg-white shadow-sm border-b sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="py-4">
-            <div className="flex justify-between items-center mb-4">
-              <div className="flex items-center space-x-4">
-                <DentConnectLogo width={180} height={35} />
-                <div className="h-8 w-px bg-gray-300" />
-                <div>
-                  <h1 className="text-xl font-semibold text-gray-900">Dentist Dashboard</h1>
-                  <p className="text-sm text-gray-500">Welcome back, {user?.firstName} {user?.lastName}</p>
-                  <div className="flex items-center space-x-2 mt-1">
-                    <span className="text-xs text-gray-400">Practice Connection Tag:</span>
-                    <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs">
-                      DRRICHARD
-                    </Badge>
-                  </div>
+          <div className="flex items-center justify-between h-16">
+            {/* Left Section */}
+            <div className="flex items-center space-x-4">
+              <Link href="/">
+                <DentConnectLogo width={160} height={32} className="cursor-pointer" />
+              </Link>
+              <div className="hidden md:block h-6 w-px bg-gray-300" />
+              <div className="hidden md:block">
+                <h1 className="text-lg font-semibold text-gray-900">Dentist Dashboard</h1>
+                <div className="flex items-center space-x-2">
+                  <span className="text-xs text-gray-500">Welcome, {user?.firstName} {user?.lastName}</span>
+                  <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs">
+                    DRRICHARD
+                  </Badge>
                 </div>
-              </div>
-              <div className="flex items-center space-x-3">
-                {/* Return to Patient Side Button */}
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => window.location.href = "/"}
-                  className="text-primary border-primary/30 hover:bg-primary/10 transition-all duration-300"
-                >
-                  <Users className="h-4 w-4 mr-2" />
-                  Patient View
-                </Button>
-                
-                {/* Professional Early Access Button */}
-                <Button 
-                  onClick={() => window.open('https://dentconnect.replit.app/', '_blank')}
-                  className="bg-blue-600 text-white hover:bg-blue-700 transition-all duration-300 shadow-sm hover:shadow-md border-0"
-                  size="sm"
-                >
-                  <i className="fas fa-star mr-2"></i>
-                  Early Access
-                </Button>
-                
-                <Button variant="outline" size="sm">
-                  <Bell className="h-4 w-4 mr-2" />
-                  Notifications
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Settings
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={handleLogout}
-                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Logout
-                </Button>
-                <Avatar>
-                  <AvatarImage src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 300 300'%3E%3Ccircle cx='150' cy='150' r='150' fill='%234F46E5'/%3E%3Ctext x='150' y='160' text-anchor='middle' dy='.3em' fill='white' font-size='48' font-family='Arial'%3E👨‍⚕️%3C/text%3E%3C/svg%3E" />
-                  <AvatarFallback>{user?.firstName?.[0] || 'D'}{user?.lastName?.[0] || 'R'}</AvatarFallback>
-                </Avatar>
               </div>
             </div>
             
-
+            {/* Right Section */}
+            <div className="flex items-center space-x-2">
+              {/* Early Access Button */}
+              <Button 
+                onClick={() => window.open('https://dentconnect.replit.app/', '_blank')}
+                className="bg-blue-600 text-white hover:bg-blue-700 hidden md:flex items-center"
+                size="sm"
+              >
+                <Star className="h-4 w-4 mr-2" />
+                Early Access
+              </Button>
+              
+              {/* Patient View Button */}
+              <Link href="/">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="text-primary border-primary hover:bg-primary hover:text-white"
+                >
+                  <Users className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Patient View</span>
+                </Button>
+              </Link>
+              
+              {/* Logout Button */}
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={handleLogout}
+                className="text-gray-600 hover:text-red-600 hover:bg-red-50"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">Logout</span>
+              </Button>
+            </div>
           </div>
         </div>
       </div>
