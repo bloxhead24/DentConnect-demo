@@ -38,6 +38,7 @@ export interface IStorage {
   
   // Appointment operations
   getAvailableAppointments(practiceId: number, date?: Date): Promise<Appointment[]>;
+  getAllAvailableAppointments(): Promise<any[]>;
   bookAppointment(appointmentId: number, userId: number): Promise<Appointment>;
   createAppointment(appointment: InsertAppointment): Promise<Appointment>;
   getPracticeAppointments(practiceId: number): Promise<Appointment[]>;
@@ -683,6 +684,54 @@ export class MemStorage implements IStorage {
         appointment.status === "available" &&
         (!date || appointment.appointmentDate.toDateString() === date.toDateString())
     );
+  }
+
+  async getAllAvailableAppointments(): Promise<any[]> {
+    const availableAppointments = Array.from(this.appointments.values()).filter(
+      appointment => appointment.status === "available"
+    );
+
+    // Join with practices, dentists, and treatments to get complete data
+    return availableAppointments.map(appointment => {
+      const practice = this.practices.get(appointment.practiceId);
+      const dentist = this.dentists.get(appointment.dentistId);
+      const treatment = this.treatments.get(appointment.treatmentId);
+
+      return {
+        id: appointment.id,
+        appointmentDate: appointment.appointmentDate,
+        appointmentTime: appointment.appointmentTime,
+        duration: appointment.duration,
+        practiceId: appointment.practiceId,
+        dentistId: appointment.dentistId,
+        treatmentId: appointment.treatmentId,
+        status: appointment.status,
+        practice: practice ? {
+          id: practice.id,
+          name: practice.name,
+          address: practice.address,
+          city: practice.city,
+          postcode: practice.postcode,
+          phone: practice.phone,
+          latitude: practice.latitude,
+          longitude: practice.longitude
+        } : null,
+        dentist: dentist ? {
+          id: dentist.id,
+          name: dentist.name,
+          title: dentist.title,
+          specialization: dentist.specialization,
+          photo: dentist.photo
+        } : null,
+        treatment: treatment ? {
+          id: treatment.id,
+          name: treatment.name,
+          category: treatment.category,
+          duration: treatment.duration,
+          description: treatment.description
+        } : null
+      };
+    });
   }
 
   async bookAppointment(appointmentId: number, userId: number): Promise<Appointment> {

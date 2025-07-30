@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import { useQuery } from "@tanstack/react-query";
+import { BookingFlow } from "@/components/BookingFlow";
 
 interface DentalQuestion {
   id: string;
@@ -63,12 +65,19 @@ interface OpenSearchFlowProps {
 }
 
 export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
-  const [currentStep, setCurrentStep] = useState<"loading" | "questions" | "searching" | "result">("loading");
+  const [currentStep, setCurrentStep] = useState<"loading" | "questions" | "searching" | "result" | "booking">("loading");
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [searchProgress, setSearchProgress] = useState(0);
   const [matchedAppointment, setMatchedAppointment] = useState<any>(null);
+  const [showBookingFlow, setShowBookingFlow] = useState(false);
   const { toast } = useToast();
+
+  // Fetch real appointments from the API
+  const { data: availableAppointments = [] } = useQuery({
+    queryKey: ["/api/appointments/available/all"],
+    enabled: currentStep === "searching"
+  });
 
   useEffect(() => {
     // Initial loading animation
@@ -80,34 +89,29 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
   }, [currentStep]);
 
   useEffect(() => {
-    // Searching animation
-    if (currentStep === "searching") {
+    // Searching animation with real appointments
+    if (currentStep === "searching" && availableAppointments.length > 0) {
       const interval = setInterval(() => {
         setSearchProgress(prev => {
           if (prev >= 100) {
             clearInterval(interval);
-            // Mock matched appointment
-            setMatchedAppointment({
-              practice: {
-                name: "Newcastle Dental Excellence",
-                address: "123 Grey Street, Newcastle upon Tyne, NE1 6EE",
-                distance: "2.3 km",
-                travelTime: "7 minutes"
-              },
-              dentist: {
-                name: "Dr. Sarah Thompson",
-                specialization: "Emergency Dental Care",
-                rating: 4.8,
-                experience: "12 years"
-              },
-              appointment: {
-                date: new Date(Date.now() + 2 * 60 * 60 * 1000), // 2 hours from now
-                duration: "30 minutes",
-                type: "Emergency Consultation"
-              },
-              estimatedCost: "£85-120"
-            });
-            setCurrentStep("result");
+            
+            // Find the best matching appointment based on urgency and distance
+            const urgencyScore = calculateUrgencyScore(answers);
+            const bestAppointment = findBestAppointment(availableAppointments, urgencyScore);
+            
+            if (bestAppointment) {
+              setMatchedAppointment(bestAppointment);
+              setCurrentStep("result");
+            } else {
+              // No appointments found
+              toast({
+                title: "No appointments available",
+                description: "Unfortunately, there are no appointments available at this time. Please try again later.",
+                variant: "destructive"
+              });
+              onClose();
+            }
             return 100;
           }
           return prev + 5;
@@ -116,7 +120,60 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
 
       return () => clearInterval(interval);
     }
-  }, [currentStep]);
+  }, [currentStep, availableAppointments, answers, toast, onClose]);
+
+  // Helper function to calculate urgency score
+  const calculateUrgencyScore = (answers: Record<string, string>) => {
+    let score = 0;
+    if (answers["pain-level"] === "severe") score += 10;
+    else if (answers["pain-level"] === "moderate") score += 7;
+    else if (answers["pain-level"] === "mild") score += 4;
+    
+    if (answers["issue-duration"] === "today") score += 8;
+    else if (answers["issue-duration"] === "days") score += 6;
+    else if (answers["issue-duration"] === "week") score += 4;
+    
+    if (answers["symptoms"] === "swelling") score += 9;
+    else if (answers["symptoms"] === "bleeding") score += 7;
+    else if (answers["symptoms"] === "sensitivity") score += 5;
+    
+    return score;
+  };
+
+  // Helper function to find the best appointment
+  const findBestAppointment = (appointments: any[], urgencyScore: number) => {
+    if (!appointments || appointments.length === 0) return null;
+    
+    // Sort appointments by date/time (earliest first)
+    const sortedAppointments = [...appointments].sort((a, b) => {
+      const dateA = new Date(`${a.appointmentDate} ${a.appointmentTime}`);
+      const dateB = new Date(`${b.appointmentDate} ${b.appointmentTime}`);
+      return dateA.getTime() - dateB.getTime();
+    });
+    
+    // For high urgency, return the earliest appointment
+    // For lower urgency, we could implement more complex matching logic
+    const appointment = sortedAppointments[0];
+    
+    return {
+      id: appointment.id,
+      practice: appointment.practice || {
+        name: "Unknown Practice",
+        address: "Address not available"
+      },
+      dentist: appointment.dentist || {
+        name: "Available Dentist",
+        specialization: "General Dentistry"
+      },
+      appointment: {
+        date: new Date(appointment.appointmentDate),
+        time: appointment.appointmentTime,
+        duration: appointment.duration || 30,
+        type: appointment.treatment?.name || "Dental Consultation"
+      },
+      estimatedCost: "£5 booking fee (treatment cost assessed during appointment)"
+    };
+  };
 
   const handleAnswer = (value: string) => {
     setAnswers({ ...answers, [dentalQuestions[currentQuestionIndex].id]: value });
@@ -130,14 +187,9 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
   };
 
   const handleBookingDecision = (approved: boolean) => {
-    if (approved) {
-      toast({
-        title: "Booking Confirmed!",
-        description: "You'll receive confirmation details shortly. The practice will contact you within 15 minutes.",
-        duration: 5000,
-      });
-      // In real app, this would navigate to booking confirmation
-      onClose();
+    if (approved && matchedAppointment) {
+      // Show the booking flow to collect triage information
+      setShowBookingFlow(true);
     } else {
       // Reset to show different options
       setCurrentStep("searching");
@@ -288,8 +340,8 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
                   <h3 className="text-xl font-semibold">Perfect Match Found!</h3>
                 </div>
                 <p className="text-teal-50">
-                  Available in {format(matchedAppointment.appointment.date, "h:mm a")} • 
-                  {matchedAppointment.practice.travelTime} away
+                  Available at {matchedAppointment.appointment.time || format(matchedAppointment.appointment.date, "h:mm a")} • 
+                  {matchedAppointment.practice.travelTime || "Nearby location"}
                 </p>
               </div>
 
@@ -302,10 +354,12 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
                       <MapPin className="w-4 h-4 text-muted-foreground" />
                       <span>{matchedAppointment.practice.address}</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Navigation className="w-4 h-4 text-muted-foreground" />
-                      <span>{matchedAppointment.practice.distance} • {matchedAppointment.practice.travelTime}</span>
-                    </div>
+                    {(matchedAppointment.practice.distance || matchedAppointment.practice.travelTime) && (
+                      <div className="flex items-center gap-2">
+                        <Navigation className="w-4 h-4 text-muted-foreground" />
+                        <span>{matchedAppointment.practice.distance} • {matchedAppointment.practice.travelTime}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -315,13 +369,17 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
                     <div>
                       <h5 className="font-medium">{matchedAppointment.dentist.name}</h5>
                       <p className="text-sm text-muted-foreground">{matchedAppointment.dentist.specialization}</p>
-                      <p className="text-sm text-muted-foreground">{matchedAppointment.dentist.experience} experience</p>
+                      {matchedAppointment.dentist.experience && (
+                        <p className="text-sm text-muted-foreground">{matchedAppointment.dentist.experience} experience</p>
+                      )}
                     </div>
-                    <div className="text-right">
-                      <div className="flex items-center gap-1">
-                        <span className="text-sm font-medium">★ {matchedAppointment.dentist.rating}</span>
+                    {matchedAppointment.dentist.rating && (
+                      <div className="text-right">
+                        <div className="flex items-center gap-1">
+                          <span className="text-sm font-medium">★ {matchedAppointment.dentist.rating}</span>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
 
@@ -330,11 +388,11 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
                   <div className="bg-accent/50 rounded-lg p-4 space-y-2">
                     <div className="flex justify-between">
                       <span className="text-sm font-medium">Appointment Time:</span>
-                      <span className="text-sm">{format(matchedAppointment.appointment.date, "h:mm a 'today'")}</span>
+                      <span className="text-sm">{matchedAppointment.appointment.time} on {format(matchedAppointment.appointment.date, "MMM d, yyyy")}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm font-medium">Duration:</span>
-                      <span className="text-sm">{matchedAppointment.appointment.duration}</span>
+                      <span className="text-sm">{matchedAppointment.appointment.duration} minutes</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm font-medium">Estimated Cost:</span>
@@ -384,6 +442,25 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Booking Flow Modal */}
+      {showBookingFlow && matchedAppointment && (
+        <BookingFlow
+          appointmentData={{
+            id: matchedAppointment.id,
+            practiceId: matchedAppointment.practice?.id || 1,
+            dentistId: matchedAppointment.dentist?.id || 1,
+            appointmentDate: matchedAppointment.appointment.date,
+            appointmentTime: matchedAppointment.appointment.time,
+            treatmentCategory: "emergency",
+            practice: matchedAppointment.practice
+          }}
+          onClose={() => {
+            setShowBookingFlow(false);
+            onClose();
+          }}
+        />
+      )}
     </div>
   );
 }

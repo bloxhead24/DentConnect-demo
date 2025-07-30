@@ -471,6 +471,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Appointment routes
+  // Get all available appointments across all practices (for rapid search)
+  app.get("/api/appointments/available/all", async (req, res) => {
+    try {
+      const appointments = await storage.getAllAvailableAppointments();
+      res.json(appointments);
+    } catch (error) {
+      console.error("Error fetching all appointments:", error);
+      res.status(500).json({ message: "Failed to fetch appointments" });
+    }
+  });
+
   app.get("/api/appointments/:practiceId", async (req, res) => {
     try {
       const practiceId = parseInt(req.params.practiceId);
