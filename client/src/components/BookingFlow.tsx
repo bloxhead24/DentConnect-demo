@@ -115,7 +115,7 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
       
       console.log('User payload:', userPayload);
       
-      const userResponse = await fetch('/api/users', {
+      const userResponse = await fetch('/api/users/guest', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userPayload)

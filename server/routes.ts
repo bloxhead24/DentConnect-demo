@@ -504,6 +504,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Create guest user for booking (no password required)
+  app.post("/api/users/guest", async (req, res) => {
+    try {
+      console.log("Guest user creation request body:", req.body);
+      
+      // Validate required fields for guest user
+      const { email, firstName, lastName, phone, userType = 'patient' } = req.body;
+      
+      if (!email || !firstName || !lastName || !phone) {
+        return res.status(400).json({ 
+          error: "Missing required fields", 
+          details: "Email, firstName, lastName, and phone are required" 
+        });
+      }
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.json(existingUser);
+      }
+      
+      // Create guest user with a temporary password
+      const guestUserData = {
+        email,
+        password: `Temp${Date.now()}!`, // Temporary password, user will need to reset
+        firstName,
+        lastName,
+        phone,
+        dateOfBirth: req.body.dateOfBirth || null,
+        userType,
+        emergencyContact: req.body.emergencyContact || null,
+        gdprConsentGiven: true,
+        gdprConsentDate: new Date()
+      };
+      
+      const user = await storage.createUser(guestUserData);
+      console.log("Guest user created successfully:", user);
+      res.status(201).json(user);
+    } catch (error) {
+      console.error("Guest user creation error:", error);
+      res.status(500).json({ error: "Failed to create guest user" });
+    }
+  });
+
   // Get user by email
   app.get("/api/users/email/:email", async (req, res) => {
     try {
