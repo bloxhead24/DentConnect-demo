@@ -11,7 +11,6 @@ import { cn } from "../lib/utils";
 import type { Practice, Appointment, Dentist } from "@shared/schema";
 import { GDPRPrivacyNotice, type ConsentData } from "./GDPRPrivacyNotice";
 import { TriageAssessment, type TriageAssessmentData } from "./TriageAssessment";
-import { UrgencyQuestionnaire, type UrgencyData } from "./UrgencyQuestionnaire";
 
 interface BookingFlowProps {
   practice: Practice | null;
@@ -23,7 +22,7 @@ interface BookingFlowProps {
 }
 
 export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, onSuccess }: BookingFlowProps) {
-  const [currentStep, setCurrentStep] = useState<"urgency" | "gdpr" | "triage" | "details" | "confirmation" | "success">("urgency");
+  const [currentStep, setCurrentStep] = useState<"urgency" | "gdpr" | "triage" | "details" | "confirmation" | "success">("gdpr");
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -39,17 +38,7 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
     clinicalDataConsent: false,
     communicationConsent: false
   });
-  const [urgencyData, setUrgencyData] = useState<UrgencyData>({
-    painLevel: 0,
-    painDuration: "",
-    symptoms: "",
-    swelling: false,
-    trauma: false,
-    bleeding: false,
-    infection: false,
-    urgencyLevel: "low",
-    additionalNotes: ""
-  });
+
   const [triageData, setTriageData] = useState<TriageAssessmentData>({
     painLevel: 0,
     painDuration: "",
@@ -77,10 +66,7 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleUrgencyComplete = (data: UrgencyData) => {
-    setUrgencyData(data);
-    setCurrentStep("gdpr");
-  };
+
 
   const handleGDPRConsent = (consents: ConsentData) => {
     setConsentData(consents);
@@ -172,17 +158,17 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
       console.log('Booking created:', booking);
 
       // ALWAYS create triage assessment - collect comprehensive patient data
-      // Use urgencyData for basic assessment if triageData is not complete
+      // Use the complete triage data from the triage assessment
       const finalTriageData = {
-        painLevel: triageData.painLevel || urgencyData.painLevel || 0,
-        painDuration: triageData.painDuration || urgencyData.painDuration || '',
-        symptoms: triageData.symptoms || urgencyData.symptoms || '',
-        swelling: triageData.swelling || urgencyData.swelling || false,
-        trauma: triageData.trauma || urgencyData.trauma || false,
-        bleeding: triageData.bleeding || urgencyData.bleeding || false,
-        infection: triageData.infection || urgencyData.infection || false,
-        urgencyLevel: triageData.urgencyLevel || urgencyData.urgencyLevel || 'low',
-        triageNotes: triageData.triageNotes || urgencyData.additionalNotes || '',
+        painLevel: triageData.painLevel || 0,
+        painDuration: triageData.painDuration || '',
+        symptoms: triageData.symptoms || '',
+        swelling: triageData.swelling || false,
+        trauma: triageData.trauma || false,
+        bleeding: triageData.bleeding || false,
+        infection: triageData.infection || false,
+        urgencyLevel: triageData.urgencyLevel || 'low',
+        triageNotes: triageData.triageNotes || '',
         anxietyLevel: triageData.anxietyLevel || 'comfortable',
         medicalHistory: triageData.medicalHistory || '',
         currentMedications: triageData.currentMedications || '',
@@ -284,7 +270,6 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
             <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
               <i className={cn(
                 "text-white",
-                currentStep === "urgency" ? "fas fa-exclamation-triangle" :
                 currentStep === "gdpr" ? "fas fa-shield-alt" :
                 currentStep === "triage" ? "fas fa-stethoscope" :
                 "fas fa-calendar-check"
@@ -292,14 +277,12 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
             </div>
             <div>
               <h3 className="text-xl font-bold">
-                {currentStep === "urgency" ? "Quick Assessment" :
-                 currentStep === "gdpr" ? "Data Protection Notice" :
+                {currentStep === "gdpr" ? "Data Protection Notice" :
                  currentStep === "triage" ? "Clinical Assessment" :
                  "Book Appointment"}
               </h3>
               <p className="text-sm text-gray-600">
-                {currentStep === "urgency" ? "Help us understand your dental needs" :
-                 currentStep === "gdpr" ? "GDPR compliance and consent management" :
+                {currentStep === "gdpr" ? "GDPR compliance and consent management" :
                  currentStep === "triage" ? "Clinical triage for patient safety" :
                  "Complete your booking details"}
               </p>
@@ -314,12 +297,7 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
           </div>
         </DialogHeader>
 
-        {currentStep === "urgency" && (
-          <UrgencyQuestionnaire
-            onComplete={handleUrgencyComplete}
-            onBack={onClose}
-          />
-        )}
+
 
         {currentStep === "gdpr" && (
           <GDPRPrivacyNotice
