@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, MapPin, Clock, AlertCircle, CheckCircle, XCircle, Navigation, Phone, Check, X } from "lucide-react";
+import { Search, MapPin, Clock, AlertCircle, CheckCircle, XCircle, Navigation, Phone, Check, X, AlertTriangle, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
@@ -72,6 +74,7 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
   const [searchProgress, setSearchProgress] = useState(0);
   const [matchedAppointment, setMatchedAppointment] = useState<any>(null);
   const [showBookingFlow, setShowBookingFlow] = useState(false);
+  const [showEmergencyAlert, setShowEmergencyAlert] = useState(false);
   const { toast } = useToast();
 
   // Fetch real appointments from the API

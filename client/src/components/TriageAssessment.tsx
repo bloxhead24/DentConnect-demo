@@ -8,6 +8,8 @@ import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Checkbox } from "./ui/checkbox";
 import { Badge } from "./ui/badge";
 import { Alert, AlertDescription } from "./ui/alert";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
+import { AlertTriangle, Phone, Info, AlertCircle } from "lucide-react";
 import { cn } from "../lib/utils";
 
 interface TriageAssessmentProps {
@@ -58,6 +60,8 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
 
   const [currentStep, setCurrentStep] = useState(1);
 
+  const [showEmergencyAlert, setShowEmergencyAlert] = useState(false);
+
   const handleSubmit = () => {
     // Auto-calculate urgency level based on symptoms
     let urgencyLevel: "low" | "medium" | "high" | "emergency" = "low";
@@ -70,7 +74,18 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
       urgencyLevel = "medium";
     }
 
+    // Show emergency alert if emergency symptoms detected
+    if (urgencyLevel === "emergency" && !showEmergencyAlert) {
+      setShowEmergencyAlert(true);
+      return;
+    }
+
     const finalData = { ...formData, urgencyLevel };
+    onComplete(finalData);
+  };
+
+  const handleEmergencyProceed = () => {
+    const finalData = { ...formData, urgencyLevel: "emergency" as const };
     onComplete(finalData);
   };
 
@@ -86,7 +101,8 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
   const isFormValid = formData.painLevel > 0 && formData.symptoms.trim() !== "";
 
   return (
-    <Card className="max-w-2xl mx-auto">
+    <>
+      <Card className="max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
           <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
@@ -686,6 +702,65 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
                   </Badge>
                 </div>
               </div>
+
+              {/* Emergency Protocol Alert - shown for emergency symptoms */}
+              {(formData.bleeding || formData.trauma || formData.painLevel >= 8) && (
+                <Alert className="mt-4 border-red-200 bg-red-50">
+                  <AlertTriangle className="h-4 w-4 text-red-600" />
+                  <AlertDescription>
+                    <div className="space-y-3 text-red-800">
+                      <p className="font-semibold">Emergency symptoms detected - immediate action recommended:</p>
+                      
+                      <div className="space-y-2">
+                        <div className="flex items-start space-x-2">
+                          <Phone className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium">Call NHS 111 immediately</p>
+                            <p className="text-xs">Available 24/7 for urgent dental triage</p>
+                          </div>
+                        </div>
+                        
+                        {formData.bleeding && (
+                          <div className="flex items-start space-x-2">
+                            <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                            <div>
+                              <p className="font-medium">Active bleeding detected</p>
+                              <p className="text-xs">Apply pressure with clean gauze and seek immediate care</p>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {formData.trauma && (
+                          <div className="flex items-start space-x-2">
+                            <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                            <div>
+                              <p className="font-medium">Dental trauma reported</p>
+                              <p className="text-xs">Visit A&E if tooth is knocked out or severe facial injury</p>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {formData.painLevel >= 8 && (
+                          <div className="flex items-start space-x-2">
+                            <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                            <div>
+                              <p className="font-medium">Severe pain level ({formData.painLevel}/10)</p>
+                              <p className="text-xs">May indicate abscess or serious infection requiring urgent care</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="bg-white rounded p-2 border border-red-200">
+                        <p className="text-xs font-medium text-red-700">
+                          You can still book through DentConnect, but we strongly recommend seeking 
+                          immediate emergency care first.
+                        </p>
+                      </div>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              )}
             </div>
 
             <div className="flex justify-between gap-4 px-2 pb-2">
@@ -709,5 +784,90 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
         )}
       </CardContent>
     </Card>
+
+    {/* Emergency Protocol Alert Dialog */}
+    <Dialog open={showEmergencyAlert} onOpenChange={setShowEmergencyAlert}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center space-x-2 text-red-600">
+            <AlertTriangle className="h-5 w-5" />
+            <span>Emergency Symptoms Detected</span>
+          </DialogTitle>
+          <DialogDescription asChild>
+            <div className="space-y-4 pt-4">
+              <Alert className="border-red-200 bg-red-50">
+                <AlertTriangle className="h-4 w-4 text-red-600" />
+                <AlertDescription className="text-red-800">
+                  <p className="font-semibold mb-2">Based on your symptoms, you may need immediate medical attention.</p>
+                  <p>You reported one or more of the following:</p>
+                  <ul className="list-disc list-inside mt-2 space-y-1">
+                    {formData.painLevel >= 8 && <li>Severe pain (level 8 or higher)</li>}
+                    {formData.bleeding && <li>Active bleeding</li>}
+                    {formData.trauma && <li>Recent dental trauma or injury</li>}
+                  </ul>
+                </AlertDescription>
+              </Alert>
+
+              <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                <h4 className="font-semibold text-blue-900 mb-2 flex items-center">
+                  <Phone className="h-4 w-4 mr-2" />
+                  Recommended Actions:
+                </h4>
+                <ol className="list-decimal list-inside space-y-2 text-sm text-blue-800">
+                  <li>
+                    <strong>Call NHS 111</strong> for immediate triage advice
+                    <p className="ml-5 text-xs mt-1">Available 24/7 for urgent medical guidance</p>
+                  </li>
+                  <li>
+                    <strong>Visit A&E</strong> if experiencing:
+                    <ul className="list-disc list-inside ml-5 mt-1 text-xs">
+                      <li>Uncontrollable bleeding</li>
+                      <li>Severe facial swelling</li>
+                      <li>Difficulty breathing or swallowing</li>
+                      <li>High fever with dental pain</li>
+                    </ul>
+                  </li>
+                  <li>
+                    <strong>Contact your dental practice</strong> for emergency appointments
+                    <p className="ml-5 text-xs mt-1">Many practices have emergency slots available</p>
+                  </li>
+                </ol>
+              </div>
+
+              <div className="bg-amber-50 rounded-lg p-3 border border-amber-200">
+                <div className="flex items-start space-x-2">
+                  <Info className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                  <div className="text-sm text-amber-800">
+                    <p className="font-medium">Why this recommendation?</p>
+                    <p className="mt-1">
+                      Severe dental pain, bleeding, or trauma can indicate serious conditions that require 
+                      immediate professional assessment. Early intervention can prevent complications and 
+                      provide faster pain relief.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowEmergencyAlert(false)}
+                  className="flex-1"
+                >
+                  Cancel Booking
+                </Button>
+                <Button
+                  onClick={handleEmergencyProceed}
+                  className="flex-1 bg-red-600 hover:bg-red-700"
+                >
+                  Continue Anyway
+                </Button>
+              </div>
+            </div>
+          </DialogDescription>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }

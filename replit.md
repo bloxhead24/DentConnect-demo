@@ -118,6 +118,18 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+✓ **EMERGENCY PROTOCOL PROMPTS IMPLEMENTATION** (July 30, 2025)
+→ **ENHANCED PATIENT SAFETY**: Added emergency protocol alerts when severe symptoms are detected in triage assessment
+→ **NHS 111 INTEGRATION**: Prominent recommendation to call NHS 111 for immediate triage advice (24/7 availability)
+→ **SYMPTOM-SPECIFIC GUIDANCE**: Tailored emergency recommendations based on specific symptoms:
+  - Active bleeding: Apply pressure with clean gauze and seek immediate care
+  - Dental trauma: Visit A&E if tooth is knocked out or severe facial injury
+  - Severe pain (8+/10): May indicate abscess or serious infection requiring urgent care
+→ **INLINE ALERT DESIGN**: Emergency alert appears directly under calculated urgency level for immediate visibility
+→ **PROFESSIONAL MEDICAL MESSAGING**: Clear, actionable guidance following NHS dental emergency protocols
+→ **MODAL DIALOG BACKUP**: Additional emergency dialog for critical symptoms requiring user acknowledgment
+→ **USER CHOICE PRESERVED**: Patients can still continue booking while being strongly advised to seek emergency care first
+
 ✓ **BALANCED OPEN SEARCH ANIMATION AND TIMING** (February 3, 2025)
 → **OPTIMIZED SEARCH SPEED**: Balanced search timing to complete in ~2.5 seconds (not too fast, not too slow)
 → **ENHANCED DENTAL-THEMED ANIMATION**: Added animated tooth icon with gentle sway and rotation inside map pin
