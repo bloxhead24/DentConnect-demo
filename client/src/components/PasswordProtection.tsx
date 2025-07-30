@@ -29,7 +29,7 @@ export function PasswordProtection({ children }: PasswordProtectionProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (password === "ToothPick") {
+    if (password === "AppleTooth") {
       sessionStorage.setItem("demo_authenticated", "true");
       sessionStorage.setItem("dentconnect_authenticated", "true");
       setIsAuthenticated(true);

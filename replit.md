@@ -2,7 +2,7 @@
 
 ## Overview
 
-DentConnect is a modern web application that connects patients with last-minute dental appointment cancellations at local practices. The platform serves as a real-time marketplace where patients can instantly book available dental appointments while helping practices fill their cancelled slots.
+DentConnect is a modern web application that connects patients with last-minute dental appointment cancellations at local practices. The platform serves as a real-time marketplace where patients can instantly book available dental appointments while helping practices fill their cancelled slots. The demo is password-protected with the password "AppleTooth".
 
 ## System Architecture
 
@@ -145,8 +145,8 @@ Preferred communication style: Simple, everyday language.
 → **RESPONSIVE TEXT SIZES**: Updated dialog titles with text-lg sm:text-xl for better mobile readability
 → **ENHANCED TOUCH TARGETS**: Improved button sizing and spacing for better mobile interaction
 
-✓ **PASSWORD PROTECTION REINSTATED** (July 31, 2025)
-→ **DEMO PASSWORD PROTECTION**: Added password protection to entire demo with password "ToothPick"
+✓ **PASSWORD PROTECTION UPDATED** (July 31, 2025)
+→ **DEMO PASSWORD PROTECTION**: Password protection for entire demo updated to "AppleTooth"
 → **SESSION-BASED AUTHENTICATION**: Password only required once per browser session
 → **PROFESSIONAL UI**: Clean password entry screen with DentConnect branding and pilot demo messaging
 → **SECURITY ENHANCEMENT**: Protects pilot demo from unauthorized access during testing phase
