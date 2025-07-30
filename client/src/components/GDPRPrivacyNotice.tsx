@@ -1,6 +1,10 @@
+import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shield, Lock, Database, FileText, Users, Globe, Clock, Mail } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 export interface ConsentData {
   gdprConsent: boolean;
@@ -9,9 +13,36 @@ export interface ConsentData {
   communicationConsent: boolean;
 }
 
-export function GDPRPrivacyNotice() {
+interface GDPRPrivacyNoticeProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+  onConsentGiven?: (consents: ConsentData) => void;
+  showAsModal?: boolean;
+}
+
+export function GDPRPrivacyNotice({ onClose, onConsentGiven }: GDPRPrivacyNoticeProps) {
+  const [consents, setConsents] = useState<ConsentData>({
+    gdprConsent: false,
+    marketingConsent: false,
+    clinicalDataConsent: false,
+    communicationConsent: false
+  });
+
+  const handleConsentChange = (type: keyof ConsentData, checked: boolean) => {
+    setConsents(prev => ({ ...prev, [type]: checked }));
+  };
+
+  const handleContinue = () => {
+    if (consents.gdprConsent && consents.clinicalDataConsent) {
+      onConsentGiven?.(consents);
+    }
+  };
+
+  const canContinue = consents.gdprConsent && consents.clinicalDataConsent;
+
   return (
-    <ScrollArea className="h-[600px] pr-4">
+    <div className="space-y-6">
+      <ScrollArea className="h-[500px] pr-4">
       <div className="space-y-6">
         {/* Header Section */}
         <Card>
@@ -356,5 +387,77 @@ export function GDPRPrivacyNotice() {
         </Card>
       </div>
     </ScrollArea>
+    
+    {/* Consent Checkboxes */}
+    <Card className="border-teal-200 bg-teal-50/50">
+      <CardHeader>
+        <CardTitle className="text-lg">Your Consent</CardTitle>
+        <CardDescription>Please review and provide your consent to proceed</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex items-start space-x-2">
+          <Checkbox
+            id="gdpr"
+            checked={consents.gdprConsent}
+            onCheckedChange={(checked) => handleConsentChange('gdprConsent', checked as boolean)}
+          />
+          <Label htmlFor="gdpr" className="text-sm font-normal cursor-pointer">
+            <span className="font-semibold">I consent to the processing of my personal data</span> as described in this privacy notice in accordance with UK GDPR and Data Protection Act 2018. *
+          </Label>
+        </div>
+
+        <div className="flex items-start space-x-2">
+          <Checkbox
+            id="clinical"
+            checked={consents.clinicalDataConsent}
+            onCheckedChange={(checked) => handleConsentChange('clinicalDataConsent', checked as boolean)}
+          />
+          <Label htmlFor="clinical" className="text-sm font-normal cursor-pointer">
+            <span className="font-semibold">I consent to the processing of my health data</span> for the purpose of dental treatment and care. *
+          </Label>
+        </div>
+
+        <div className="flex items-start space-x-2">
+          <Checkbox
+            id="communication"
+            checked={consents.communicationConsent}
+            onCheckedChange={(checked) => handleConsentChange('communicationConsent', checked as boolean)}
+          />
+          <Label htmlFor="communication" className="text-sm font-normal cursor-pointer">
+            I consent to receive appointment reminders and important updates via SMS and email.
+          </Label>
+        </div>
+
+        <div className="flex items-start space-x-2">
+          <Checkbox
+            id="marketing"
+            checked={consents.marketingConsent}
+            onCheckedChange={(checked) => handleConsentChange('marketingConsent', checked as boolean)}
+          />
+          <Label htmlFor="marketing" className="text-sm font-normal cursor-pointer">
+            I consent to receive marketing communications about dental services and offers.
+          </Label>
+        </div>
+
+        <p className="text-xs text-muted-foreground mt-4">
+          * Required consents. You can withdraw your consent at any time by contacting us.
+        </p>
+      </CardContent>
+    </Card>
+
+    {/* Action Buttons */}
+    <div className="flex justify-between">
+      <Button variant="outline" onClick={onClose}>
+        Back
+      </Button>
+      <Button 
+        onClick={handleContinue}
+        disabled={!canContinue}
+        className="bg-teal-600 hover:bg-teal-700"
+      >
+        Continue
+      </Button>
+    </div>
+    </div>
   );
 }
