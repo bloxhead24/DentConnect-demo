@@ -181,8 +181,8 @@ export default function Home() {
                     )}
                   </div>
                   
-                  {/* Dentist Dashboard Link - Only show for dentists */}
-                  {user?.userType === 'dentist' && (
+                  {/* Dentist Dashboard Link - Show for dentists OR demo access for patients */}
+                  {user?.userType === 'dentist' ? (
                     <Link href="/dentist-dashboard">
                       <Button 
                         variant="outline" 
@@ -193,6 +193,43 @@ export default function Home() {
                         <span className="hidden sm:inline">Dashboard</span>
                       </Button>
                     </Link>
+                  ) : (
+                    // Demo access for patients
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      className="text-purple-600 border-purple-600 hover:bg-purple-600 hover:text-white transition-all duration-200"
+                      onClick={async () => {
+                        try {
+                          // Log out current user first
+                          await logout();
+                          
+                          // Log in as demo dentist
+                          const response = await fetch('/api/auth/login', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              email: 'dentist@demo.com',
+                              password: 'DemoPassword123!',
+                              userType: 'dentist'
+                            }),
+                          });
+                          
+                          const result = await response.json();
+                          
+                          if (response.ok) {
+                            sessionStorage.setItem('dentconnect_user', JSON.stringify(result.user));
+                            sessionStorage.setItem('dentconnect_token', result.token);
+                            window.location.href = '/dentist-dashboard';
+                          }
+                        } catch (error) {
+                          console.error('Demo login failed:', error);
+                        }
+                      }}
+                    >
+                      <Stethoscope className="h-4 w-4 mr-2" />
+                      <span className="hidden sm:inline">Demo: Dentist View</span>
+                    </Button>
                   )}
                   
                   {/* Logout Button */}
