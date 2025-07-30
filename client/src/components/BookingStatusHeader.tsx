@@ -83,23 +83,32 @@ export function BookingStatusHeader() {
         return {
           icon: CheckCircle2,
           color: 'bg-green-500 text-white',
+          ringColor: 'bg-green-400',
           text: 'Appointment Approved',
-          description: 'Your appointment has been confirmed'
+          description: 'Your appointment has been confirmed',
+          animation: 'animate-bounce',
+          showPulse: true
         };
       case 'rejected':
         return {
           icon: XCircle,
           color: 'bg-red-500 text-white',
+          ringColor: 'bg-red-400',
           text: 'Appointment Declined',
-          description: 'Please contact the practice for alternatives'
+          description: 'Please contact the practice for alternatives',
+          animation: 'animate-pulse',
+          showPulse: false
         };
       case 'pending':
       default:
         return {
           icon: Clock,
           color: 'bg-amber-500 text-white',
+          ringColor: 'bg-amber-400',
           text: 'Awaiting Approval',
-          description: 'Your booking is under review'
+          description: 'Your booking is under review',
+          animation: 'animate-bounce',
+          showPulse: true
         };
     }
   };
@@ -108,19 +117,29 @@ export function BookingStatusHeader() {
   const StatusIcon = statusConfig.icon;
 
   return (
-    <div className="fixed top-4 right-4 z-50 group">
-      {/* Floating Indicator - Always visible */}
+    <div className="fixed bottom-24 right-6 z-50 group">
+      {/* Status Label - Always visible */}
+      <div className="absolute -top-8 right-0 text-sm font-medium text-gray-700 whitespace-nowrap">
+        Appointment Status
+      </div>
+      
+      {/* Floating Indicator - Always visible with dynamic animation */}
       <div 
         key={animationKey}
-        className={`${statusConfig.color} rounded-full p-3 shadow-lg cursor-pointer transition-all duration-300 hover:scale-110 animate-in fade-in-0 slide-in-from-right-4`}
+        className={`${statusConfig.color} rounded-2xl px-6 py-4 shadow-2xl cursor-pointer transition-all duration-300 hover:scale-110 ${statusConfig.animation} relative flex items-center gap-3`}
       >
-        <StatusIcon className="w-5 h-5" />
+        <StatusIcon className="w-6 h-6 relative z-10" />
+        <span className="font-semibold text-sm relative z-10">{statusConfig.text}</span>
+        {/* Pulse ring animation */}
+        {statusConfig.showPulse && (
+          <div className={`absolute inset-0 rounded-2xl ${statusConfig.ringColor} animate-ping opacity-40`} />
+        )}
       </div>
       
       {/* Detailed Card - Shows on hover */}
-      <div className="absolute top-0 right-0 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
-        <Card className="w-80 shadow-xl border-primary/20 bg-white/95 backdrop-blur-sm">
-          <CardContent className="p-4">
+      <div className="absolute bottom-full mb-2 right-0 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+        <Card className="w-80 shadow-2xl border-2 border-primary/30 bg-white backdrop-blur-sm animate-in slide-in-from-bottom-2">
+          <CardContent className="p-5">
             {/* Status Header */}
             <div className="flex items-center space-x-3 mb-3">
               <div className={`p-2 rounded-lg ${statusConfig.color} shadow-sm`}>
