@@ -667,6 +667,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update booking fee collection status
+  app.patch("/api/bookings/:bookingId/fee-collected", async (req, res) => {
+    try {
+      const bookingId = parseInt(req.params.bookingId);
+      const { feeCollected } = req.body;
+      
+      console.log("Updating booking fee status:", bookingId, "feeCollected:", feeCollected);
+      
+      const updatedBooking = await storage.updateBooking(bookingId, { feeCollected });
+      res.json(updatedBooking);
+    } catch (error) {
+      console.error("Error updating booking fee status:", error);
+      res.status(500).json({ error: "Failed to update booking fee status" });
+    }
+  });
+
   // Get all bookings for a user with detailed information
   app.get("/api/users/:userId/bookings", async (req, res) => {
     try {
@@ -752,6 +768,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error rejecting booking:", error);
       res.status(500).json({ error: "Failed to reject booking" });
+    }
+  });
+
+  // Update fee collection status
+  app.patch("/api/bookings/:bookingId/fee-collected", async (req, res) => {
+    try {
+      const bookingId = parseInt(req.params.bookingId);
+      const { feeCollected } = req.body;
+      
+      const booking = await storage.updateBookingFeeStatus(bookingId, feeCollected);
+      res.json(booking);
+    } catch (error) {
+      console.error("Error updating fee collection status:", error);
+      res.status(500).json({ error: "Failed to update fee collection status" });
     }
   });
 

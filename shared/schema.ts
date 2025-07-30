@@ -173,6 +173,7 @@ export const bookings = pgTable("bookings", {
   approvalStatus: varchar("approval_status", { length: 20 }).notNull().default("pending"), // pending, approved, rejected
   approvedBy: integer("approved_by").references(() => users.id),
   approvedAt: timestamp("approved_at"),
+  feeCollected: boolean("fee_collected").default(false), // Track if £5 booking fee has been collected
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

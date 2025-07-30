@@ -36,6 +36,9 @@ import PricingManagement from "../components/PricingManagement";
 import { AddSlotFlow } from "../components/AddSlotFlow";
 import EnhancedSlotCreation from "../components/EnhancedSlotCreation";
 import { DentistScheduleCalendar } from "../components/DentistScheduleCalendar";
+import { AppointmentManagement } from "../components/AppointmentManagement";
+import { PatientManagement } from "../components/PatientManagement";
+import { PracticeAnalytics } from "../components/PracticeAnalytics";
 import { useToast } from "@/hooks/use-toast";
 
 interface DashboardStats {
@@ -632,15 +635,7 @@ export default function DentistDashboard() {
           </TabsContent>
 
           <TabsContent value="appointments">
-            <Card>
-              <CardHeader>
-                <CardTitle>Appointment Management</CardTitle>
-                <CardDescription>Manage your appointment schedule</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">Appointment management interface would go here...</p>
-              </CardContent>
-            </Card>
+            <AppointmentManagement practiceId={1} />
           </TabsContent>
 
           <TabsContent value="pricing">
@@ -648,27 +643,11 @@ export default function DentistDashboard() {
           </TabsContent>
 
           <TabsContent value="patients">
-            <Card>
-              <CardHeader>
-                <CardTitle>Patient Management</CardTitle>
-                <CardDescription>View and manage your patients</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">Patient management interface would go here...</p>
-              </CardContent>
-            </Card>
+            <PatientManagement practiceId={1} />
           </TabsContent>
 
           <TabsContent value="analytics">
-            <Card>
-              <CardHeader>
-                <CardTitle>Practice Analytics</CardTitle>
-                <CardDescription>Detailed insights about your practice</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">Analytics dashboard would go here...</p>
-              </CardContent>
-            </Card>
+            <PracticeAnalytics practiceId={1} />
           </TabsContent>
 
           <TabsContent value="schedule">

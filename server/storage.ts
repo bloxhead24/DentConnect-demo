@@ -710,7 +710,7 @@ export class MemStorage implements IStorage {
           id: practice.id,
           name: practice.name,
           address: practice.address,
-          city: practice.city,
+
           postcode: practice.postcode,
           phone: practice.phone,
           latitude: practice.latitude,
@@ -721,7 +721,7 @@ export class MemStorage implements IStorage {
           name: dentist.name,
           title: dentist.title,
           specialization: dentist.specialization,
-          photo: dentist.photo
+          imageUrl: dentist.imageUrl
         } : null,
         treatment: treatment ? {
           id: treatment.id,
@@ -768,12 +768,11 @@ export class MemStorage implements IStorage {
       specialRequests: insertBooking.specialRequests || null,
       status: insertBooking.status || 'pending_approval',
       approvalStatus: insertBooking.approvalStatus || 'pending',
-      approvedBy: undefined,
-      approvedAt: undefined,
-      rejectedBy: undefined,
-      rejectedAt: undefined,
+      approvedBy: null,
+      approvedAt: null,
+      feeCollected: false,
       createdAt: new Date(),
-      updatedAt: undefined
+      updatedAt: new Date()
     };
     
     console.log(`[MemStorage] Creating booking with status: ${booking.status}`);
@@ -1107,6 +1106,22 @@ export class MemStorage implements IStorage {
     
     this.callbackRequests.set(requestId, updatedRequest);
     return updatedRequest;
+  }
+
+  async updateBookingFeeStatus(bookingId: number, feeCollected: boolean): Promise<Booking> {
+    const booking = this.bookings.get(bookingId);
+    if (!booking) {
+      throw new Error(`Booking with ID ${bookingId} not found`);
+    }
+    
+    const updatedBooking: Booking = {
+      ...booking,
+      feeCollected,
+      updatedAt: new Date(),
+    };
+    
+    this.bookings.set(bookingId, updatedBooking);
+    return updatedBooking;
   }
 
   private enrichCallbackRequest(request: CallbackRequest): any {
@@ -1822,6 +1837,8 @@ export class DatabaseStorage implements IStorage {
     return request;
   }
 
+  // Duplicate function - using the MemStorage version instead
+  /*
   async getCallbackRequests(practiceId: number, date?: Date): Promise<any[]> {
     const query = db
       .select({
@@ -1891,6 +1908,7 @@ export class DatabaseStorage implements IStorage {
 
     return query;
   }
+  */
 
   async getTodaysCallbackRequests(practiceId: number): Promise<any[]> {
     const today = new Date();
