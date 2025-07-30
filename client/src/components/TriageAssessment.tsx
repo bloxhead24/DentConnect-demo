@@ -170,15 +170,22 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
               />
             </div>
 
-            <div className="flex justify-between">
-              <Button variant="outline" onClick={onCancel}>
+            <div className="flex justify-between gap-4 px-2 pb-2">
+              <Button 
+                variant="outline" 
+                onClick={onCancel}
+                className="flex-1 sm:flex-none"
+              >
+                <i className="fas fa-times mr-2"></i>
                 Cancel
               </Button>
               <Button 
                 onClick={() => setCurrentStep(2)}
                 disabled={!isFormValid}
+                className="flex-1 sm:flex-none"
               >
-                Continue to Clinical Indicators
+                Continue
+                <i className="fas fa-arrow-right ml-2"></i>
               </Button>
             </div>
           </div>
@@ -190,7 +197,7 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
               <Label className="text-base font-medium">Clinical Indicators</Label>
               <p className="text-sm text-gray-600 mb-4">Please check all symptoms that apply</p>
               
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="swelling"
@@ -267,12 +274,21 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
               </div>
             </div>
 
-            <div className="flex justify-between">
-              <Button variant="outline" onClick={() => setCurrentStep(1)}>
+            <div className="flex justify-between gap-4 px-2 pb-2">
+              <Button 
+                variant="outline" 
+                onClick={() => setCurrentStep(1)}
+                className="flex-1 sm:flex-none"
+              >
+                <i className="fas fa-arrow-left mr-2"></i>
                 Back
               </Button>
-              <Button onClick={() => setCurrentStep(3)}>
-                Continue to Medical History
+              <Button 
+                onClick={() => setCurrentStep(3)}
+                className="flex-1 sm:flex-none"
+              >
+                Continue
+                <i className="fas fa-arrow-right ml-2"></i>
               </Button>
             </div>
           </div>
@@ -294,7 +310,7 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
               <RadioGroup
                 value={formData.anxietyLevel}
                 onValueChange={(value) => setFormData(prev => ({ ...prev, anxietyLevel: value as any }))}
-                className="grid grid-cols-2 gap-4"
+                className="grid grid-cols-1 sm:grid-cols-2 gap-4"
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="none" id="anxiety-none" />
@@ -549,15 +565,22 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
               )}
             </div>
 
-            <div className="flex justify-between">
-              <Button variant="outline" onClick={() => setCurrentStep(2)}>
+            <div className="flex justify-between gap-4 px-2 pb-2">
+              <Button 
+                variant="outline" 
+                onClick={() => setCurrentStep(2)}
+                className="flex-1 sm:flex-none"
+              >
+                <i className="fas fa-arrow-left mr-2"></i>
                 Back
               </Button>
               <Button 
                 onClick={() => setCurrentStep(4)}
                 disabled={!formData.medicalHistory.trim() || !formData.currentMedications.trim() || !formData.allergies.trim()}
+                className="flex-1 sm:flex-none"
               >
-                Continue to Lifestyle Factors
+                Continue
+                <i className="fas fa-arrow-right ml-2"></i>
               </Button>
             </div>
           </div>
@@ -669,12 +692,21 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
               </div>
             </div>
 
-            <div className="flex justify-between">
-              <Button variant="outline" onClick={() => setCurrentStep(3)}>
+            <div className="flex justify-between gap-4 px-2 pb-2">
+              <Button 
+                variant="outline" 
+                onClick={() => setCurrentStep(3)}
+                className="flex-1 sm:flex-none"
+              >
+                <i className="fas fa-arrow-left mr-2"></i>
                 Back
               </Button>
-              <Button onClick={handleSubmit}>
+              <Button 
+                onClick={handleSubmit}
+                className="flex-1 sm:flex-none"
+              >
                 Complete Assessment
+                <i className="fas fa-arrow-right ml-2"></i>
               </Button>
             </div>
           </div>

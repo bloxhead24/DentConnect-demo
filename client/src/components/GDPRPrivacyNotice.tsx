@@ -446,16 +446,22 @@ export function GDPRPrivacyNotice({ onClose, onConsentGiven }: GDPRPrivacyNotice
     </Card>
 
     {/* Action Buttons */}
-    <div className="flex justify-between">
-      <Button variant="outline" onClick={onClose}>
+    <div className="flex justify-between gap-4 px-2 pb-2">
+      <Button 
+        variant="outline" 
+        onClick={onClose}
+        className="flex-1 sm:flex-none"
+      >
+        <i className="fas fa-arrow-left mr-2"></i>
         Back
       </Button>
       <Button 
         onClick={handleContinue}
         disabled={!canContinue}
-        className="bg-teal-600 hover:bg-teal-700"
+        className="bg-teal-600 hover:bg-teal-700 flex-1 sm:flex-none"
       >
         Continue
+        <i className="fas fa-arrow-right ml-2"></i>
       </Button>
     </div>
     </div>

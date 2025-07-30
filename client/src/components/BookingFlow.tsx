@@ -264,9 +264,9 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
         <DialogHeader>
-          <DialogTitle className="flex items-center space-x-3">
+          <DialogTitle className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
             <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
               <i className={cn(
                 "text-white",
@@ -276,7 +276,7 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
               )}></i>
             </div>
             <div>
-              <h3 className="text-xl font-bold">
+              <h3 className="text-lg sm:text-xl font-bold">
                 {currentStep === "gdpr" ? "Data Protection Notice" :
                  currentStep === "triage" ? "Clinical Assessment" :
                  "Book Appointment"}
@@ -368,7 +368,7 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
                   <CardTitle>Personal Information</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="firstName">First Name *</Label>
                       <Input
@@ -400,7 +400,7 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
                     />
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="phone">Phone Number *</Label>
                       <Input
@@ -451,8 +451,14 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
                 </CardContent>
               </Card>
 
-              <div className="flex space-x-4">
-                <Button type="button" variant="outline" onClick={onClose} className="flex-1">
+              <div className="flex gap-4 px-2 pb-2">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={onClose} 
+                  className="flex-1"
+                >
+                  <i className="fas fa-times mr-2"></i>
                   Cancel
                 </Button>
                 <Button 
