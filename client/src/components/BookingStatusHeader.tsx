@@ -86,8 +86,8 @@ export function BookingStatusHeader() {
           ringColor: 'bg-green-400',
           text: 'Appointment Approved',
           description: 'Your appointment has been confirmed',
-          animation: 'animate-bounce',
-          showPulse: true
+          animation: 'animate-pulse',
+          showPulse: false
         };
       case 'rejected':
         return {
@@ -107,7 +107,7 @@ export function BookingStatusHeader() {
           ringColor: 'bg-amber-400',
           text: 'Awaiting Approval',
           description: 'Your booking is under review',
-          animation: 'animate-bounce',
+          animation: '',
           showPulse: true
         };
     }
@@ -123,16 +123,23 @@ export function BookingStatusHeader() {
         Appointment Status
       </div>
       
-      {/* Floating Indicator - Always visible with dynamic animation */}
+      {/* Floating Indicator - Always visible with subtle animation */}
       <div 
         key={animationKey}
-        className={`${statusConfig.color} rounded-2xl px-6 py-4 shadow-2xl cursor-pointer transition-all duration-300 hover:scale-110 ${statusConfig.animation} relative flex items-center gap-3`}
+        className={`${statusConfig.color} rounded-2xl px-6 py-4 shadow-2xl cursor-pointer transition-all duration-500 hover:scale-105 hover:shadow-3xl ${statusConfig.animation} relative flex items-center gap-3 transform-gpu`}
+        style={{
+          animation: statusConfig.showPulse ? 'gentle-float 3s ease-in-out infinite' : undefined
+        }}
       >
         <StatusIcon className="w-6 h-6 relative z-10" />
         <span className="font-semibold text-sm relative z-10">{statusConfig.text}</span>
-        {/* Pulse ring animation */}
+        {/* Subtle glow animation for pending status */}
         {statusConfig.showPulse && (
-          <div className={`absolute inset-0 rounded-2xl ${statusConfig.ringColor} animate-ping opacity-40`} />
+          <div className={`absolute inset-0 rounded-2xl ${statusConfig.ringColor} opacity-20`} 
+            style={{
+              animation: 'subtle-glow 2s ease-in-out infinite'
+            }}
+          />
         )}
       </div>
       
