@@ -78,30 +78,39 @@ export default function BudgetSelection({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-secondary/5">
+    <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-blue-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-4 py-4">
-        <div className="flex items-center justify-between max-w-md mx-auto">
-          <Button variant="ghost" size="sm" onClick={onBack}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
+      <div className="bg-white/80 backdrop-blur-sm border-b border-gray-100 px-4 py-6 shadow-sm">
+        <div className="flex items-center justify-between max-w-6xl mx-auto">
+          <Button 
+            variant="outline" 
+            size="lg" 
+            onClick={onBack}
+            className="hover:bg-gray-50 transition-colors"
+            aria-label="Go back to previous step"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
             Back
           </Button>
-          <h1 className="text-xl font-bold text-center">Treatment Budget</h1>
-          <div className="w-16"></div>
+          <h1 className="text-2xl font-bold text-gray-900">Select Your Budget Range</h1>
+          <div className="w-24"></div>
         </div>
       </div>
 
-      <div className="max-w-md mx-auto p-6 space-y-6">
+      <div className="max-w-6xl mx-auto px-6 py-12">
         {/* Header Information */}
-        <div className="text-center space-y-3">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-            <i className="fas fa-pound-sign text-2xl text-green-600"></i>
+        <div className="text-center mb-12 space-y-4">
+          <div className="w-20 h-20 bg-gradient-to-br from-teal-100 to-teal-200 rounded-full flex items-center justify-center mx-auto shadow-lg">
+            <svg className="w-10 h-10 text-teal-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
           </div>
           
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">What's Your Budget Range?</h2>
-            <p className="text-gray-600 mt-2">
-              Help us show practices that match your budget preferences
+            <h2 className="text-3xl font-bold text-gray-900">What's Your Budget Range?</h2>
+            <p className="text-lg text-gray-600 mt-3 max-w-2xl mx-auto">
+              Select your preferred budget range to see dental practices that match your financial preferences. 
+              All practices offer transparent pricing and many provide payment plans.
             </p>
           </div>
 

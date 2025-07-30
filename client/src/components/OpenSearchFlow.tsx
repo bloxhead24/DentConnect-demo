@@ -208,20 +208,65 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
         {currentStep === "loading" && (
           <motion.div
             key="loading"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5 }}
             className="text-center"
           >
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-              className="w-24 h-24 mx-auto mb-6"
+            <div className="relative w-32 h-32 mx-auto mb-8">
+              {/* Outer rotating ring */}
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                className="absolute inset-0"
+              >
+                <div className="w-full h-full rounded-full border-4 border-teal-200 border-t-teal-600" />
+              </motion.div>
+              
+              {/* Inner pulsing circle */}
+              <motion.div
+                animate={{ scale: [0.8, 1, 0.8] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute inset-4 bg-gradient-to-br from-teal-500 to-teal-600 rounded-full flex items-center justify-center shadow-lg"
+              >
+                <Search className="w-12 h-12 text-white" />
+              </motion.div>
+              
+              {/* Orbiting dots */}
+              {[0, 1, 2].map((index) => (
+                <motion.div
+                  key={index}
+                  animate={{ rotate: 360 }}
+                  transition={{ 
+                    duration: 2, 
+                    repeat: Infinity, 
+                    ease: "linear",
+                    delay: index * 0.66
+                  }}
+                  className="absolute inset-0"
+                >
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-teal-400 rounded-full" />
+                </motion.div>
+              ))}
+            </div>
+            
+            <motion.h2 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="text-3xl font-light mb-3 bg-gradient-to-r from-teal-600 to-teal-700 bg-clip-text text-transparent"
             >
-              <Search className="w-full h-full text-teal-600" />
-            </motion.div>
-            <h2 className="text-2xl font-semibold mb-2">Activating Smart Search</h2>
-            <p className="text-muted-foreground">Finding the fastest available appointment for you...</p>
+              Activating Smart Search
+            </motion.h2>
+            <motion.p 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="text-gray-600 text-lg"
+            >
+              Finding the fastest available appointment for you...
+            </motion.p>
           </motion.div>
         )}
 
@@ -286,39 +331,193 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
         {currentStep === "searching" && (
           <motion.div
             key="searching"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="text-center w-full max-w-md"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5 }}
+            className="text-center w-full max-w-lg"
           >
-            <Card className="p-8">
-              <motion.div
-                animate={{ 
-                  scale: [1, 1.1, 1],
-                  rotate: [0, 180, 360]
-                }}
-                transition={{ 
-                  duration: 2, 
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-                className="w-20 h-20 mx-auto mb-6"
+            <Card className="p-10 bg-gradient-to-br from-white to-gray-50 border-gray-200 shadow-2xl">
+              {/* Advanced Search Animation */}
+              <div className="relative w-32 h-32 mx-auto mb-8">
+                {/* Background pulse effect */}
+                <motion.div
+                  animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0.1, 0.3] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute inset-0 bg-teal-400 rounded-full"
+                />
+                
+                {/* Map with scanning effect */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="relative w-24 h-24">
+                    <MapPin className="w-full h-full text-teal-600 z-10 relative" />
+                    
+                    {/* Scanning line */}
+                    <motion.div
+                      animate={{ y: [-48, 48] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                      className="absolute inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-teal-400 to-transparent"
+                      style={{ top: '50%' }}
+                    />
+                    
+                    {/* Radar circles */}
+                    {[0, 1, 2].map((index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ scale: 0, opacity: 1 }}
+                        animate={{ scale: 3, opacity: 0 }}
+                        transition={{
+                          duration: 3,
+                          repeat: Infinity,
+                          delay: index * 1,
+                          ease: "easeOut"
+                        }}
+                        className="absolute inset-0 border border-teal-400 rounded-full"
+                      />
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Orbiting location markers */}
+                {[0, 60, 120, 180, 240, 300].map((rotation, index) => (
+                  <motion.div
+                    key={rotation}
+                    animate={{ rotate: 360 }}
+                    transition={{
+                      duration: 8,
+                      repeat: Infinity,
+                      ease: "linear",
+                      delay: index * 0.3
+                    }}
+                    className="absolute inset-0"
+                    style={{ transform: `rotate(${rotation}deg)` }}
+                  >
+                    <motion.div
+                      animate={{ scale: [0.8, 1.2, 0.8] }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        delay: index * 0.2
+                      }}
+                      className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-teal-500 rounded-full shadow-sm"
+                    />
+                  </motion.div>
+                ))}
+              </div>
+              
+              <motion.h3 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="text-2xl font-light mb-3 text-gray-800"
               >
-                <MapPin className="w-full h-full text-teal-600" />
-              </motion.div>
+                Optimizing Your Match
+              </motion.h3>
               
-              <h3 className="text-xl font-semibold mb-2">Optimizing Your Match</h3>
-              <p className="text-sm text-muted-foreground mb-6">
-                Analyzing {Math.floor(searchProgress / 10) + 1} practices near you...
-              </p>
+              <motion.p 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="text-base text-gray-600 mb-8"
+              >
+                Analyzing <span className="font-semibold text-teal-600">{Math.floor(searchProgress / 10) + 1}</span> practices near you...
+              </motion.p>
               
-              <Progress value={searchProgress} className="h-3 mb-4" />
+              {/* Enhanced Progress Bar */}
+              <div className="relative mb-8">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden">
+                    <motion.div
+                      animate={{ x: ['-100%', '100%'] }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                      className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                    />
+                  </div>
+                </div>
+                <Progress value={searchProgress} className="h-4 relative" />
+              </div>
               
-              <div className="text-xs text-muted-foreground space-y-1">
-                {searchProgress < 30 && <p>✓ Checking emergency availability...</p>}
-                {searchProgress >= 30 && searchProgress < 60 && <p>✓ Calculating travel times...</p>}
-                {searchProgress >= 60 && searchProgress < 90 && <p>✓ Matching with specialists...</p>}
-                {searchProgress >= 90 && <p>✓ Securing appointment slot...</p>}
+              {/* Status Updates with Icons */}
+              <div className="space-y-3 text-left max-w-xs mx-auto">
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: searchProgress >= 0 ? 1 : 0.3, x: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="flex items-center gap-3"
+                >
+                  <div className={cn(
+                    "w-5 h-5 rounded-full flex items-center justify-center",
+                    searchProgress >= 25 ? "bg-teal-500" : "bg-gray-300"
+                  )}>
+                    {searchProgress >= 25 && <Check className="w-3 h-3 text-white" />}
+                  </div>
+                  <span className={cn(
+                    "text-sm",
+                    searchProgress >= 25 ? "text-gray-700" : "text-gray-400"
+                  )}>
+                    Checking emergency availability
+                  </span>
+                </motion.div>
+                
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: searchProgress >= 25 ? 1 : 0.3, x: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="flex items-center gap-3"
+                >
+                  <div className={cn(
+                    "w-5 h-5 rounded-full flex items-center justify-center",
+                    searchProgress >= 50 ? "bg-teal-500" : "bg-gray-300"
+                  )}>
+                    {searchProgress >= 50 && <Check className="w-3 h-3 text-white" />}
+                  </div>
+                  <span className={cn(
+                    "text-sm",
+                    searchProgress >= 50 ? "text-gray-700" : "text-gray-400"
+                  )}>
+                    Calculating optimal travel routes
+                  </span>
+                </motion.div>
+                
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: searchProgress >= 50 ? 1 : 0.3, x: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="flex items-center gap-3"
+                >
+                  <div className={cn(
+                    "w-5 h-5 rounded-full flex items-center justify-center",
+                    searchProgress >= 75 ? "bg-teal-500" : "bg-gray-300"
+                  )}>
+                    {searchProgress >= 75 && <Check className="w-3 h-3 text-white" />}
+                  </div>
+                  <span className={cn(
+                    "text-sm",
+                    searchProgress >= 75 ? "text-gray-700" : "text-gray-400"
+                  )}>
+                    Matching with available specialists
+                  </span>
+                </motion.div>
+                
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: searchProgress >= 75 ? 1 : 0.3, x: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="flex items-center gap-3"
+                >
+                  <div className={cn(
+                    "w-5 h-5 rounded-full flex items-center justify-center",
+                    searchProgress >= 90 ? "bg-teal-500" : "bg-gray-300"
+                  )}>
+                    {searchProgress >= 90 && <Check className="w-3 h-3 text-white" />}
+                  </div>
+                  <span className={cn(
+                    "text-sm",
+                    searchProgress >= 90 ? "text-gray-700" : "text-gray-400"
+                  )}>
+                    Securing your appointment slot
+                  </span>
+                </motion.div>
               </div>
             </Card>
           </motion.div>
