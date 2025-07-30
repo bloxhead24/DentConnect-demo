@@ -23,6 +23,78 @@
   }
 }
 
+/* Healthcare button animations */
+@keyframes healthcare-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
+}
+
+@keyframes healthcare-pulse-red {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+/* Success feedback animation */
+@keyframes approval-success {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Gentle loading animation */
+@keyframes healthcare-loading {
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+}
+
+/* Healthcare-appropriate button styles */
+.healthcare-approve-btn {
+  animation: healthcare-pulse 2s infinite;
+}
+
+.healthcare-reject-btn {
+  animation: healthcare-pulse-red 2s infinite;
+}
+
+/* Professional toast animations */
+.animate-approval-success {
+  animation: approval-success 0.5s ease-out;
+}
+
+/* Healthcare loading animation for buttons */
+.animate-healthcare-loading {
+  animation: healthcare-loading 1.5s ease-in-out infinite;
+}
+
 :root {
   --background: hsl(0, 0%, 100%);
   --foreground: hsl(0, 0%, 13%);

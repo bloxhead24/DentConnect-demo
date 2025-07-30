@@ -6,6 +6,7 @@ import { Badge } from "./ui/badge";
 import { Calendar, Clock, User, AlertCircle, CheckCircle, XCircle, FileText, Phone, Mail, Activity, Heart, TrendingUp } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "../lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 interface PendingBooking {
   id: number;
@@ -72,6 +73,7 @@ interface AppointmentApprovalDashboardProps {
 export function AppointmentApprovalDashboard({ practiceId }: AppointmentApprovalDashboardProps) {
   const [selectedDate, setSelectedDate] = useState<string>("");
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const { data: availableAppointments = [], isLoading: appointmentsLoading } = useQuery<Appointment[]>({
     queryKey: [`/api/practice/${practiceId}/available-appointments`],
@@ -107,6 +109,12 @@ export function AppointmentApprovalDashboard({ practiceId }: AppointmentApproval
       queryClient.invalidateQueries({ queryKey: [`/api/practice/${practiceId}/approved-bookings`] });
       // Invalidate all user bookings to update patient status immediately
       queryClient.invalidateQueries({ queryKey: ['/api/users'], exact: false });
+      
+      toast({
+        title: "Appointment Approved",
+        description: "The patient has been notified of their confirmed appointment.",
+        className: "animate-approval-success bg-green-50 border-green-200",
+      });
     }
   });
 
@@ -126,6 +134,12 @@ export function AppointmentApprovalDashboard({ practiceId }: AppointmentApproval
       queryClient.invalidateQueries({ queryKey: [`/api/practice/${practiceId}/approved-bookings`] });
       // Invalidate all user bookings to update patient status immediately
       queryClient.invalidateQueries({ queryKey: ['/api/users'], exact: false });
+      
+      toast({
+        title: "Appointment Declined",
+        description: "The appointment request has been declined and the patient will be notified.",
+        className: "bg-red-50 border-red-200",
+      });
     }
   });
 
@@ -564,9 +578,13 @@ export function AppointmentApprovalDashboard({ practiceId }: AppointmentApproval
                                         size="sm"
                                         onClick={() => handleApproveBooking(booking.id)}
                                         disabled={approveMutation.isPending}
-                                        className="bg-green-600 hover:bg-green-700"
+                                        className={`
+                                          bg-green-600 hover:bg-green-700 
+                                          transition-all duration-300 ease-in-out
+                                          ${approveMutation.isPending ? 'opacity-75 scale-95 animate-healthcare-loading' : 'hover:scale-105 hover:shadow-md healthcare-approve-btn'}
+                                        `}
                                       >
-                                        <CheckCircle className="h-4 w-4 mr-1" />
+                                        <CheckCircle className={`h-4 w-4 mr-1 transition-transform duration-300 ${approveMutation.isPending ? 'animate-pulse' : ''}`} />
                                         {approveMutation.isPending ? 'Approving...' : 'Approve'}
                                       </Button>
                                       <Button
@@ -574,9 +592,13 @@ export function AppointmentApprovalDashboard({ practiceId }: AppointmentApproval
                                         variant="outline"
                                         onClick={() => handleRejectBooking(booking.id)}
                                         disabled={rejectMutation.isPending}
-                                        className="border-red-200 text-red-600 hover:bg-red-50"
+                                        className={`
+                                          border-red-200 text-red-600 hover:bg-red-50
+                                          transition-all duration-300 ease-in-out
+                                          ${rejectMutation.isPending ? 'opacity-75 scale-95 animate-healthcare-loading' : 'hover:scale-105 hover:shadow-md healthcare-reject-btn'}
+                                        `}
                                       >
-                                        <XCircle className="h-4 w-4 mr-1" />
+                                        <XCircle className={`h-4 w-4 mr-1 transition-transform duration-300 ${rejectMutation.isPending ? 'animate-pulse' : ''}`} />
                                         {rejectMutation.isPending ? 'Rejecting...' : 'Reject'}
                                       </Button>
                                     </div>

@@ -118,6 +118,15 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+✓ **HEALTHCARE-APPROPRIATE ANIMATIONS AND IMPROVED BOOKING STATUS UPDATES** (February 2, 2025)
+→ **PROFESSIONAL ANIMATIONS**: Replaced bouncing effects with subtle floating (5px over 3s) and soft glow animations
+→ **APPOINTMENT STATUS VISIBILITY**: Enhanced title with white background, shadows, and improved contrast for better readability
+→ **FASTER STATUS UPDATES**: Reduced patient booking status refetch from 10s to 2s for near-instant feedback
+→ **APPROVED APPOINTMENTS FIX**: Added 5-second refetch interval and cache invalidation for immediate visibility
+→ **HEALTHCARE BUTTON ANIMATIONS**: Created gentle pulse effects for approval/rejection buttons with professional styling
+→ **TOAST NOTIFICATIONS**: Added healthcare-themed success/error feedback with appropriate animations
+→ **LOADING STATES**: Implemented subtle scale and opacity transitions during pending operations
+
 ✓ **ENHANCED MOBILE RESPONSIVENESS FOR BOOKING FLOW** (February 2, 2025)
 → **RESPONSIVE GRID LAYOUTS**: Changed all grid-cols-2 to grid-cols-1 sm:grid-cols-2 for mobile-friendly forms
 → **MOBILE-FRIENDLY NAVIGATION**: Updated all navigation buttons with flex-1 sm:flex-none for full-width on mobile
