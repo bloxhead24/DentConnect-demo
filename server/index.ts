@@ -3,6 +3,7 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import security, { generateNonce, createSecurityHeaders } from "./security";
 import cors from "cors";
+import path from "path";
 
 const app = express();
 
@@ -20,6 +21,9 @@ app.get("/health", (req, res) => {
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 app.use(cors());
+
+// Serve attached assets statically
+app.use('/attached_assets', express.static(path.join(process.cwd(), 'attached_assets')));
 
 // Add nonce middleware for CSP - only in production
 if (process.env.NODE_ENV === 'production') {

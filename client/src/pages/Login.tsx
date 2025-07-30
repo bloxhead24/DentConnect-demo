@@ -285,20 +285,11 @@ export default function Login() {
         <div className="text-center mb-8">
           <Link href="/">
             <div className="flex items-center justify-center mb-4">
-              <svg 
-                width="60" 
-                height="60" 
-                viewBox="0 0 60 60" 
-                fill="none" 
-                xmlns="http://www.w3.org/2000/svg"
-                className="mr-3"
-              >
-                <circle cx="30" cy="30" r="30" fill="#0D9488" />
-                <path d="M30 15C28.5 15 27 16 27 18C27 20 28.5 21 30 21C31.5 21 33 20 33 18C33 16 31.5 15 30 15Z" fill="white" />
-                <path d="M20 25C20 23 22 21 24 21H36C38 21 40 23 40 25V35C40 40 36 45 30 45C24 45 20 40 20 35V25Z" fill="white" />
-                <path d="M25 28H27V32H25V28ZM29 28H31V32H29V28ZM33 28H35V32H33V28Z" fill="#0D9488" />
-              </svg>
-              <h1 className="text-4xl font-bold text-teal-600">DentConnect</h1>
+              <img 
+                src="/attached_assets/Website Header updated_1751940892927.png"
+                alt="DentConnect Logo"
+                className="h-16 w-auto"
+              />
             </div>
           </Link>
           <p className="text-gray-600 mb-2">Connect with dental care instantly</p>
