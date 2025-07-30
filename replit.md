@@ -118,13 +118,13 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-✓ **ROYAL COLLEGE BADGE SLIDE-TO-SIDE ANIMATION** (July 30, 2025)
-→ **HORIZONTAL SLIDE ANIMATION**: Badges smoothly slide to the opposite side of the screen on hover
-→ **PATIENT BADGE**: Center badge slides to the right side of the screen (translate-x-[45vw])
-→ **DENTIST BADGE**: Left badge slides all the way to the right edge (translate-x-[calc(100vw-24rem)])
-→ **SMOOTH TRANSITIONS**: 500ms transitions with ease-in-out for professional movement
-→ **NO OPACITY CHANGE**: Badges remain fully visible while sliding to maintain presence
-→ **UNOBTRUSIVE DESIGN**: Badges move completely out of the way to opposite screen edge
+✓ **ROYAL COLLEGE BADGE SIMPLE OPACITY REDUCTION** (July 30, 2025)
+→ **80% OPACITY REDUCTION**: Badges fade to 20% opacity (hover:opacity-20) when hovered
+→ **NO MOVEMENT ANIMATIONS**: Removed all sliding and movement effects for simplicity
+→ **CLICK-THROUGH ENABLED**: Users can click elements behind the faded badges
+→ **SMOOTH FADE**: 300ms opacity transition for professional appearance
+→ **MINIMAL DISTRACTION**: Badges become nearly invisible while maintaining subtle presence
+→ **APPLIES TO ALL BADGES**: Both patient and dentist badges have identical hover behavior
 
 ✓ **COMPREHENSIVE APPOINTMENT MANAGEMENT SYSTEM WITH FEE TRACKING** (July 30, 2025)
 → **APPOINTMENT MANAGEMENT TAB**: Created user-friendly AppointmentManagement.tsx component with calendar view and booking details
