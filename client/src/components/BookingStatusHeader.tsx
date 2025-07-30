@@ -96,47 +96,66 @@ export function BookingStatusHeader() {
   const StatusIcon = statusConfig.icon;
 
   return (
-    <div 
-      key={animationKey} 
-      className="relative bg-gradient-to-r from-primary/5 via-white to-primary/5 border-b border-primary/10 shadow-sm animate-in fade-in-0 slide-in-from-top-4 duration-500"
-    >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between py-2">
-          {/* Status Icon and Info */}
-          <div className="flex items-center space-x-3">
-            <div className={`p-1.5 rounded-lg ${statusConfig.color} shadow-sm`}>
-              <StatusIcon className="w-3.5 h-3.5" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center space-x-2">
-                <p className="font-medium text-sm text-gray-900">{statusConfig.text}</p>
-                <Badge variant="outline" className="text-xs h-5 px-2 bg-primary/5 border-primary/20 text-primary">
-                  {latestBooking.appointment.treatmentType}
-                </Badge>
+    <div className="fixed top-4 right-4 z-50 group">
+      {/* Floating Indicator - Always visible */}
+      <div 
+        key={animationKey}
+        className={`${statusConfig.color} rounded-full p-3 shadow-lg cursor-pointer transition-all duration-300 hover:scale-110 animate-in fade-in-0 slide-in-from-right-4`}
+      >
+        <StatusIcon className="w-5 h-5" />
+      </div>
+      
+      {/* Detailed Card - Shows on hover */}
+      <div className="absolute top-0 right-0 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
+        <Card className="w-80 shadow-xl border-primary/20 bg-white/95 backdrop-blur-sm">
+          <CardContent className="p-4">
+            {/* Status Header */}
+            <div className="flex items-center space-x-3 mb-3">
+              <div className={`p-2 rounded-lg ${statusConfig.color} shadow-sm`}>
+                <StatusIcon className="w-4 h-4" />
               </div>
-              <p className="text-xs text-gray-500 truncate">
-                {new Date(latestBooking.appointment.appointmentDate).toLocaleDateString()} at {latestBooking.appointment.appointmentTime}
-              </p>
+              <div>
+                <p className="font-semibold text-sm text-gray-900">{statusConfig.text}</p>
+                <p className="text-xs text-gray-500">{statusConfig.description}</p>
+              </div>
             </div>
-          </div>
-
-          {/* Practice Name */}
-          <div className="hidden md:block text-xs text-gray-600 truncate max-w-xs">
-            📍 {latestBooking.practice.name}
-          </div>
-
-          {/* Action Button */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setLocation('/booking-status')}
-            className="text-xs h-7 px-3 border-primary/20 text-primary hover:bg-primary hover:text-white transition-colors"
-          >
-            <ExternalLink className="w-3 h-3 mr-1.5" />
-            <span className="hidden sm:inline">View Details</span>
-            <span className="sm:hidden">Details</span>
-          </Button>
-        </div>
+            
+            {/* Appointment Details */}
+            <div className="space-y-2 pt-3 border-t border-gray-100">
+              <div className="flex items-center space-x-2 text-xs">
+                <Calendar className="w-3.5 h-3.5 text-gray-400" />
+                <span className="text-gray-600">
+                  {new Date(latestBooking.appointment.appointmentDate).toLocaleDateString('en-GB', {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long'
+                  })} at {latestBooking.appointment.appointmentTime}
+                </span>
+              </div>
+              
+              <div className="flex items-center space-x-2 text-xs">
+                <User className="w-3.5 h-3.5 text-gray-400" />
+                <span className="text-gray-600">
+                  {latestBooking.user.firstName} {latestBooking.user.lastName}
+                </span>
+              </div>
+              
+              <div className="text-xs text-gray-600">
+                📍 {latestBooking.practice.name}
+              </div>
+            </div>
+            
+            {/* Action Button */}
+            <Button 
+              size="sm" 
+              className="w-full mt-3"
+              onClick={() => setLocation('/booking-status')}
+            >
+              <ExternalLink className="w-3.5 h-3.5 mr-2" />
+              View Details
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
