@@ -31,6 +31,7 @@ import PricingManagement from "../components/PricingManagement";
 import { AddSlotFlow } from "../components/AddSlotFlow";
 import EnhancedSlotCreation from "../components/EnhancedSlotCreation";
 import { DentistScheduleCalendar } from "../components/DentistScheduleCalendar";
+import { useToast } from "@/hooks/use-toast";
 
 interface DashboardStats {
   totalPatients: number;
@@ -57,6 +58,7 @@ export default function DentistDashboard() {
   const [showVirtualConsultation, setShowVirtualConsultation] = useState(false);
   const [showAddSlotFlow, setShowAddSlotFlow] = useState(false);
   const [showEnhancedSlotCreation, setShowEnhancedSlotCreation] = useState(false);
+  const { toast } = useToast();
   
   // Get logged-in user info
   const userStr = sessionStorage.getItem('dentconnect_user');
@@ -152,12 +154,7 @@ export default function DentistDashboard() {
               <div className="hidden md:block h-6 w-px bg-gray-300" />
               <div className="hidden md:block">
                 <h1 className="text-lg font-semibold text-gray-900">Dentist Dashboard</h1>
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs text-gray-500">Welcome, {user?.firstName} {user?.lastName}</span>
-                  <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs">
-                    DRRICHARD
-                  </Badge>
-                </div>
+                <p className="text-sm text-gray-500">Welcome, {user?.firstName} {user?.lastName}</p>
               </div>
             </div>
             
@@ -201,6 +198,43 @@ export default function DentistDashboard() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Practice Connection Tag Card - More Prominent */}
+        <Card className="mb-6 border-primary/20 bg-gradient-to-r from-primary/5 to-blue-50">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900 mb-2">Practice Connection Tag</h2>
+                <p className="text-sm text-gray-600 mb-3">Share this tag with patients for direct appointment booking</p>
+                <div className="flex items-center space-x-4">
+                  <div className="bg-white rounded-lg px-6 py-3 border-2 border-primary shadow-sm">
+                    <code className="text-2xl font-bold text-primary">DRRICHARD</code>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      navigator.clipboard.writeText('DRRICHARD');
+                      toast({
+                        title: "Tag Copied!",
+                        description: "Practice connection tag has been copied to clipboard.",
+                      });
+                    }}
+                    className="border-primary text-primary hover:bg-primary hover:text-white"
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    Copy Tag
+                  </Button>
+                </div>
+              </div>
+              <div className="hidden lg:block">
+                <div className="bg-primary/10 rounded-full p-4">
+                  <Users className="h-8 w-8 text-primary" />
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card>
