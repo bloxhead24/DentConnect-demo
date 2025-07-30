@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "wouter";
 import { AppointmentApprovalDashboard } from "../components/AppointmentApprovalDashboard";
 import { ApprovedAppointmentsOverview } from "../components/ApprovedAppointmentsOverview";
 import { CallbackRequestsOverview } from "../components/CallbackRequestsOverview";
@@ -508,7 +509,7 @@ export default function DentistDashboard() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-2 mb-1">
                 <p className="text-xs font-bold text-blue-800 truncate">
-                  🏆 Excellence in Patient Care
+                  🏆 Undergraduate Award Nominee
                 </p>
                 <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse flex-shrink-0"></div>
               </div>

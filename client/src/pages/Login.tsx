@@ -299,7 +299,7 @@ export default function Login() {
           <div className="flex justify-center">
             <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-full shadow-lg flex items-center space-x-2">
               <Award className="w-5 h-5" />
-              <span className="text-sm font-semibold">Nominated for Excellence Award 2025</span>
+              <span className="text-sm font-semibold">Nominated for Undergraduate Award 2025</span>
               <span className="text-xs">Royal College of Surgeons</span>
             </div>
           </div>

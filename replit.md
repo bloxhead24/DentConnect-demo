@@ -152,7 +152,7 @@ Preferred communication style: Simple, everyday language.
 ✓ **DENTCONNECT BRANDING AND CREDIBILITY ENHANCEMENT** (July 31, 2025)
 → **PROFESSIONAL LOGO DESIGN**: Added custom SVG DentConnect logo featuring tooth icon in teal circle on login and signup pages
 → **DEMO ENVIRONMENT NOTICE**: Implemented prominent amber demo environment banner clarifying no real appointments will be booked
-→ **ROYAL COLLEGE BADGE**: Added prestigious "Nominated for Excellence Award 2025 - Royal College of Surgeons" badge on login screen
+→ **ROYAL COLLEGE BADGE**: Added prestigious "Nominated for Undergraduate Award 2025 - Royal College of Surgeons" badge on login screen
 → **CONSISTENT BRANDING**: Applied same logo and demo notice to PatientSignup page for unified brand experience
 → **ENHANCED CREDIBILITY**: Professional medical credentials prominently displayed to build trust with users
 → **VISUAL HIERARCHY**: Clear logo placement at top center with supporting badges and notices below
@@ -227,7 +227,7 @@ Preferred communication style: Simple, everyday language.
 
 ✓ **REDUCED DENTAL TEAM TO 5 SPECIALISTS FOR EASIER MANAGEMENT** (July 26, 2025)
 → **STREAMLINED TEAM STRUCTURE**: Reduced from 28 to 5 core dental specialists for simpler management
-→ **PRINCIPAL DENTIST FEATURED**: Dr. Richard Thompson highlighted as practice leader with Royal College Excellence Award 2025
+→ **PRINCIPAL DENTIST FEATURED**: Dr. Richard Thompson highlighted as practice leader with Royal College Undergraduate Award 2025
 → **CORE SPECIALIZATIONS**: 5 key specialists covering General Dentistry & Emergency Care, Pediatric Dentistry & Family Care, Cosmetic Dentistry & Smile Design, Oral Surgery & Implantology, and Endodontics & Root Canal Therapy
 → **CONDITIONAL ACCESS CONTROLS**: My Practice page shows all 5 dentists with full functionality; My Dentist page shows all 5 but only Dr. Richard Thompson has interactive diary access and booking buttons
 → **ENHANCED TEAM PAGE**: Practice overview displays correct team size with professional statistics
