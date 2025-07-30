@@ -130,85 +130,86 @@ export function DiaryView({ practice, dentist, searchMode, isOpen, onClose, onBo
         </div>
 
         <div className="space-y-6">
-          {/* Controls Section */}
-          <div className="flex flex-col lg:flex-row gap-4">
-            {/* Date Selection */}
-            <Card className="lg:w-80">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">Select Date</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Calendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={(date) => date && setSelectedDate(date)}
-                  className="rounded-md border w-full"
-                />
-              </CardContent>
-            </Card>
-
-            {/* Dentist Selection (Practice Mode Only) */}
-            {searchMode === "practice" && practiceDentists.length > 0 && (
-              <Card className="lg:w-80">
+          {/* Controls Section - Desktop Optimized Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+            {/* Date Selection - Left Side */}
+            <div className="lg:col-span-4">
+              <Card className="h-full">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-base">Select Dentist</CardTitle>
+                  <CardTitle className="text-base">Select Date</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2">
-                    <Button
-                      variant={!selectedDentist ? "default" : "outline"}
-                      size="sm"
-                      className="w-full justify-start"
-                      onClick={() => setSelectedDentist(null)}
-                    >
-                      <i className="fas fa-users mr-2"></i>
-                      All Dentists
-                    </Button>
-                    {practiceDentists.map((dentist) => (
-                      <Button
-                        key={dentist.id}
-                        variant={selectedDentist?.id === dentist.id ? "default" : "outline"}
-                        size="sm"
-                        className="w-full justify-start"
-                        onClick={() => setSelectedDentist(dentist)}
-                      >
-                        <i className="fas fa-user-md mr-2"></i>
-                        {dentist.name}
-                      </Button>
-                    ))}
-                  </div>
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={(date) => date && setSelectedDate(date)}
+                    className="rounded-md border w-full"
+                  />
                 </CardContent>
               </Card>
-            )}
+            </div>
 
-            {/* View Options */}
-            <Card className="lg:w-80">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">View Options</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <Button
-                    variant={viewMode === "week" ? "default" : "outline"}
-                    size="sm"
-                    className="w-full justify-start"
-                    onClick={() => setViewMode("week")}
-                  >
-                    <i className="fas fa-calendar-week mr-2"></i>
-                    Week View
-                  </Button>
-                  <Button
-                    variant={viewMode === "month" ? "default" : "outline"}
-                    size="sm"
-                    className="w-full justify-start"
-                    onClick={() => setViewMode("month")}
-                  >
-                    <i className="fas fa-list mr-2"></i>
-                    Day View
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+            {/* Right Side Controls */}
+            <div className="lg:col-span-8 space-y-4">
+              {/* View Options - Top Right */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-base">View Options</CardTitle>
+                    <div className="flex gap-2">
+                      <Button
+                        variant={viewMode === "week" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setViewMode("week")}
+                      >
+                        <i className="fas fa-calendar-week mr-2"></i>
+                        Week View
+                      </Button>
+                      <Button
+                        variant={viewMode === "month" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setViewMode("month")}
+                      >
+                        <i className="fas fa-list mr-2"></i>
+                        Day View
+                      </Button>
+                    </div>
+                  </div>
+                </CardHeader>
+              </Card>
+
+              {/* Dentist Selection - Bottom Right (Practice Mode Only) */}
+              {searchMode === "practice" && practiceDentists.length > 0 && (
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base">Filter by Dentist</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        variant={!selectedDentist ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setSelectedDentist(null)}
+                      >
+                        <i className="fas fa-users mr-2"></i>
+                        All Dentists
+                      </Button>
+                      {practiceDentists.map((dentist) => (
+                        <Button
+                          key={dentist.id}
+                          variant={selectedDentist?.id === dentist.id ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setSelectedDentist(dentist)}
+                        >
+                          <i className="fas fa-user-md mr-2"></i>
+                          {dentist.name}
+                        </Button>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
           </div>
 
           {/* Appointments Section */}
