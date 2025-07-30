@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { MapPin, Phone, Clock, Star, Languages, GraduationCap, PhoneCall } from "lucide-react";
 import { DiaryView } from "./DiaryView";
 import { CallbackRequestModal } from "./CallbackRequestModal";
+import EnhancedBookingFlow from "./EnhancedBookingFlow";
 
 interface PracticeBottomSheetProps {
   practice: Practice | null;
@@ -20,6 +21,8 @@ interface PracticeBottomSheetProps {
 
 export function PracticeBottomSheet({ practice, isOpen, onClose, onBookAppointment, searchMode = "open" }: PracticeBottomSheetProps) {
   const [showDiary, setShowDiary] = useState(false);
+  const [showEnhancedBooking, setShowEnhancedBooking] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const { data: appointments = [] } = useQuery({
     queryKey: [`/api/appointments/${practice?.id}`],
     enabled: !!practice,
@@ -52,7 +55,8 @@ export function PracticeBottomSheet({ practice, isOpen, onClose, onBookAppointme
 
   const handleQuickBook = () => {
     if (earliestAppointment) {
-      onBookAppointment(earliestAppointment);
+      setSelectedAppointment(earliestAppointment);
+      setShowEnhancedBooking(true);
     }
   };
 
@@ -256,7 +260,10 @@ export function PracticeBottomSheet({ practice, isOpen, onClose, onBookAppointme
                     key={appointment.id}
                     variant="outline"
                     className="p-3 h-auto bg-green-50 hover:bg-green-100 border-green-200"
-                    onClick={() => onBookAppointment(appointment)}
+                    onClick={() => {
+                      setSelectedAppointment(appointment);
+                      setShowEnhancedBooking(true);
+                    }}
                   >
                     <div className="text-center">
                       <div className="font-medium">{format(new Date(appointment.appointmentDate), 'h:mm a')}</div>
@@ -323,8 +330,22 @@ export function PracticeBottomSheet({ practice, isOpen, onClose, onBookAppointme
           onClose={() => setShowDiary(false)}
           onBookAppointment={(appointment) => {
             setShowDiary(false);
-            onBookAppointment(appointment);
+            setSelectedAppointment(appointment);
+            setShowEnhancedBooking(true);
           }}
+        />
+      )}
+
+      {/* Enhanced Booking Flow Modal */}
+      {selectedAppointment && practice && (
+        <EnhancedBookingFlow
+          appointment={selectedAppointment}
+          practice={practice}
+          onClose={() => {
+            setShowEnhancedBooking(false);
+            setSelectedAppointment(null);
+          }}
+          isOpen={showEnhancedBooking}
         />
       )}
     </Sheet>

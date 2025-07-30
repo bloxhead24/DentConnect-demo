@@ -2,6 +2,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shield, Lock, Database, FileText, Users, Globe, Clock, Mail } from "lucide-react";
 
+export interface ConsentData {
+  gdprConsent: boolean;
+  marketingConsent: boolean;
+  clinicalDataConsent: boolean;
+  communicationConsent: boolean;
+}
+
 export function GDPRPrivacyNotice() {
   return (
     <ScrollArea className="h-[600px] pr-4">

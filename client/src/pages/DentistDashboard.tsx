@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import PricingManagement from "../components/PricingManagement";
 import { AddSlotFlow } from "../components/AddSlotFlow";
+import EnhancedSlotCreation from "../components/EnhancedSlotCreation";
 import { DentistScheduleCalendar } from "../components/DentistScheduleCalendar";
 
 interface DashboardStats {
@@ -54,6 +55,7 @@ export default function DentistDashboard() {
   const [selectedPeriod, setSelectedPeriod] = useState<"week" | "month" | "year">("month");
   const [showVirtualConsultation, setShowVirtualConsultation] = useState(false);
   const [showAddSlotFlow, setShowAddSlotFlow] = useState(false);
+  const [showEnhancedSlotCreation, setShowEnhancedSlotCreation] = useState(false);
   
   // Get logged-in user info
   const userStr = sessionStorage.getItem('dentconnect_user');
@@ -325,7 +327,7 @@ export default function DentistDashboard() {
                       <span className="text-sm font-medium">Virtual Consult</span>
                     </Button>
                     <Button 
-                      onClick={() => setShowAddSlotFlow(true)}
+                      onClick={() => setShowEnhancedSlotCreation(true)}
                       variant="outline" 
                       className="h-20 flex flex-col items-center space-y-2 hover:bg-blue-50 hover:border-blue-300"
                     >
@@ -498,6 +500,12 @@ export default function DentistDashboard() {
           setShowAddSlotFlow(false);
           // You could add a success toast here
         }}
+      />
+
+      {/* Enhanced Slot Creation Modal */}
+      <EnhancedSlotCreation
+        isOpen={showEnhancedSlotCreation}
+        onClose={() => setShowEnhancedSlotCreation(false)}
       />
 
       {/* Floating Royal College of Surgeons Badge */}
