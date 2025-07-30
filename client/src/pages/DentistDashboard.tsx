@@ -99,6 +99,22 @@ export default function DentistDashboard() {
   };
 
   // Mutation for updating practice tag
+  // Query for today's appointments
+  const { data: todayAppointments } = useQuery({
+    queryKey: ["/api/practice/1/appointments", "today"],
+    queryFn: async () => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      
+      const response = await fetch(`/api/practice/1/appointments?startDate=${today.toISOString()}&endDate=${tomorrow.toISOString()}`);
+      if (!response.ok) throw new Error("Failed to fetch appointments");
+      return response.json();
+    },
+    refetchInterval: 30000 // Refresh every 30 seconds
+  });
+
   const updateTagMutation = useMutation({
     mutationFn: async (newTag: string) => {
       const response = await fetch('/api/practices/update-tag', {
@@ -277,12 +293,36 @@ export default function DentistDashboard() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Practice Connection Tag Card - More Prominent */}
+        {/* Practice Connection Tag Card with Today's Summary */}
         <Card className="mb-6 border-primary/20 bg-gradient-to-r from-primary/5 to-blue-50">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <h2 className="text-lg font-semibold text-gray-900 mb-2">Practice Connection Tag</h2>
+                <div className="flex items-center justify-between mb-2">
+                  <h2 className="text-lg font-semibold text-gray-900">Practice Connection Tag</h2>
+                  {todayAppointments && (
+                    <div className="flex items-center space-x-4 text-sm">
+                      <div className="flex items-center space-x-2 bg-blue-100 px-3 py-1 rounded-full">
+                        <Calendar className="h-4 w-4 text-blue-600" />
+                        <span className="font-medium text-blue-700">
+                          {todayAppointments.filter((apt: any) => apt.status === 'booked').length} booked today
+                        </span>
+                      </div>
+                      <div className="flex items-center space-x-2 bg-green-100 px-3 py-1 rounded-full">
+                        <Clock className="h-4 w-4 text-green-600" />
+                        <span className="font-medium text-green-700">
+                          {todayAppointments.filter((apt: any) => apt.status === 'available').length} slots available
+                        </span>
+                      </div>
+                      <div className="flex items-center space-x-2 bg-amber-100 px-3 py-1 rounded-full">
+                        <Users className="h-4 w-4 text-amber-600" />
+                        <span className="font-medium text-amber-700">
+                          {todayAppointments.filter((apt: any) => apt.bookings?.some((b: any) => b.approvalStatus === 'pending')).length} pending approval
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
                 <p className="text-sm text-gray-600 mb-3">Share this tag with patients for direct appointment booking</p>
                 <div className="flex items-center space-x-4">
                   {isEditingTag ? (
