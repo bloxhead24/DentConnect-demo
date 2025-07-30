@@ -17,6 +17,7 @@ import { VirtualConsultation } from "../components/VirtualConsultation";
 import { BookingFlow } from "../components/BookingFlow";
 import { BookingStatusHeader } from "../components/BookingStatusHeader";
 import { RoyalCollegeBadge } from "../components/RoyalCollegeBadge";
+import { OpenSearchFlow } from "../components/OpenSearchFlow";
 import { Stethoscope, Users, MapPin, Clock, Shield, Star, Video, LogIn, LogOut, User } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { Link } from "wouter";
@@ -32,6 +33,7 @@ export default function Home() {
   const [showDemoComplete, setShowDemoComplete] = useState(false);
   const [showVirtualConsultation, setShowVirtualConsultation] = useState(false);
   const [showBookingFlow, setShowBookingFlow] = useState(false);
+  const [showOpenSearchFlow, setShowOpenSearchFlow] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
   const [selectedPractice, setSelectedPractice] = useState<any>(null);
 
@@ -47,7 +49,8 @@ export default function Home() {
 
   const handleBudgetSelect = (budget: any) => {
     setSelectedBudget(budget);
-    setCurrentStep("openSearch");
+    // Immediately show the rapid search flow
+    setShowOpenSearchFlow(true);
   };
 
   const handleSearchModeSelect = (mode: "open" | "practice" | "mydentist") => {
@@ -102,8 +105,7 @@ export default function Home() {
       setCurrentStep("searchmode");
     } else if (currentStep === "authenticatedDiary") {
       setCurrentStep("practiceConnect");
-    } else if (currentStep === "openSearch") {
-      setCurrentStep("budget");
+
     } else if (currentStep === "map") {
       // If coming from practice connect, go back to it, otherwise to search mode
       if (selectedSearchMode === "practice" || selectedSearchMode === "mydentist") {
@@ -291,8 +293,8 @@ export default function Home() {
                 <span>Connect</span>
               </div>
             )}
-            <div className={`flex items-center space-x-1 ${(currentStep === "map" || currentStep === "openSearch" || currentStep === "authenticatedDiary") ? "text-primary font-medium" : ""}`}>
-              <div className={`w-2 h-2 rounded-full ${(currentStep === "map" || currentStep === "openSearch" || currentStep === "authenticatedDiary") ? "bg-primary" : "bg-gray-300"}`}></div>
+            <div className={`flex items-center space-x-1 ${(currentStep === "map" || currentStep === "authenticatedDiary") ? "text-primary font-medium" : ""}`}>
+              <div className={`w-2 h-2 rounded-full ${(currentStep === "map" || currentStep === "authenticatedDiary") ? "bg-primary" : "bg-gray-300"}`}></div>
               <span>Book</span>
             </div>
           </div>
@@ -354,15 +356,7 @@ export default function Home() {
           />
         )}
         
-        {currentStep === "openSearch" && (
-          <OpenSearchView
-            selectedTreatment={selectedTreatment}
-            selectedAccessibility={selectedAccessibility}
-            selectedBudget={selectedBudget}
-            onBack={handleBack}
-            onBookingComplete={() => setShowDemoComplete(true)}
-          />
-        )}
+
 
         {currentStep === "map" && (
           <MapView 
@@ -403,6 +397,16 @@ export default function Home() {
 
       {/* Royal College Badge */}
       <RoyalCollegeBadge />
+      
+      {/* Open Search Flow Modal */}
+      {showOpenSearchFlow && (
+        <OpenSearchFlow 
+          onClose={() => {
+            setShowOpenSearchFlow(false);
+            setShowDemoComplete(true);
+          }} 
+        />
+      )}
     </div>
   );
 }
