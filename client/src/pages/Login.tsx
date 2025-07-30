@@ -229,25 +229,37 @@ export default function Login() {
   const handleDemoLogin = async (type: 'patient' | 'dentist') => {
     setIsLoading(true);
     try {
-      const credentials = type === 'patient' 
-        ? { email: 'patient@demo.com', password: 'DemoPassword123!', userType: 'patient' }
-        : { email: 'dentist@demo.com', password: 'DemoPassword123!', userType: 'dentist' };
+      // Direct demo bypass - create mock user data without server authentication
+      const demoUser = type === 'patient' 
+        ? {
+            id: 1,
+            email: 'patient@demo.com',
+            firstName: 'Demo',
+            lastName: 'Patient',
+            userType: 'patient',
+            gdprConsentGiven: true,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          }
+        : {
+            id: 2,
+            email: 'dentist@demo.com',
+            firstName: 'Dr. Richard',
+            lastName: 'Thompson',
+            userType: 'dentist',
+            gdcNumber: '83457',
+            practiceId: 1,
+            gdprConsentGiven: true,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          };
       
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(credentials),
-      });
-      
-      const result = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(result.message || 'Demo login failed');
-      }
+      const demoToken = 'demo-token-' + type + '-' + Date.now();
       
       // Store user data and token
-      sessionStorage.setItem('dentconnect_user', JSON.stringify(result.user));
-      sessionStorage.setItem('dentconnect_token', result.token);
+      sessionStorage.setItem('dentconnect_user', JSON.stringify(demoUser));
+      sessionStorage.setItem('dentconnect_token', demoToken);
+      sessionStorage.setItem('demo_mode', 'true');
       
       toast({
         title: type === 'patient' ? "Demo mode activated" : "Welcome Dr. Thompson!",

@@ -306,6 +306,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const token = authHeader.split(' ')[1];
       
+      // Check if this is a demo token
+      if (token.startsWith('demo-token-')) {
+        const tokenParts = token.split('-');
+        if (tokenParts.length >= 3) {
+          const userType = tokenParts[2]; // patient or dentist
+          
+          // Return demo user data
+          const demoUser = userType === 'patient' 
+            ? {
+                id: 1,
+                email: 'patient@demo.com',
+                firstName: 'Demo',
+                lastName: 'Patient',
+                userType: 'patient',
+                gdprConsentGiven: true,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+              }
+            : {
+                id: 2,
+                email: 'dentist@demo.com',
+                firstName: 'Dr. Richard',
+                lastName: 'Thompson',
+                userType: 'dentist',
+                gdcNumber: '83457',
+                practiceId: 1,
+                gdprConsentGiven: true,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+              };
+          
+          return res.json(demoUser);
+        }
+      }
+      
       // Verify token
       const { verifyToken } = await import('./auth-utils');
       let decoded;
