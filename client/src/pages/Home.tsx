@@ -201,8 +201,9 @@ export default function Home() {
                       className="text-purple-600 border-purple-600 hover:bg-purple-600 hover:text-white transition-all duration-200"
                       onClick={async () => {
                         try {
-                          // Log out current user first
-                          await logout();
+                          // Clear current session without redirecting
+                          sessionStorage.removeItem('dentconnect_user');
+                          sessionStorage.removeItem('dentconnect_token');
                           
                           // Log in as demo dentist
                           const response = await fetch('/api/auth/login', {

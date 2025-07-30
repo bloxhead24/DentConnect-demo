@@ -60,6 +60,7 @@ export function useAuth() {
   const logout = () => {
     setUser(null);
     sessionStorage.removeItem('dentconnect_user');
+    sessionStorage.removeItem('dentconnect_token');
     toast({
       title: "Logged out successfully",
       description: "See you next time!",
