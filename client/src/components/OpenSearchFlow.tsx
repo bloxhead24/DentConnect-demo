@@ -300,6 +300,18 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
                   </span>
                 </div>
                 <Progress value={(currentQuestionIndex + 1) / dentalQuestions.length * 100} className="h-2" />
+                
+                {/* Accuracy note for pain assessment */}
+                {currentQuestionIndex === 0 && (
+                  <div className="mt-3 p-2 bg-amber-50 rounded-md">
+                    <div className="flex items-start space-x-2">
+                      <AlertCircle className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                      <p className="text-xs text-amber-800">
+                        <span className="font-medium">Important:</span> Please assess your pain level accurately. This helps us connect you to the right level of dental care and ensures you receive appropriate priority.
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-4">
