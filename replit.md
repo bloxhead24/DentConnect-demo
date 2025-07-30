@@ -127,7 +127,7 @@ Preferred communication style: Simple, everyday language.
 → **ENHANCED TOUCH TARGETS**: Improved button sizing and spacing for better mobile interaction
 
 ✓ **PASSWORD PROTECTION REINSTATED** (July 31, 2025)
-→ **DEMO PASSWORD PROTECTION**: Added password protection to entire demo with password "AppleTooth"
+→ **DEMO PASSWORD PROTECTION**: Added password protection to entire demo with password "ToothPick"
 → **SESSION-BASED AUTHENTICATION**: Password only required once per browser session
 → **PROFESSIONAL UI**: Clean password entry screen with DentConnect branding and pilot demo messaging
 → **SECURITY ENHANCEMENT**: Protects pilot demo from unauthorized access during testing phase
