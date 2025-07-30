@@ -25,6 +25,7 @@ export interface IStorage {
   getPractice(id: number): Promise<Practice | undefined>;
   getPracticeByConnectionTag(connectionTag: string): Promise<Practice | undefined>;
   getPracticesWithAppointments(location?: string): Promise<PracticeWithAppointments[]>;
+  updatePracticeTag(practiceId: number, newTag: string): Promise<Practice>;
   
   // Treatment operations
   getTreatments(): Promise<Treatment[]>;
@@ -640,6 +641,19 @@ export class MemStorage implements IStorage {
         appointment => appointment.practiceId === practice.id && appointment.status === "available"
       ),
     }));
+  }
+
+  async updatePracticeTag(practiceId: number, newTag: string): Promise<Practice> {
+    const practice = this.practices.get(practiceId);
+    if (!practice) {
+      throw new Error("Practice not found");
+    }
+    
+    // Update the practice tag
+    practice.connectionTag = newTag;
+    this.practices.set(practiceId, practice);
+    
+    return practice;
   }
 
   async getTreatments(): Promise<Treatment[]> {

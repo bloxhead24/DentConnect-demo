@@ -8,9 +8,11 @@ import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import DentConnectLogo from "../components/DentConnectLogo";
 import { VirtualConsultation } from "../components/VirtualConsultation";
+import { Input } from "../components/ui/input";
 import { 
   Calendar, 
   Users, 
@@ -25,7 +27,10 @@ import {
   Activity,
   Bell,
   Video,
-  LogOut
+  LogOut,
+  Edit2,
+  Check,
+  X
 } from "lucide-react";
 import PricingManagement from "../components/PricingManagement";
 import { AddSlotFlow } from "../components/AddSlotFlow";
@@ -59,6 +64,9 @@ export default function DentistDashboard() {
   const [showAddSlotFlow, setShowAddSlotFlow] = useState(false);
   const [showEnhancedSlotCreation, setShowEnhancedSlotCreation] = useState(false);
   const { toast } = useToast();
+  const [isEditingTag, setIsEditingTag] = useState(false);
+  const [newTag, setNewTag] = useState("DRRICHARD");
+  const [currentTag, setCurrentTag] = useState("DRRICHARD");
   
   // Get logged-in user info
   const userStr = sessionStorage.getItem('dentconnect_user');
@@ -73,6 +81,62 @@ export default function DentistDashboard() {
   const handleLogout = () => {
     sessionStorage.removeItem('dentconnect_user');
     window.location.href = '/login';
+  };
+
+  // Mutation for updating practice tag
+  const updateTagMutation = useMutation({
+    mutationFn: async (newTag: string) => {
+      const response = await fetch('/api/practices/update-tag', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          practiceId: 1, // Using practice ID 1 for Dr. Richard's practice
+          newTag: newTag.toUpperCase() 
+        })
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to update tag');
+      }
+      
+      return response.json();
+    },
+    onSuccess: (data: any) => {
+      setCurrentTag(data.newTag);
+      setIsEditingTag(false);
+      toast({
+        title: "Tag Updated Successfully",
+        description: `Your practice tag has been changed to ${data.newTag}`,
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Failed to Update Tag",
+        description: error.message || "This tag is already in use. Please choose a different one.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const handleSaveTag = () => {
+    if (newTag.length < 3 || newTag.length > 20) {
+      toast({
+        title: "Invalid Tag Length",
+        description: "Tag must be between 3 and 20 characters",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (!/^[A-Z0-9]+$/i.test(newTag)) {
+      toast({
+        title: "Invalid Tag Format",
+        description: "Tag can only contain letters and numbers",
+        variant: "destructive",
+      });
+      return;
+    }
+    updateTagMutation.mutate(newTag);
   };
 
   // Mock data - in real app, these would come from API
@@ -202,31 +266,80 @@ export default function DentistDashboard() {
         <Card className="mb-6 border-primary/20 bg-gradient-to-r from-primary/5 to-blue-50">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
-              <div>
+              <div className="flex-1">
                 <h2 className="text-lg font-semibold text-gray-900 mb-2">Practice Connection Tag</h2>
                 <p className="text-sm text-gray-600 mb-3">Share this tag with patients for direct appointment booking</p>
                 <div className="flex items-center space-x-4">
-                  <div className="bg-white rounded-lg px-6 py-3 border-2 border-primary shadow-sm">
-                    <code className="text-2xl font-bold text-primary">DRRICHARD</code>
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => {
-                      navigator.clipboard.writeText('DRRICHARD');
-                      toast({
-                        title: "Tag Copied!",
-                        description: "Practice connection tag has been copied to clipboard.",
-                      });
-                    }}
-                    className="border-primary text-primary hover:bg-primary hover:text-white"
-                  >
-                    <FileText className="h-4 w-4 mr-2" />
-                    Copy Tag
-                  </Button>
+                  {isEditingTag ? (
+                    <>
+                      <Input
+                        value={newTag}
+                        onChange={(e) => setNewTag(e.target.value.toUpperCase())}
+                        className="w-48 text-lg font-bold"
+                        placeholder="Enter new tag"
+                        maxLength={20}
+                      />
+                      <Button 
+                        size="sm"
+                        onClick={handleSaveTag}
+                        disabled={updateTagMutation.isPending}
+                        className="bg-green-600 hover:bg-green-700"
+                      >
+                        <Check className="h-4 w-4 mr-1" />
+                        Save
+                      </Button>
+                      <Button 
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setIsEditingTag(false);
+                          setNewTag(currentTag);
+                        }}
+                        disabled={updateTagMutation.isPending}
+                      >
+                        <X className="h-4 w-4 mr-1" />
+                        Cancel
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <div className="bg-white rounded-lg px-6 py-3 border-2 border-primary shadow-sm">
+                        <code className="text-2xl font-bold text-primary">{currentTag}</code>
+                      </div>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => setIsEditingTag(true)}
+                        className="border-primary text-primary hover:bg-primary hover:text-white"
+                      >
+                        <Edit2 className="h-4 w-4 mr-2" />
+                        Edit Tag
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          navigator.clipboard.writeText(currentTag);
+                          toast({
+                            title: "Tag Copied!",
+                            description: "Practice connection tag has been copied to clipboard.",
+                          });
+                        }}
+                        className="border-primary text-primary hover:bg-primary hover:text-white"
+                      >
+                        <FileText className="h-4 w-4 mr-2" />
+                        Copy Tag
+                      </Button>
+                    </>
+                  )}
                 </div>
+                {isEditingTag && (
+                  <p className="text-xs text-gray-500 mt-2">
+                    Tag must be 3-20 characters long and contain only letters and numbers
+                  </p>
+                )}
               </div>
-              <div className="hidden lg:block">
+              <div className="hidden lg:block ml-6">
                 <div className="bg-primary/10 rounded-full p-4">
                   <Users className="h-8 w-8 text-primary" />
                 </div>

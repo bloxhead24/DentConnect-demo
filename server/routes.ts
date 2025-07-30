@@ -383,6 +383,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update practice connection tag
+  app.post("/api/practices/update-tag", async (req, res) => {
+    try {
+      const { practiceId, newTag } = req.body;
+      
+      if (!practiceId || !newTag) {
+        return res.status(400).json({ message: "Practice ID and new tag are required" });
+      }
+      
+      // Validate tag format
+      if (newTag.length < 3 || newTag.length > 20) {
+        return res.status(400).json({ message: "Tag must be between 3 and 20 characters" });
+      }
+      
+      if (!/^[A-Z0-9]+$/i.test(newTag)) {
+        return res.status(400).json({ message: "Tag can only contain letters and numbers" });
+      }
+      
+      // Check if tag is already in use
+      const existingPractice = await storage.getPracticeByConnectionTag(newTag.toUpperCase());
+      if (existingPractice && existingPractice.id !== practiceId) {
+        return res.status(400).json({ message: "This tag is already in use by another practice" });
+      }
+      
+      // Update the practice tag
+      const updatedPractice = await storage.updatePracticeTag(practiceId, newTag.toUpperCase());
+      
+      res.json({ 
+        success: true, 
+        newTag: updatedPractice.connectionTag,
+        message: "Practice tag updated successfully" 
+      });
+    } catch (error) {
+      console.error("Error updating practice tag:", error);
+      res.status(500).json({ message: "Failed to update practice tag" });
+    }
+  });
+
   // Treatment routes
   app.get("/api/treatments", async (req, res) => {
     try {
