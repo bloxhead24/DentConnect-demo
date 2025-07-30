@@ -667,10 +667,6 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
                   <RadioGroupItem value="pregnant" id="preg-yes" />
                   <Label htmlFor="preg-yes">Pregnant</Label>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="trying" id="preg-trying" />
-                  <Label htmlFor="preg-trying">Trying to conceive</Label>
-                </div>
               </RadioGroup>
             </div>
 
