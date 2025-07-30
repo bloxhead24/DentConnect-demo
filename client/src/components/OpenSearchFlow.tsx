@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, MapPin, Clock, AlertCircle, CheckCircle, XCircle, Navigation, Phone, Check } from "lucide-react";
+import { Search, MapPin, Clock, AlertCircle, CheckCircle, XCircle, Navigation, Phone, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -205,6 +205,16 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
 
   return (
     <div className="fixed inset-0 bg-background/95 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      {/* Close button */}
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onClose}
+        className="absolute top-4 right-4 z-50 bg-white/90 hover:bg-white rounded-full shadow-lg"
+      >
+        <X className="h-4 w-4" />
+      </Button>
+      
       <AnimatePresence mode="wait">
         {/* Initial Loading */}
         {currentStep === "loading" && (
@@ -318,13 +328,24 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
                 </RadioGroup>
               </div>
 
-              <Button
-                variant="ghost"
-                onClick={onClose}
-                className="w-full mt-4"
-              >
-                Cancel Search
-              </Button>
+              <div className="flex gap-3 mt-4">
+                {currentQuestionIndex > 0 && (
+                  <Button
+                    variant="outline"
+                    onClick={() => setCurrentQuestionIndex(prev => prev - 1)}
+                    className="flex-1"
+                  >
+                    Back
+                  </Button>
+                )}
+                <Button
+                  variant="ghost"
+                  onClick={onClose}
+                  className={currentQuestionIndex > 0 ? "flex-1" : "w-full"}
+                >
+                  Cancel Search
+                </Button>
+              </div>
             </Card>
           </motion.div>
         )}
