@@ -85,59 +85,48 @@ export function BookingStatusHeader() {
   const StatusIcon = statusConfig.icon;
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 animate-in fade-in-50 slide-in-from-top-2 duration-300">
-      <div className="bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between py-3">
-            {/* Status Icon and Info */}
-            <div className="flex items-center space-x-3">
-              <div className={`p-2 rounded-lg ${statusConfig.color} shadow-sm`}>
-                <StatusIcon className="w-4 h-4" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center space-x-2">
-                  <p className="font-semibold text-sm text-gray-900">{statusConfig.text}</p>
-                  <Badge variant="outline" className="text-xs bg-gray-50">
-                    {latestBooking.appointment.treatmentType}
-                  </Badge>
-                </div>
-                <p className="text-xs text-gray-600 truncate">
-                  {statusConfig.description}
-                </p>
-              </div>
+    <div className="sticky top-0 z-50 bg-white border-b border-gray-100 animate-in fade-in-50 slide-in-from-top-2 duration-300">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="flex items-center justify-between py-2">
+          {/* Status Icon and Info */}
+          <div className="flex items-center space-x-2">
+            <div className={`p-1.5 rounded-md ${statusConfig.color}`}>
+              <StatusIcon className="w-3.5 h-3.5" />
             </div>
-
-            {/* Appointment Details */}
-            <div className="hidden sm:flex items-center space-x-6 text-xs text-gray-600">
-              <div className="flex items-center space-x-1">
-                <Calendar className="w-3 h-3" />
-                <span>{new Date(latestBooking.appointment.appointmentDate).toLocaleDateString()}</span>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center space-x-2">
+                <p className="font-medium text-sm text-gray-900">{statusConfig.text}</p>
+                <Badge variant="outline" className="text-xs h-5 px-1.5">
+                  {latestBooking.appointment.treatmentType}
+                </Badge>
               </div>
-              <div className="flex items-center space-x-1">
-                <Clock className="w-3 h-3" />
-                <span>{latestBooking.appointment.appointmentTime}</span>
-              </div>
-              <div className="text-gray-400">•</div>
-              <span className="font-medium text-gray-700">{latestBooking.practice.name}</span>
+              <p className="text-xs text-gray-500 truncate leading-tight">
+                {new Date(latestBooking.appointment.appointmentDate).toLocaleDateString()} at {latestBooking.appointment.appointmentTime}
+              </p>
             </div>
-
-            {/* Action Button */}
-            <Button
-              variant="default"
-              size="sm"
-              onClick={() => {
-                console.log('BookingStatusHeader: Navigating to /booking-status');
-                console.log('Current userId:', currentUserId);
-                console.log('Latest booking:', latestBooking);
-                setLocation('/booking-status');
-              }}
-              className="ml-4 shrink-0 text-xs h-8 px-4 bg-primary hover:bg-primary/90 text-white shadow-sm"
-            >
-              <ExternalLink className="w-3 h-3 mr-1" />
-              <span className="hidden sm:inline">View Details</span>
-              <span className="sm:hidden">Details</span>
-            </Button>
           </div>
+
+          {/* Practice Name (hidden on small screens) */}
+          <div className="hidden md:block text-xs text-gray-600 font-medium truncate max-w-xs">
+            {latestBooking.practice.name}
+          </div>
+
+          {/* Action Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              console.log('BookingStatusHeader: Navigating to /booking-status');
+              console.log('Current userId:', currentUserId);
+              console.log('Latest booking:', latestBooking);
+              setLocation('/booking-status');
+            }}
+            className="ml-2 shrink-0 text-xs h-7 px-3 border-gray-200 hover:bg-gray-50"
+          >
+            <ExternalLink className="w-3 h-3 mr-1" />
+            <span className="hidden sm:inline">Details</span>
+            <span className="sm:hidden">View</span>
+          </Button>
         </div>
       </div>
     </div>
