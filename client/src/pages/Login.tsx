@@ -248,12 +248,44 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-blue-50 flex items-center justify-center p-4">
       <div className="w-full max-w-5xl">
-        {/* Header */}
+        {/* Header with Logo and Badge */}
         <div className="text-center mb-8">
           <Link href="/">
-            <h1 className="text-4xl font-bold mb-2 text-teal-600">DentConnect</h1>
+            <div className="flex items-center justify-center mb-4">
+              <svg 
+                width="60" 
+                height="60" 
+                viewBox="0 0 60 60" 
+                fill="none" 
+                xmlns="http://www.w3.org/2000/svg"
+                className="mr-3"
+              >
+                <circle cx="30" cy="30" r="30" fill="#0D9488" />
+                <path d="M30 15C28.5 15 27 16 27 18C27 20 28.5 21 30 21C31.5 21 33 20 33 18C33 16 31.5 15 30 15Z" fill="white" />
+                <path d="M20 25C20 23 22 21 24 21H36C38 21 40 23 40 25V35C40 40 36 45 30 45C24 45 20 40 20 35V25Z" fill="white" />
+                <path d="M25 28H27V32H25V28ZM29 28H31V32H29V28ZM33 28H35V32H33V28Z" fill="#0D9488" />
+              </svg>
+              <h1 className="text-4xl font-bold text-teal-600">DentConnect</h1>
+            </div>
           </Link>
-          <p className="text-gray-600">Connect with dental care instantly</p>
+          <p className="text-gray-600 mb-2">Connect with dental care instantly</p>
+          
+          {/* Demo Notice */}
+          <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-2 inline-block mb-4">
+            <p className="text-amber-800 text-sm font-medium">
+              <AlertCircle className="w-4 h-4 inline mr-1" />
+              Demo Environment - No real appointments will be booked
+            </p>
+          </div>
+          
+          {/* Royal College Badge */}
+          <div className="flex justify-center">
+            <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-full shadow-lg flex items-center space-x-2">
+              <Award className="w-5 h-5" />
+              <span className="text-sm font-semibold">Nominated for Excellence Award 2025</span>
+              <span className="text-xs">Royal College of Surgeons</span>
+            </div>
+          </div>
         </div>
 
         {/* Quick demo access */}
