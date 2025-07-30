@@ -356,6 +356,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get all appointments for a practice (for calendar view)
+  app.get("/api/practice/:practiceId/appointments", async (req, res) => {
+    try {
+      const practiceId = parseInt(req.params.practiceId);
+      const appointments = await storage.getPracticeAppointments(practiceId);
+      res.json(appointments);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch practice appointments" });
+    }
+  });
+
   // Approve a booking
   app.post("/api/bookings/:bookingId/approve", async (req, res) => {
     try {

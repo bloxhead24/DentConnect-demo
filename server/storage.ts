@@ -817,6 +817,11 @@ export class MemStorage implements IStorage {
     });
   }
 
+  async getPracticeAppointments(practiceId: number): Promise<Appointment[]> {
+    return Array.from(this.appointments.values())
+      .filter(appointment => appointment.practiceId === practiceId);
+  }
+
   async createAppointment(insertAppointment: InsertAppointment): Promise<Appointment> {
     const appointment: Appointment = {
       id: this.currentAppointmentId++,

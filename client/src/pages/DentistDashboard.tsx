@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import PricingManagement from "../components/PricingManagement";
 import { AddSlotFlow } from "../components/AddSlotFlow";
+import { DentistScheduleCalendar } from "../components/DentistScheduleCalendar";
 
 interface DashboardStats {
   totalPatients: number;
@@ -451,15 +452,7 @@ export default function DentistDashboard() {
           </TabsContent>
 
           <TabsContent value="schedule">
-            <Card>
-              <CardHeader>
-                <CardTitle>Schedule Management</CardTitle>
-                <CardDescription>Manage your availability and time slots</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">Schedule management interface would go here...</p>
-              </CardContent>
-            </Card>
+            <DentistScheduleCalendar practiceId={1} />
           </TabsContent>
         </Tabs>
       </div>
