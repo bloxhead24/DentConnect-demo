@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 interface DentalQuestion {
   id: string;
   question: string;
-  options: { value: string; label: string; urgency?: number }[];
+  options: { value: string; label: string; urgency?: number; estimatedTime?: string }[];
 }
 
 const dentalQuestions: DentalQuestion[] = [
@@ -23,10 +23,10 @@ const dentalQuestions: DentalQuestion[] = [
     id: "pain-level",
     question: "How would you describe your current pain level?",
     options: [
-      { value: "severe", label: "Severe pain (8-10/10)", urgency: 10 },
-      { value: "moderate", label: "Moderate pain (5-7/10)", urgency: 7 },
-      { value: "mild", label: "Mild discomfort (2-4/10)", urgency: 4 },
-      { value: "none", label: "No pain, routine check", urgency: 1 }
+      { value: "severe", label: "Severe pain (8-10/10)", urgency: 10, estimatedTime: "30-45 minutes" },
+      { value: "moderate", label: "Moderate pain (5-7/10)", urgency: 7, estimatedTime: "45-90 minutes" },
+      { value: "mild", label: "Mild discomfort (2-4/10)", urgency: 4, estimatedTime: "2-4 hours" },
+      { value: "none", label: "No pain, routine check", urgency: 1, estimatedTime: "Same day" }
     ]
   },
   {
@@ -319,14 +319,41 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
                       <RadioGroupItem value={option.value} id={option.value} />
                       <Label 
                         htmlFor={option.value} 
-                        className="flex-1 cursor-pointer text-sm"
+                        className="flex-1 cursor-pointer"
                       >
-                        {option.label}
+                        <div>
+                          <div className="text-sm">{option.label}</div>
+                          {option.estimatedTime && (
+                            <div className="text-xs text-muted-foreground mt-1">
+                              <Clock className="w-3 h-3 inline mr-1" />
+                              Estimated connection time: {option.estimatedTime}
+                            </div>
+                          )}
+                        </div>
                       </Label>
                     </motion.div>
                   ))}
                 </RadioGroup>
               </div>
+
+              {/* Show estimated time info for pain level question */}
+              {currentQuestionIndex === 0 && answers["pain-level"] && (
+                <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                  <div className="flex items-start space-x-2">
+                    <AlertCircle className="w-4 h-4 text-blue-600 mt-0.5" />
+                    <div className="text-xs text-blue-800">
+                      <p className="font-medium">Total Connection Time Estimate</p>
+                      <p className="mt-1">
+                        Based on your pain level, we estimate you'll be connected to an appointment in{" "}
+                        <span className="font-semibold">
+                          {dentalQuestions[0].options.find(opt => opt.value === answers["pain-level"])?.estimatedTime}
+                        </span>
+                        . This includes finding an available slot and dentist approval.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="flex gap-3 mt-4">
                 {currentQuestionIndex > 0 && (
