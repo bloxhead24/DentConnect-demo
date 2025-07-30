@@ -1,99 +1,97 @@
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Lock, Shield } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Lock, AlertCircle } from "lucide-react";
 
 interface PasswordProtectionProps {
-  onAuthenticated: () => void;
+  children: React.ReactNode;
 }
 
-export function PasswordProtection({ onAuthenticated }: PasswordProtectionProps) {
-  const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+export function PasswordProtection({ children }: PasswordProtectionProps) {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError('');
-
-    // Simulate loading delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    if (password === 'ToothPick') {
-      // Store authentication in sessionStorage
-      sessionStorage.setItem('dentconnect_authenticated', 'true');
-      onAuthenticated();
-    } else {
-      setError('Incorrect password. Please try again.');
+  useEffect(() => {
+    // Check if already authenticated in this session
+    const auth = sessionStorage.getItem("demo_authenticated");
+    if (auth === "true") {
+      setIsAuthenticated(true);
     }
-    
     setIsLoading(false);
+  }, []);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (password === "AppleTooth") {
+      sessionStorage.setItem("demo_authenticated", "true");
+      setIsAuthenticated(true);
+      setError(false);
+    } else {
+      setError(true);
+      setPassword("");
+    }
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-50 to-blue-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            <div className="bg-teal-100 p-3 rounded-full">
-              <Shield className="h-8 w-8 text-teal-600" />
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 to-blue-50 p-4">
+        <Card className="w-full max-w-md shadow-xl">
+          <CardHeader className="text-center">
+            <div className="w-16 h-16 bg-teal-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Lock className="w-8 h-8 text-white" />
             </div>
-          </div>
-          <CardTitle className="text-2xl font-bold text-gray-900">
-            DentConnect Demo
-          </CardTitle>
-          <CardDescription className="text-gray-600">
-            This demo is temporarily password-protected during our pilot testing phase.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium text-gray-700">
-                Enter Access Password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <CardTitle className="text-2xl font-bold">DentConnect Pilot Demo</CardTitle>
+            <p className="text-sm text-gray-600 mt-2">
+              This is a protected pilot demo. Please enter the password to continue.
+            </p>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Password"
-                  className="pl-10"
-                  required
+                  placeholder="Enter demo password"
+                  className={error ? "border-red-500" : ""}
+                  autoFocus
                 />
+                {error && (
+                  <div className="flex items-center space-x-2 text-red-600 text-sm">
+                    <AlertCircle className="w-4 h-4" />
+                    <span>Incorrect password. Please try again.</span>
+                  </div>
+                )}
               </div>
+              <Button type="submit" className="w-full">
+                Access Demo
+              </Button>
+            </form>
+            <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+              <p className="text-xs text-amber-800 text-center">
+                <strong>Note:</strong> This is a demonstration environment. No real appointments will be booked.
+              </p>
             </div>
-            
-            {error && (
-              <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
-                {error}
-              </div>
-            )}
-            
-            <Button 
-              type="submit" 
-              className="w-full bg-teal-600 hover:bg-teal-700"
-              disabled={isLoading}
-            >
-              {isLoading ? 'Authenticating...' : 'Access Demo'}
-            </Button>
-          </form>
-          
-          <div className="mt-6 text-center">
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <div className="flex items-center justify-center space-x-2 mb-2">
-                <i className="fas fa-award text-blue-600"></i>
-                <span className="font-bold text-blue-800">Royal College of Surgeons</span>
-              </div>
-              <p className="text-sm text-blue-700">National Contribution to Dentistry 2025</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return <>{children}</>;
 }

@@ -111,30 +111,14 @@ function Router() {
 }
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    // Check if user is already authenticated
-    const authStatus = sessionStorage.getItem('dentconnect_authenticated');
-    if (authStatus === 'true') {
-      setIsAuthenticated(true);
-    }
-  }, []);
-
-  const handleAuthenticated = () => {
-    setIsAuthenticated(true);
-  };
-
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <Toaster />
-          {isAuthenticated ? (
+          <PasswordProtection>
+            <Toaster />
             <Router />
-          ) : (
-            <PasswordProtection onAuthenticated={handleAuthenticated} />
-          )}
+          </PasswordProtection>
         </TooltipProvider>
       </QueryClientProvider>
     </ErrorBoundary>

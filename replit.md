@@ -118,6 +118,12 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+✓ **PASSWORD PROTECTION REINSTATED** (July 31, 2025)
+→ **DEMO PASSWORD PROTECTION**: Added password protection to entire demo with password "AppleTooth"
+→ **SESSION-BASED AUTHENTICATION**: Password only required once per browser session
+→ **PROFESSIONAL UI**: Clean password entry screen with DentConnect branding and pilot demo messaging
+→ **SECURITY ENHANCEMENT**: Protects pilot demo from unauthorized access during testing phase
+
 ✓ **PRACTICE CONNECTION TAG MANAGEMENT SYSTEM** (July 31, 2025)
 → **EDITABLE PRACTICE TAGS**: Added ability for dentists to change their practice connection tag in the dashboard
 → **DUPLICATE PREVENTION**: Built validation to ensure no two practices can have the same connection tag
