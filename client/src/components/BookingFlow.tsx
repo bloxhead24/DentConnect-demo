@@ -142,16 +142,28 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
         throw new Error('Invalid appointment selected');
       }
       
-      const bookingResponse = await fetch('/api/bookings', {
+      // Use absolute URL to ensure proper routing
+      const apiUrl = window.location.origin + '/api/bookings';
+      console.log('Submitting booking to:', apiUrl);
+      
+      const bookingResponse = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(bookingPayload)
       });
 
+      // Check content type before parsing
+      const contentType = bookingResponse.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await bookingResponse.text();
+        console.error('Non-JSON response received:', text);
+        throw new Error('Server returned an invalid response. Expected JSON but received HTML.');
+      }
+
       if (!bookingResponse.ok) {
         const errorData = await bookingResponse.json();
         console.error('Booking creation failed:', errorData);
-        throw new Error('Failed to create booking');
+        throw new Error(errorData.message || 'Failed to create booking');
       }
 
       const booking = await bookingResponse.json();
@@ -206,7 +218,8 @@ export function BookingFlow({ practice, appointment, dentist, isOpen, onClose, o
         
         console.log('Triage payload:', triagePayload);
         
-        const triageResponse = await fetch('/api/triage-assessments', {
+        const triageUrl = window.location.origin + '/api/triage-assessments';
+        const triageResponse = await fetch(triageUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(triagePayload)
