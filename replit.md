@@ -118,13 +118,13 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-✓ **ROYAL COLLEGE BADGE HOVER EFFECTS** (July 30, 2025)
-→ **DUAL HOVER EFFECTS**: Royal College of Surgeons badge now expands (110% scale) AND becomes 50% transparent on hover
-→ **SMOOTH ANIMATIONS**: Combined scale and opacity transitions create an elegant hover effect
-→ **CLICKTHROUGH FUNCTIONALITY**: Users can click elements behind the semi-transparent badge when hovering
-→ **POINTER EVENTS CONTROL**: Badge uses pointer-events-none by default, enabling pointer-events on hover
+✓ **ROYAL COLLEGE BADGE "MOVE AWAY" ANIMATION** (July 30, 2025)
+→ **SLIDE-UP ANIMATION**: Patient-side badge slides up 80px (-translate-y-20) when hovered
+→ **DIAGONAL MOVEMENT**: Dentist-side badge moves up and left (-translate-y-20 -translate-x-20) when hovered
+→ **REDUCED OPACITY**: Both badges fade to 30% opacity when hovered to get out of the way
+→ **SMOOTH TRANSITIONS**: 300ms transitions for elegant movement animations
+→ **UNOBTRUSIVE DESIGN**: Badges actively move out of the way when users need to interact with content behind them
 → **APPLIES TO ALL BADGES**: Updated both RoyalCollegeBadge component (patient side) and DentistDashboard badge
-→ **EXPANSION EFFECT**: Badge grows by 10% (scale-110) on hover for better visibility while becoming transparent
 
 ✓ **COMPREHENSIVE APPOINTMENT MANAGEMENT SYSTEM WITH FEE TRACKING** (July 30, 2025)
 → **APPOINTMENT MANAGEMENT TAB**: Created user-friendly AppointmentManagement.tsx component with calendar view and booking details
