@@ -18,10 +18,6 @@ interface BookingStatus {
   practice: {
     name: string;
   };
-  user: {
-    firstName: string;
-    lastName: string;
-  };
 }
 
 export function BookingStatusHeader() {
@@ -152,7 +148,7 @@ export function BookingStatusHeader() {
               <div className="flex items-center space-x-2 text-xs">
                 <User className="w-3.5 h-3.5 text-gray-400" />
                 <span className="text-gray-600">
-                  {latestBooking.user.firstName} {latestBooking.user.lastName}
+                  Your Appointment
                 </span>
               </div>
               
