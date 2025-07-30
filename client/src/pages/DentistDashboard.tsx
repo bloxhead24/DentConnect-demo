@@ -68,14 +68,29 @@ export default function DentistDashboard() {
   const [newTag, setNewTag] = useState("DRRICHARD");
   const [currentTag, setCurrentTag] = useState("DRRICHARD");
   
-  // Get logged-in user info
+  // Get logged-in user info or use demo user
   const userStr = sessionStorage.getItem('dentconnect_user');
   let user = null;
   try {
-    user = userStr ? JSON.parse(userStr) : null;
+    user = userStr ? JSON.parse(userStr) : {
+      id: 2,
+      email: 'dentist@demo.com',
+      userType: 'dentist',
+      firstName: 'Richard',
+      lastName: 'Thompson',
+      practiceId: 1
+    };
   } catch (error) {
     console.error('Error parsing user data:', error);
-    user = null;
+    // Use demo user as fallback
+    user = {
+      id: 2,
+      email: 'dentist@demo.com',
+      userType: 'dentist',
+      firstName: 'Richard',
+      lastName: 'Thompson',
+      practiceId: 1
+    };
   }
   
   const handleLogout = () => {

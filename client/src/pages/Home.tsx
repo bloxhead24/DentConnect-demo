@@ -195,10 +195,24 @@ export default function Home() {
                     </Link>
                   ) : (
                     // Demo access for patients
+                    <Link href="/dentist-dashboard">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        className="text-purple-600 border-purple-600 hover:bg-purple-600 hover:text-white transition-all duration-200"
+                      >
+                        <Stethoscope className="h-4 w-4 mr-2" />
+                        <span className="hidden sm:inline">Demo: Dentist View</span>
+                      </Button>
+                    </Link>
+                  )}
+                  
+                  {/* Additional demo button for quick switch */}
+                  {user?.userType === 'patient' && (
                     <Button 
                       variant="outline" 
                       size="sm"
-                      className="text-purple-600 border-purple-600 hover:bg-purple-600 hover:text-white transition-all duration-200"
+                      className="text-purple-600 border-purple-600 hover:bg-purple-600 hover:text-white transition-all duration-200 md:hidden"
                       onClick={async () => {
                         try {
                           // Clear current session without redirecting
