@@ -62,6 +62,7 @@ export class MemStorage implements IStorage {
   private appointments: Map<number, Appointment> = new Map();
   private bookings: Map<number, Booking> = new Map();
   private triageAssessments: Map<number, TriageAssessment> = new Map();
+  private callbackRequests: Map<number, CallbackRequest> = new Map();
   
   private currentUserId = 1;
   private currentPracticeId = 1;
@@ -69,6 +70,7 @@ export class MemStorage implements IStorage {
   private currentDentistId = 1;
   private currentAppointmentId = 1;
   private currentBookingId = 1;
+  private currentCallbackRequestId = 1;
 
   constructor() {
     this.initializeData();
@@ -504,14 +506,30 @@ export class MemStorage implements IStorage {
     return this.users.get(id);
   }
 
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(user => user.email === email);
+  }
+
   async createUser(insertUser: InsertUser): Promise<User> {
     const user: User = {
       ...insertUser,
       id: this.currentUserId++,
-        createdAt: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
       firstName: insertUser.firstName || null,
       lastName: insertUser.lastName || null,
+      phone: insertUser.phone || null,
+      dateOfBirth: insertUser.dateOfBirth || null,
       userType: insertUser.userType || 'patient',
+      gdprConsentGiven: insertUser.gdprConsentGiven || false,
+      gdprConsentDate: insertUser.gdprConsentDate || null,
+      marketingConsentGiven: insertUser.marketingConsentGiven || false,
+      marketingConsentDate: insertUser.marketingConsentDate || null,
+      dataRetentionDate: insertUser.dataRetentionDate || null,
+      emergencyContact: insertUser.emergencyContact || null,
+      medicalConditions: insertUser.medicalConditions || null,
+      medications: insertUser.medications || null,
+      allergies: insertUser.allergies || null,
     };
     this.users.set(user.id, user);
     return user;
@@ -867,6 +885,99 @@ export class MemStorage implements IStorage {
     this.bookings.set(bookingId, updatedBooking);
     console.log(`[MemStorage] Rejected booking ${bookingId} by ${rejectedBy}`);
     return updatedBooking;
+  }
+
+  // Callback request methods
+  async createCallbackRequest(insertRequest: InsertCallbackRequest): Promise<CallbackRequest> {
+    const request: CallbackRequest = {
+      ...insertRequest,
+      id: this.currentCallbackRequestId++,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: insertRequest.status || 'pending',
+      callbackNotes: insertRequest.callbackNotes || null,
+      triageAssessmentId: insertRequest.triageAssessmentId || null,
+    };
+    this.callbackRequests.set(request.id, request);
+    return request;
+  }
+
+  async getCallbackRequests(practiceId: number, date?: Date): Promise<any[]> {
+    const requests = Array.from(this.callbackRequests.values())
+      .filter(request => request.practiceId === practiceId);
+    
+    if (date) {
+      const startOfDay = new Date(date);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(date);
+      endOfDay.setHours(23, 59, 59, 999);
+      
+      return requests.filter(request => 
+        request.createdAt >= startOfDay && request.createdAt <= endOfDay
+      ).map(request => this.enrichCallbackRequest(request));
+    }
+    
+    return requests.map(request => this.enrichCallbackRequest(request));
+  }
+
+  async getTodaysCallbackRequests(practiceId: number): Promise<any[]> {
+    const today = new Date();
+    return this.getCallbackRequests(practiceId, today);
+  }
+
+  async getPreviousDaysCallbackRequests(practiceId: number, days: number): Promise<any[]> {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);  
+    startDate.setHours(0, 0, 0, 0);
+    
+    const requests = Array.from(this.callbackRequests.values())
+      .filter(request => 
+        request.practiceId === practiceId && 
+        request.createdAt >= startDate
+      );
+    
+    return requests.map(request => this.enrichCallbackRequest(request));
+  }
+
+  async updateCallbackRequestStatus(requestId: number, status: string, notes?: string): Promise<CallbackRequest> {
+    const request = this.callbackRequests.get(requestId);
+    if (!request) {
+      throw new Error(`Callback request with ID ${requestId} not found`);
+    }
+    
+    const updatedRequest: CallbackRequest = {
+      ...request,
+      status,
+      callbackNotes: notes || request.callbackNotes,
+      updatedAt: new Date(),
+    };
+    
+    this.callbackRequests.set(requestId, updatedRequest);
+    return updatedRequest;
+  }
+
+  private enrichCallbackRequest(request: CallbackRequest): any {
+    const user = this.users.get(request.userId);
+    const appointment = request.appointmentId ? this.appointments.get(request.appointmentId) : null;
+    const triageAssessment = request.triageAssessmentId ? this.triageAssessments.get(request.triageAssessmentId) : null;
+    
+    return {
+      ...request,
+      user: user ? {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phone: user.phone,
+        dateOfBirth: user.dateOfBirth,
+      } : null,
+      appointment: appointment ? {
+        appointmentDate: appointment.appointmentDate,
+        appointmentTime: appointment.appointmentTime,
+        duration: appointment.duration,
+        treatmentType: appointment.treatmentType,
+      } : null,
+      triageAssessment: triageAssessment || null,
+    };
   }
 }
 

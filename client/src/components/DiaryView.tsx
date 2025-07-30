@@ -35,8 +35,8 @@ export function DiaryView({ practice, dentist, searchMode, isOpen, onClose, onBo
 
   // Filter appointments based on search mode and selected date
   const filteredAppointments = appointments.filter(appointment => {
-    // Handle both dateTime and appointmentDate properties
-    const appointmentDateStr = appointment.dateTime || appointment.appointmentDate;
+    // Use appointmentDate property only
+    const appointmentDateStr = appointment.appointmentDate;
     if (!appointmentDateStr) return false;
     
     const appointmentDate = new Date(appointmentDateStr);
