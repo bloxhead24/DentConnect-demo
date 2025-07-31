@@ -785,6 +785,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get practice patients (those with approved bookings)
+  app.get("/api/practice/:practiceId/patients", async (req, res) => {
+    try {
+      const practiceId = parseInt(req.params.practiceId);
+      const patients = await storage.getPracticePatients(practiceId);
+      res.json(patients);
+    } catch (error) {
+      console.error("Error fetching practice patients:", error);
+      res.status(500).json({ error: "Failed to fetch practice patients" });
+    }
+  });
+
   // Appointment creation route
   app.post("/api/appointments", async (req, res) => {
     try {

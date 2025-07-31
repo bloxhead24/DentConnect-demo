@@ -52,64 +52,9 @@ export function PatientManagement({ practiceId }: PatientManagementProps) {
   const [filterStatus, setFilterStatus] = useState("all");
 
   // Fetch all patients with their booking history
-  const { data: patients, isLoading } = useQuery({
-    queryKey: ["/api/practice", practiceId, "patients"],
-    queryFn: async () => {
-      // Mock data for now - would be replaced with real API call
-      return [
-        {
-          id: 1,
-          firstName: "Sarah",
-          lastName: "Johnson",
-          email: "sarah.johnson@example.com",
-          phone: "07700 900001",
-          dateOfBirth: "1985-03-15",
-          nhsNumber: "943 476 5919",
-          registeredDate: "2024-01-15",
-          lastVisit: "2025-07-28",
-          totalVisits: 12,
-          totalSpent: 960,
-          upcomingAppointments: 1,
-          medicalAlerts: ["Penicillin allergy"],
-          anxietyLevel: "moderate",
-          status: "active"
-        },
-        {
-          id: 2,
-          firstName: "Michael",
-          lastName: "Chen",
-          email: "m.chen@example.com",
-          phone: "07700 900002",
-          dateOfBirth: "1990-07-22",
-          nhsNumber: "943 476 5920",
-          registeredDate: "2024-03-20",
-          lastVisit: "2025-07-25",
-          totalVisits: 8,
-          totalSpent: 640,
-          upcomingAppointments: 0,
-          medicalAlerts: [],
-          anxietyLevel: "low",
-          status: "active"
-        },
-        {
-          id: 3,
-          firstName: "Emma",
-          lastName: "Wilson",
-          email: "emma.w@example.com",
-          phone: "07700 900003",
-          dateOfBirth: "1978-11-30",
-          nhsNumber: "943 476 5921",
-          registeredDate: "2023-11-10",
-          lastVisit: "2025-06-15",
-          totalVisits: 15,
-          totalSpent: 1850,
-          upcomingAppointments: 2,
-          medicalAlerts: ["Diabetic", "Blood thinners"],
-          anxietyLevel: "high",
-          status: "active"
-        }
-      ];
-    }
+  const { data: patients = [], isLoading } = useQuery<any[]>({
+    queryKey: [`/api/practice/${practiceId}/patients`],
+    refetchInterval: 30000 // Refresh every 30 seconds
   });
 
   const filteredPatients = patients?.filter((patient: any) => {

@@ -70,6 +70,9 @@ export interface IStorage {
   exportUserData(userId: number): Promise<any>;
   deleteUserData(userId: number): Promise<void>;
   updateGDPRConsent(userId: number, consent: { gdpr: boolean; marketing: boolean }): Promise<User>;
+  
+  // Practice patient operations
+  getPracticePatients(practiceId: number): Promise<any[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -130,6 +133,61 @@ export class MemStorage implements IStorage {
       });
 
       console.log('Demo users initialized successfully');
+      
+      // Create demo bookings (one approved for testing)
+      const demoPatient = await this.getUserByEmail('patient@demo.com');
+      const demoAppointment = this.appointments.get(1); // First appointment
+      
+      if (demoPatient && demoAppointment) {
+        // Create a triage assessment first
+        const triageAssessment = await this.createTriageAssessment({
+          userId: demoPatient.id,
+          painLevel: 3,
+          painDuration: '1-3 days',
+          symptoms: 'Mild toothache in upper molar',
+          swelling: false,
+          trauma: false,
+          bleeding: false,
+          infection: false,
+          urgencyLevel: 'medium',
+          triageNotes: 'Patient reports mild discomfort when eating cold foods',
+          anxietyLevel: 'moderate',
+          medicalHistory: 'No significant medical conditions',
+          currentMedications: 'None',
+          allergies: 'None',
+          previousDentalTreatment: 'Regular check-ups every 6 months',
+          smokingStatus: 'never',
+          alcoholConsumption: 'moderate',
+          pregnancyStatus: 'not-applicable'
+        });
+        
+        // Create an approved booking
+        const booking = await this.createBooking({
+          userId: demoPatient.id,
+          appointmentId: 1,
+          triageAssessmentId: triageAssessment.id,
+          treatmentCategory: 'Routine Check-up',
+          accessibilityNeeds: null,
+          medications: false,
+          allergies: false,
+          lastDentalVisit: '6 months ago',
+          anxietyLevel: 'moderate',
+          specialRequests: null,
+          status: 'confirmed',
+          approvalStatus: 'approved',
+          approvedBy: 'Dr. Richard Thompson',
+          approvedAt: new Date(),
+          feeCollected: true,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        });
+        
+        // Update appointment status to booked
+        demoAppointment.status = 'booked';
+        demoAppointment.userId = demoPatient.id;
+        
+        console.log('Demo booking created:', booking);
+      }
     } catch (error) {
       console.error('Error initializing demo users:', error);
     }
@@ -1312,6 +1370,73 @@ export class MemStorage implements IStorage {
     return Array.from(this.appointments.values()).filter(
       appointment => appointment.practiceId === practiceId
     );
+  }
+
+  async getPracticePatients(practiceId: number): Promise<any[]> {
+    // Get all approved bookings for this practice
+    const practiceBookings = Array.from(this.bookings.values())
+      .filter(booking => {
+        const appointment = this.appointments.get(booking.appointmentId);
+        return appointment && 
+               appointment.practiceId === practiceId && 
+               booking.approvalStatus === 'approved';
+      });
+    
+    // Get unique users who have approved bookings
+    const uniqueUserIds = [...new Set(practiceBookings.map(b => b.userId))];
+    
+    // Build patient details with their booking history
+    return uniqueUserIds.map(userId => {
+      const user = this.users.get(userId);
+      if (!user) return null;
+      
+      // Get all approved bookings for this user at this practice
+      const userBookings = practiceBookings.filter(b => b.userId === userId);
+      
+      // Calculate stats
+      const lastBooking = userBookings.sort((a, b) => 
+        b.createdAt.getTime() - a.createdAt.getTime()
+      )[0];
+      
+      const lastAppointment = lastBooking ? 
+        this.appointments.get(lastBooking.appointmentId) : null;
+      
+      // Get upcoming appointments (approved bookings with future dates)
+      const upcomingCount = userBookings.filter(booking => {
+        const apt = this.appointments.get(booking.appointmentId);
+        return apt && new Date(apt.appointmentDate) > new Date();
+      }).length;
+      
+      // Get triage assessment from most recent booking
+      const recentTriage = lastBooking?.triageAssessmentId ? 
+        this.triageAssessments.get(lastBooking.triageAssessmentId) : null;
+      
+      return {
+        id: user.id,
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        email: user.email,
+        phone: user.phone || '',
+        dateOfBirth: user.dateOfBirth || null,
+        nhsNumber: user.nhsNumber || 'Not provided',
+        registeredDate: user.createdAt,
+        lastVisit: lastAppointment ? lastAppointment.appointmentDate : null,
+        totalVisits: userBookings.length,
+        totalSpent: userBookings.length * 50, // Assuming £50 per appointment
+        upcomingAppointments: upcomingCount,
+        medicalAlerts: recentTriage ? [
+          ...(recentTriage.allergies && recentTriage.allergies !== 'None' ? [recentTriage.allergies] : []),
+          ...(recentTriage.currentMedications && recentTriage.currentMedications !== 'No current medications' ? 
+            ['Current medications'] : [])
+        ] : [],
+        anxietyLevel: recentTriage?.anxietyLevel || 'not specified',
+        status: 'active',
+        // Additional medical info from triage
+        medicalHistory: recentTriage?.medicalHistory || 'Not provided',
+        currentMedications: recentTriage?.currentMedications || 'Not provided',
+        allergies: recentTriage?.allergies || 'Not provided'
+      };
+    }).filter(patient => patient !== null);
   }
 }
 
