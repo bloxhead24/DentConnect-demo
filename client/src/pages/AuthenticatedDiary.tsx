@@ -12,6 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { PhoneCall, Star, MapPin, Clock, Users, Award, Shield, Accessibility } from "lucide-react";
 import { RoyalCollegeBadge } from "../components/RoyalCollegeBadge";
+import { BookingStatusHeader } from "../components/BookingStatusHeader";
 import type { Practice, Dentist, Appointment } from "@shared/schema";
 
 interface AuthenticatedDiaryProps {
@@ -150,6 +151,9 @@ export default function AuthenticatedDiary({ onBack, onBookAppointment, currentU
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-secondary/5">
+      {/* Booking Status Header - Shows if user has bookings */}
+      <BookingStatusHeader />
+      
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-4 py-4 sticky top-0 z-40 shadow-sm">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
