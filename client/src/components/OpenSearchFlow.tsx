@@ -321,7 +321,7 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
             <Card className="p-6 relative">
               {/* Smart Matching Info Bubble - Positioned on left side */}
               {showSmartMatchingBubble && (
-                <div className="absolute top-2 -left-96 z-50 w-80">
+                <div className="fixed top-1/4 left-4 z-50 w-80">
                   <div className="bg-gradient-to-br from-teal-50 to-teal-100/50 border border-teal-200/60 rounded-xl p-5 shadow-xl backdrop-blur-sm animate-fade-in">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center space-x-2">
