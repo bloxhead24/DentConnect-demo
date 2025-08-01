@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -9,7 +9,7 @@ import { Checkbox } from "./ui/checkbox";
 import { Badge } from "./ui/badge";
 import { Alert, AlertDescription } from "./ui/alert";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
-import { AlertTriangle, Phone, Info, AlertCircle } from "lucide-react";
+import { AlertTriangle, Phone, Info, AlertCircle, Clock, X } from "lucide-react";
 import { cn } from "../lib/utils";
 
 interface TriageAssessmentProps {
@@ -59,8 +59,18 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
   });
 
   const [currentStep, setCurrentStep] = useState(1);
-
   const [showEmergencyAlert, setShowEmergencyAlert] = useState(false);
+  const [showInfoBubble, setShowInfoBubble] = useState(false);
+
+  // Show info bubble after 3 seconds on medical history step
+  useEffect(() => {
+    if (currentStep === 3) {
+      const timer = setTimeout(() => {
+        setShowInfoBubble(true);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [currentStep]);
 
   const handleSubmit = () => {
     // Auto-calculate urgency level based on symptoms
@@ -311,7 +321,7 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
         )}
 
         {currentStep === 3 && (
-          <div className="space-y-6">
+          <div className="space-y-6 relative">
             {/* Medical Safety Alert */}
             <Alert className="border-blue-200 bg-blue-50">
               <AlertDescription className="text-blue-700">
@@ -319,6 +329,38 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
                 The following medical information is required for your safety and to ensure proper treatment planning.
               </AlertDescription>
             </Alert>
+
+            {/* Informative Bubble */}
+            {showInfoBubble && (
+              <div className="relative">
+                <div className="absolute -top-2 right-4 z-10 max-w-sm">
+                  <div className="bg-teal-50 border-2 border-teal-200 rounded-lg p-4 shadow-lg animate-fade-in">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start space-x-3">
+                        <div className="bg-teal-100 rounded-full p-2 mt-0.5">
+                          <Clock className="h-4 w-4 text-teal-600" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="text-sm font-semibold text-teal-800 mb-1">Time-saving tip!</h4>
+                          <p className="text-xs text-teal-700 leading-relaxed">
+                            Completing this questionnaire now not only helps us match you with the right appointment, 
+                            but also saves you time and hassle when you arrive at the practice - no more clipboards!
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setShowInfoBubble(false)}
+                        className="text-teal-400 hover:text-teal-600 ml-2 flex-shrink-0"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                    {/* Speech bubble tail */}
+                    <div className="absolute -bottom-2 left-8 w-4 h-4 bg-teal-50 border-b-2 border-r-2 border-teal-200 transform rotate-45"></div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div>
               <Label className="text-base font-medium">Anxiety Level Assessment</Label>
