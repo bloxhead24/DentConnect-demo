@@ -60,6 +60,27 @@ const dentalQuestions: DentalQuestion[] = [
       { value: "20km", label: "Up to 20km (30 min drive)" },
       { value: "any", label: "Any distance for urgent care" }
     ]
+  },
+  {
+    id: "accessibility",
+    question: "Do you have any accessibility needs?",
+    options: [
+      { value: "none", label: "No special needs" },
+      { value: "wheelchair", label: "Wheelchair accessibility" },
+      { value: "hearing", label: "Hearing support" },
+      { value: "visual", label: "Visual support" },
+      { value: "anxiety", label: "Anxiety support" }
+    ]
+  },
+  {
+    id: "transportation",
+    question: "How will you get to your appointment?",
+    options: [
+      { value: "driving", label: "Driving myself" },
+      { value: "public", label: "Public transport" },
+      { value: "family", label: "Family/friend driving" },
+      { value: "taxi", label: "Taxi/ride share" }
+    ]
   }
 ];
 
