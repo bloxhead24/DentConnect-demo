@@ -310,9 +310,9 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
             <Card className="p-6 relative">
               {/* Smart Matching Info Bubble - Positioned on left side */}
               {showSmartMatchingBubble && (
-                <div className="absolute top-8 -left-80 z-20 w-72">
+                <div className="absolute top-2 -left-96 z-20 w-80">
                   <div className="bg-gradient-to-br from-teal-50 to-teal-100/50 border border-teal-200/60 rounded-xl p-5 shadow-xl backdrop-blur-sm animate-fade-in">
-                    <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center space-x-2">
                         <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-full p-2 shadow-sm">
                           <Info className="h-4 w-4 text-white" />
@@ -326,15 +326,54 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
                         <X className="h-3 w-3" />
                       </button>
                     </div>
-                    <p className="text-xs text-teal-800 leading-relaxed mb-3">
-                      These answers help us intelligently match you with the most suitable dentists and available appointments in your area.
+                    
+                    <p className="text-xs text-teal-800 leading-relaxed mb-4">
+                      Our AI-powered system analyzes your responses to match you with the most suitable dentists and available appointments in Newcastle.
                     </p>
-                    <div className="flex items-center space-x-2 text-xs text-teal-700">
-                      <div className="w-2 h-2 bg-teal-400 rounded-full animate-pulse"></div>
-                      <span>Real-time matching in progress</span>
+                    
+                    {/* Matching Criteria */}
+                    <div className="space-y-3 mb-4">
+                      <div className="text-xs font-medium text-teal-900 mb-2">What we're analyzing:</div>
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-1.5 h-1.5 bg-teal-500 rounded-full"></div>
+                          <span className="text-xs text-teal-700">Pain urgency & symptom severity</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-1.5 h-1.5 bg-teal-500 rounded-full"></div>
+                          <span className="text-xs text-teal-700">Specialist requirements & expertise</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-1.5 h-1.5 bg-teal-500 rounded-full"></div>
+                          <span className="text-xs text-teal-700">Location preference & travel time</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-1.5 h-1.5 bg-teal-500 rounded-full"></div>
+                          <span className="text-xs text-teal-700">Real-time appointment availability</span>
+                        </div>
+                      </div>
                     </div>
+                    
+                    {/* Current Status */}
+                    <div className="bg-teal-100/50 rounded-lg p-3 mb-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-medium text-teal-900">Connected Practices</span>
+                        <span className="text-xs font-semibold text-teal-700">8 active</span>
+                      </div>
+                      <div className="flex items-center space-x-2 text-xs text-teal-700">
+                        <div className="w-2 h-2 bg-teal-400 rounded-full animate-pulse"></div>
+                        <span>Checking real-time availability</span>
+                      </div>
+                    </div>
+                    
+                    {/* Benefits */}
+                    <div className="text-xs text-teal-700 bg-white/40 rounded-lg p-2">
+                      <div className="font-medium mb-1">✓ Faster than calling practices individually</div>
+                      <div>✓ Guaranteed appropriate care matching</div>
+                    </div>
+                    
                     {/* Speech bubble tail pointing to card */}
-                    <div className="absolute top-6 -right-2 w-4 h-4 bg-gradient-to-br from-teal-50 to-teal-100/50 border-r border-b border-teal-200/60 transform rotate-45"></div>
+                    <div className="absolute top-8 -right-2 w-4 h-4 bg-gradient-to-br from-teal-50 to-teal-100/50 border-r border-b border-teal-200/60 transform rotate-45"></div>
                   </div>
                 </div>
               )}
