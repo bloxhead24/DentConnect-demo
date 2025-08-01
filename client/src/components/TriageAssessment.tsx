@@ -140,7 +140,7 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
           <div className="space-y-4 relative">
             {/* Pain Assessment Info Bubble - Positioned on left side */}
             {showPainInfoBubble && (
-              <div className="absolute top-8 -left-80 z-20 w-72">
+              <div className="absolute top-8 -left-72 z-50 w-72">
                 <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 border border-blue-200/60 rounded-xl p-5 shadow-xl backdrop-blur-sm animate-fade-in">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center space-x-2">
@@ -376,7 +376,7 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
 
             {/* Medical History Info Bubble - Positioned on left side */}
             {showInfoBubble && (
-              <div className="absolute top-8 -left-80 z-20 w-72">
+              <div className="absolute top-8 -left-72 z-50 w-72">
                 <div className="bg-gradient-to-br from-teal-50 to-teal-100/50 border border-teal-200/60 rounded-xl p-5 shadow-xl backdrop-blur-sm animate-fade-in">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center space-x-2">
