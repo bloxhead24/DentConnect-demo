@@ -63,12 +63,12 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
   const [showInfoBubble, setShowInfoBubble] = useState(false);
   const [showPainInfoBubble, setShowPainInfoBubble] = useState(false);
 
-  // Show pain info bubble after 4 seconds on first step
+  // Show pain info bubble after 2 seconds on first step
   useEffect(() => {
     if (currentStep === 1) {
       const timer = setTimeout(() => {
         setShowPainInfoBubble(true);
-      }, 4000);
+      }, 2000);
       return () => clearTimeout(timer);
     }
   }, [currentStep]);
@@ -138,6 +138,37 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
       <CardContent className="space-y-6">
         {currentStep === 1 && (
           <div className="space-y-4 relative">
+            {/* Pain Assessment Info Bubble - Early Appearance */}
+            {showPainInfoBubble && (
+              <div className="relative mb-4">
+                <div className="absolute top-0 right-4 z-10 max-w-xs">
+                  <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 shadow-lg animate-fade-in">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start space-x-3">
+                        <div className="bg-blue-100 rounded-full p-2 mt-0.5">
+                          <Info className="h-4 w-4 text-blue-600" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="text-sm font-semibold text-blue-800 mb-1">Getting you the right care</h4>
+                          <p className="text-xs text-blue-700 leading-relaxed">
+                            Your pain level helps us ensure you receive appropriate care and are matched with the right dental specialist for your condition.
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setShowPainInfoBubble(false)}
+                        className="text-blue-400 hover:text-blue-600 ml-2 flex-shrink-0"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                    {/* Speech bubble tail */}
+                    <div className="absolute -bottom-2 left-8 w-4 h-4 bg-blue-50 border-b-2 border-r-2 border-blue-200 transform rotate-45"></div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             <div>
               <Label className="text-base font-medium">Pain Level Assessment</Label>
               <p className="text-sm text-gray-600 mb-3">Rate your current pain level (1 = minimal, 10 = severe)</p>
@@ -170,36 +201,7 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
               )}
             </div>
 
-            {/* Pain Assessment Info Bubble */}
-            {showPainInfoBubble && (
-              <div className="relative">
-                <div className="absolute -top-2 left-4 z-10 max-w-xs">
-                  <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 shadow-lg animate-fade-in">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start space-x-3">
-                        <div className="bg-blue-100 rounded-full p-2 mt-0.5">
-                          <Info className="h-4 w-4 text-blue-600" />
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="text-sm font-semibold text-blue-800 mb-1">Smart matching!</h4>
-                          <p className="text-xs text-blue-700 leading-relaxed">
-                            These pain details help us find the perfect dentist and appointment type for your specific needs.
-                          </p>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => setShowPainInfoBubble(false)}
-                        className="text-blue-400 hover:text-blue-600 ml-2 flex-shrink-0"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                    {/* Speech bubble tail */}
-                    <div className="absolute -bottom-2 right-8 w-4 h-4 bg-blue-50 border-b-2 border-r-2 border-blue-200 transform rotate-45"></div>
-                  </div>
-                </div>
-              </div>
-            )}
+
 
             <div>
               <Label htmlFor="painDuration">Pain Duration</Label>
