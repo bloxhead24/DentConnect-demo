@@ -71,16 +71,6 @@ const dentalQuestions: DentalQuestion[] = [
       { value: "visual", label: "Visual support" },
       { value: "anxiety", label: "Anxiety support" }
     ]
-  },
-  {
-    id: "transportation",
-    question: "How will you get to your appointment?",
-    options: [
-      { value: "driving", label: "Driving myself" },
-      { value: "public", label: "Public transport" },
-      { value: "family", label: "Family/friend driving" },
-      { value: "taxi", label: "Taxi/ride share" }
-    ]
   }
 ];
 
@@ -331,7 +321,7 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
             <Card className="p-6 relative">
               {/* Smart Matching Info Bubble - Positioned on left side */}
               {showSmartMatchingBubble && (
-                <div className="absolute top-2 -left-72 z-50 w-80">
+                <div className="absolute top-2 -left-96 z-50 w-80">
                   <div className="bg-gradient-to-br from-teal-50 to-teal-100/50 border border-teal-200/60 rounded-xl p-5 shadow-xl backdrop-blur-sm animate-fade-in">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center space-x-2">
