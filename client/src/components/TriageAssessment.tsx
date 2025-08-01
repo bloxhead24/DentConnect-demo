@@ -138,33 +138,33 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
       <CardContent className="space-y-6">
         {currentStep === 1 && (
           <div className="space-y-4 relative">
-            {/* Pain Assessment Info Bubble - Early Appearance */}
+            {/* Pain Assessment Info Bubble - Positioned on left side */}
             {showPainInfoBubble && (
-              <div className="relative mb-4">
-                <div className="absolute top-0 right-4 z-10 max-w-xs">
-                  <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 shadow-lg animate-fade-in">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start space-x-3">
-                        <div className="bg-blue-100 rounded-full p-2 mt-0.5">
-                          <Info className="h-4 w-4 text-blue-600" />
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="text-sm font-semibold text-blue-800 mb-1">Getting you the right care</h4>
-                          <p className="text-xs text-blue-700 leading-relaxed">
-                            Your pain level helps us ensure you receive appropriate care and are matched with the right dental specialist for your condition.
-                          </p>
-                        </div>
+              <div className="absolute top-8 -left-80 z-20 w-72">
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 border border-blue-200/60 rounded-xl p-5 shadow-xl backdrop-blur-sm animate-fade-in">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center space-x-2">
+                      <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-full p-2 shadow-sm">
+                        <Info className="h-4 w-4 text-white" />
                       </div>
-                      <button
-                        onClick={() => setShowPainInfoBubble(false)}
-                        className="text-blue-400 hover:text-blue-600 ml-2 flex-shrink-0"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
+                      <h4 className="text-sm font-semibold text-blue-900">Getting you the right care</h4>
                     </div>
-                    {/* Speech bubble tail */}
-                    <div className="absolute -bottom-2 left-8 w-4 h-4 bg-blue-50 border-b-2 border-r-2 border-blue-200 transform rotate-45"></div>
+                    <button
+                      onClick={() => setShowPainInfoBubble(false)}
+                      className="text-blue-400 hover:text-blue-600 transition-colors rounded-full p-1 hover:bg-blue-100"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
                   </div>
+                  <p className="text-xs text-blue-800 leading-relaxed mb-3">
+                    Your pain level helps us ensure you receive appropriate care and are matched with the right dental specialist for your condition.
+                  </p>
+                  <div className="flex items-center space-x-2 text-xs text-blue-700">
+                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                    <span>Clinical assessment in progress</span>
+                  </div>
+                  {/* Speech bubble tail pointing to card */}
+                  <div className="absolute top-6 -right-2 w-4 h-4 bg-gradient-to-br from-blue-50 to-blue-100/50 border-r border-b border-blue-200/60 transform rotate-45"></div>
                 </div>
               </div>
             )}
@@ -374,34 +374,34 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
               </AlertDescription>
             </Alert>
 
-            {/* Informative Bubble */}
+            {/* Medical History Info Bubble - Positioned on left side */}
             {showInfoBubble && (
-              <div className="relative">
-                <div className="absolute -top-2 right-4 z-10 max-w-sm">
-                  <div className="bg-teal-50 border-2 border-teal-200 rounded-lg p-4 shadow-lg animate-fade-in">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start space-x-3">
-                        <div className="bg-teal-100 rounded-full p-2 mt-0.5">
-                          <Clock className="h-4 w-4 text-teal-600" />
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="text-sm font-semibold text-teal-800 mb-1">Time-saving tip!</h4>
-                          <p className="text-xs text-teal-700 leading-relaxed">
-                            Completing this questionnaire now not only helps us match you with the right appointment, 
-                            but also saves you time and hassle when you arrive at the practice - no more clipboards!
-                          </p>
-                        </div>
+              <div className="absolute top-8 -left-80 z-20 w-72">
+                <div className="bg-gradient-to-br from-teal-50 to-teal-100/50 border border-teal-200/60 rounded-xl p-5 shadow-xl backdrop-blur-sm animate-fade-in">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center space-x-2">
+                      <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-full p-2 shadow-sm">
+                        <Clock className="h-4 w-4 text-white" />
                       </div>
-                      <button
-                        onClick={() => setShowInfoBubble(false)}
-                        className="text-teal-400 hover:text-teal-600 ml-2 flex-shrink-0"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
+                      <h4 className="text-sm font-semibold text-teal-900">Time-saving tip!</h4>
                     </div>
-                    {/* Speech bubble tail */}
-                    <div className="absolute -bottom-2 left-8 w-4 h-4 bg-teal-50 border-b-2 border-r-2 border-teal-200 transform rotate-45"></div>
+                    <button
+                      onClick={() => setShowInfoBubble(false)}
+                      className="text-teal-400 hover:text-teal-600 transition-colors rounded-full p-1 hover:bg-teal-100"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
                   </div>
+                  <p className="text-xs text-teal-800 leading-relaxed mb-3">
+                    Completing this questionnaire now not only helps us match you with the right appointment, 
+                    but also saves you time and hassle when you arrive at the practice - no more clipboards!
+                  </p>
+                  <div className="flex items-center space-x-2 text-xs text-teal-700">
+                    <div className="w-2 h-2 bg-teal-400 rounded-full animate-pulse"></div>
+                    <span>Streamlining your visit</span>
+                  </div>
+                  {/* Speech bubble tail pointing to card */}
+                  <div className="absolute top-6 -right-2 w-4 h-4 bg-gradient-to-br from-teal-50 to-teal-100/50 border-r border-b border-teal-200/60 transform rotate-45"></div>
                 </div>
               </div>
             )}
