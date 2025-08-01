@@ -308,31 +308,33 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
             className="w-full max-w-md"
           >
             <Card className="p-6 relative">
-              {/* Smart Matching Info Bubble */}
+              {/* Smart Matching Info Bubble - Positioned on left side */}
               {showSmartMatchingBubble && (
-                <div className="absolute -top-2 -right-2 z-20 max-w-xs">
-                  <div className="bg-teal-50 border-2 border-teal-200 rounded-lg p-4 shadow-lg animate-fade-in">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start space-x-3">
-                        <div className="bg-teal-100 rounded-full p-2 mt-0.5">
-                          <Info className="h-4 w-4 text-teal-600" />
+                <div className="absolute top-8 -left-80 z-20 w-72">
+                  <div className="bg-gradient-to-br from-teal-50 to-teal-100/50 border border-teal-200/60 rounded-xl p-5 shadow-xl backdrop-blur-sm animate-fade-in">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center space-x-2">
+                        <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-full p-2 shadow-sm">
+                          <Info className="h-4 w-4 text-white" />
                         </div>
-                        <div className="flex-1">
-                          <h4 className="text-sm font-semibold text-teal-800 mb-1">Smart Matching Technology</h4>
-                          <p className="text-xs text-teal-700 leading-relaxed">
-                            These answers help us intelligently match you with the most suitable dentists and available appointments in your area.
-                          </p>
-                        </div>
+                        <h4 className="text-sm font-semibold text-teal-900">Smart Matching Technology</h4>
                       </div>
                       <button
                         onClick={() => setShowSmartMatchingBubble(false)}
-                        className="text-teal-400 hover:text-teal-600 ml-2 flex-shrink-0"
+                        className="text-teal-400 hover:text-teal-600 transition-colors rounded-full p-1 hover:bg-teal-100"
                       >
-                        <X className="h-4 w-4" />
+                        <X className="h-3 w-3" />
                       </button>
                     </div>
-                    {/* Speech bubble tail */}
-                    <div className="absolute -bottom-2 right-8 w-4 h-4 bg-teal-50 border-b-2 border-r-2 border-teal-200 transform rotate-45"></div>
+                    <p className="text-xs text-teal-800 leading-relaxed mb-3">
+                      These answers help us intelligently match you with the most suitable dentists and available appointments in your area.
+                    </p>
+                    <div className="flex items-center space-x-2 text-xs text-teal-700">
+                      <div className="w-2 h-2 bg-teal-400 rounded-full animate-pulse"></div>
+                      <span>Real-time matching in progress</span>
+                    </div>
+                    {/* Speech bubble tail pointing to card */}
+                    <div className="absolute top-6 -right-2 w-4 h-4 bg-gradient-to-br from-teal-50 to-teal-100/50 border-r border-b border-teal-200/60 transform rotate-45"></div>
                   </div>
                 </div>
               )}
