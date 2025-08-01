@@ -286,10 +286,34 @@ export function PatientDetailsModal({ booking, triggerButton }: PatientDetailsMo
 
               {/* Accessibility & Special Requests */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {booking.accessibilityNeeds && (
+                {(booking.accessibilityNeeds || (booking.triageAssessment?.accessibilityNeeds?.length > 0)) && (
                   <div className="bg-white rounded-lg p-3 border border-purple-200">
                     <h4 className="font-medium text-purple-900 mb-2 text-sm">Accessibility Requirements</h4>
-                    <p className="text-sm text-gray-700 bg-purple-50 rounded px-2 py-1">{booking.accessibilityNeeds}</p>
+                    {booking.triageAssessment?.accessibilityNeeds?.length > 0 ? (
+                      <div className="space-y-2">
+                        {booking.triageAssessment.accessibilityNeeds.map((need: string) => {
+                          const needMap: Record<string, { name: string; icon: string }> = {
+                            wheelchair: { name: "Wheelchair Access", icon: "fas fa-wheelchair" },
+                            signLanguage: { name: "Sign Language Support", icon: "fas fa-sign-language" },
+                            visualSupport: { name: "Visual Support", icon: "fas fa-eye" },
+                            cognitiveSupport: { name: "Cognitive Support", icon: "fas fa-brain" },
+                            anxietySupport: { name: "Anxiety Support", icon: "fas fa-spa" },
+                            hearingSupport: { name: "Hearing Support", icon: "fas fa-deaf" },
+                            mobilitySupport: { name: "Mobility Support", icon: "fas fa-walking" },
+                            noSpecialNeeds: { name: "No Special Requirements", icon: "fas fa-check-circle" }
+                          };
+                          const needInfo = needMap[need] || { name: need, icon: "fas fa-info-circle" };
+                          return (
+                            <div key={need} className="flex items-center space-x-2 text-sm bg-purple-50 rounded px-2 py-1">
+                              <i className={`${needInfo.icon} text-purple-600`}></i>
+                              <span className="text-gray-700">{needInfo.name}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-700 bg-purple-50 rounded px-2 py-1">{booking.accessibilityNeeds}</p>
+                    )}
                   </div>
                 )}
                 

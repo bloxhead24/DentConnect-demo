@@ -35,6 +35,7 @@ export interface TriageAssessmentData {
   smokingStatus: "never" | "former" | "current";
   alcoholConsumption: "none" | "occasional" | "regular" | "excessive";
   pregnancyStatus: "not-applicable" | "not-pregnant" | "pregnant" | "trying";
+  accessibilityNeeds: string[];
 }
 
 export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps) {
@@ -55,7 +56,8 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
     previousDentalTreatment: "",
     smokingStatus: "never",
     alcoholConsumption: "none",
-    pregnancyStatus: "not-applicable"
+    pregnancyStatus: "not-applicable",
+    accessibilityNeeds: []
   });
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -853,6 +855,141 @@ export function TriageAssessment({ onComplete, onCancel }: TriageAssessmentProps
               <Button 
                 variant="outline" 
                 onClick={() => setCurrentStep(3)}
+                className="flex-1 sm:flex-none"
+              >
+                <i className="fas fa-arrow-left mr-2"></i>
+                Back
+              </Button>
+              <Button 
+                onClick={() => setCurrentStep(5)}
+                className="flex-1 sm:flex-none"
+              >
+                Continue
+                <i className="fas fa-arrow-right ml-2"></i>
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {currentStep === 5 && (
+          <div className="space-y-6">
+            <div>
+              <Label className="text-base font-medium">Care Preferences & Accessibility Needs</Label>
+              <p className="text-sm text-gray-600 mb-4">Select any support or accommodations you need for your visit (check all that apply)</p>
+              
+              <div className="grid grid-cols-1 gap-4">
+                {[
+                  {
+                    id: "wheelchair",
+                    name: "Wheelchair Access",
+                    description: "Ramp access and accessible facilities",
+                    icon: "fas fa-wheelchair",
+                  },
+                  {
+                    id: "signLanguage",
+                    name: "Sign Language Support",
+                    description: "BSL interpreter available",
+                    icon: "fas fa-sign-language",
+                  },
+                  {
+                    id: "visualSupport",
+                    name: "Visual Support",
+                    description: "Large print materials and audio assistance",
+                    icon: "fas fa-eye",
+                  },
+                  {
+                    id: "cognitiveSupport",
+                    name: "Cognitive Support",
+                    description: "Extra time and clear explanations",
+                    icon: "fas fa-brain",
+                  },
+                  {
+                    id: "anxietySupport",
+                    name: "Anxiety Support",
+                    description: "Calming environment and sedation options",
+                    icon: "fas fa-spa",
+                  },
+                  {
+                    id: "hearingSupport",
+                    name: "Hearing Support",
+                    description: "Hearing loop system and written instructions",
+                    icon: "fas fa-deaf",
+                  },
+                  {
+                    id: "mobilitySupport",
+                    name: "Mobility Support",
+                    description: "Assistance with transfers and positioning",
+                    icon: "fas fa-walking",
+                  },
+                  {
+                    id: "noSpecialNeeds",
+                    name: "No Special Requirements",
+                    description: "I don't need any special accommodations",
+                    icon: "fas fa-check-circle",
+                  }
+                ].map((need) => (
+                  <div 
+                    key={need.id} 
+                    className={cn(
+                      "border rounded-lg p-4 cursor-pointer transition-all duration-200 hover:shadow-md",
+                      formData.accessibilityNeeds.includes(need.id)
+                        ? "border-primary bg-primary/5 shadow-sm"
+                        : "border-gray-200 hover:border-gray-300"
+                    )}
+                    onClick={() => {
+                      if (need.id === 'noSpecialNeeds') {
+                        // If "no special needs" is selected, clear all others
+                        setFormData(prev => ({ 
+                          ...prev, 
+                          accessibilityNeeds: formData.accessibilityNeeds.includes(need.id) ? [] : [need.id]
+                        }));
+                      } else {
+                        // If any other need is selected, remove "no special needs" and toggle this need
+                        setFormData(prev => {
+                          let needs = prev.accessibilityNeeds.filter(n => n !== 'noSpecialNeeds');
+                          if (needs.includes(need.id)) {
+                            needs = needs.filter(n => n !== need.id);
+                          } else {
+                            needs.push(need.id);
+                          }
+                          return { ...prev, accessibilityNeeds: needs };
+                        });
+                      }
+                    }}
+                  >
+                    <div className="flex items-start space-x-3">
+                      <div className={cn(
+                        "w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0",
+                        formData.accessibilityNeeds.includes(need.id)
+                          ? "bg-primary text-white"
+                          : "bg-gray-100 text-gray-600"
+                      )}>
+                        <i className={need.icon}></i>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-gray-900">{need.name}</h4>
+                        <p className="text-sm text-gray-600 mt-1">{need.description}</p>
+                      </div>
+                      <div className={cn(
+                        "w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0",
+                        formData.accessibilityNeeds.includes(need.id)
+                          ? "border-primary bg-primary"
+                          : "border-gray-300"
+                      )}>
+                        {formData.accessibilityNeeds.includes(need.id) && (
+                          <i className="fas fa-check text-white text-xs"></i>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex justify-between gap-4 px-2 pb-2">
+              <Button 
+                variant="outline" 
+                onClick={() => setCurrentStep(4)}
                 className="flex-1 sm:flex-none"
               >
                 <i className="fas fa-arrow-left mr-2"></i>
