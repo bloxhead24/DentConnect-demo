@@ -2,9 +2,9 @@ import { TreatmentType } from "../lib/types";
 import { TreatmentCard } from "../components/TreatmentCard";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
-import { Video } from "lucide-react";
+import { Video, Info, X } from "lucide-react";
 import { EarlyAccessPopup } from "../components/EarlyAccessPopup";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface TreatmentSelectionProps {
   onTreatmentSelect: (treatment: TreatmentType) => void;
@@ -49,6 +49,15 @@ const treatmentTypes: TreatmentType[] = [
 
 export default function TreatmentSelection({ onTreatmentSelect, selectedTreatment, onVirtualConsultation }: TreatmentSelectionProps) {
   const [showEarlyAccess, setShowEarlyAccess] = useState(false);
+  const [showSmartMatchingBubble, setShowSmartMatchingBubble] = useState(false);
+
+  // Show smart matching bubble after 3 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSmartMatchingBubble(true);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
   
   const handleTreatmentSelect = (treatment: TreatmentType) => {
     onTreatmentSelect(treatment);
@@ -70,8 +79,40 @@ export default function TreatmentSelection({ onTreatmentSelect, selectedTreatmen
         </div>
 
         {/* Treatment Type Selection - Mobile Optimized */}
-        <div className="space-y-6">
+        <div className="space-y-6 relative">
           <h3 className="responsive-subtitle font-semibold text-gray-900 text-center">What type of treatment do you need?</h3>
+          
+          {/* Smart Matching Info Bubble */}
+          {showSmartMatchingBubble && (
+            <div className="relative mb-4">
+              <div className="absolute top-0 left-4 z-10 max-w-sm">
+                <div className="bg-teal-50 border-2 border-teal-200 rounded-lg p-4 shadow-lg animate-fade-in">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-start space-x-3">
+                      <div className="bg-teal-100 rounded-full p-2 mt-0.5">
+                        <Info className="h-4 w-4 text-teal-600" />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="text-sm font-semibold text-teal-800 mb-1">Smart Matching Technology</h4>
+                        <p className="text-xs text-teal-700 leading-relaxed">
+                          Our system intelligently matches your treatment needs with the most suitable dentists and available appointments in your area.
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setShowSmartMatchingBubble(false)}
+                      className="text-teal-400 hover:text-teal-600 ml-2 flex-shrink-0"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                  {/* Speech bubble tail */}
+                  <div className="absolute -bottom-2 left-8 w-4 h-4 bg-teal-50 border-b-2 border-r-2 border-teal-200 transform rotate-45"></div>
+                </div>
+              </div>
+            </div>
+          )}
+          
           <div className="treatment-grid">
             {treatmentTypes.map((treatment, index) => (
               <div 
