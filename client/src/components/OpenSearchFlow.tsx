@@ -75,6 +75,7 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
   const [matchedAppointment, setMatchedAppointment] = useState<any>(null);
   const [showBookingFlow, setShowBookingFlow] = useState(false);
   const [showEmergencyAlert, setShowEmergencyAlert] = useState(false);
+  const [showSmartMatchingBubble, setShowSmartMatchingBubble] = useState(false);
   const { toast } = useToast();
 
   // Fetch real appointments from the API
@@ -89,6 +90,18 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
       setTimeout(() => {
         setCurrentStep("questions");
       }, 1500); // Balanced timing
+    }
+  }, [currentStep]);
+
+  // Show smart matching bubble when questions step starts
+  useEffect(() => {
+    if (currentStep === "questions") {
+      const timer = setTimeout(() => {
+        setShowSmartMatchingBubble(true);
+      }, 2000); // Show after 2 seconds in questions
+      return () => clearTimeout(timer);
+    } else {
+      setShowSmartMatchingBubble(false); // Hide when leaving questions
     }
   }, [currentStep]);
 
@@ -294,7 +307,36 @@ export function OpenSearchFlow({ onClose }: OpenSearchFlowProps) {
             exit={{ opacity: 0, x: -20 }}
             className="w-full max-w-md"
           >
-            <Card className="p-6">
+            <Card className="p-6 relative">
+              {/* Smart Matching Info Bubble */}
+              {showSmartMatchingBubble && (
+                <div className="absolute -top-2 -right-2 z-20 max-w-xs">
+                  <div className="bg-teal-50 border-2 border-teal-200 rounded-lg p-4 shadow-lg animate-fade-in">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start space-x-3">
+                        <div className="bg-teal-100 rounded-full p-2 mt-0.5">
+                          <Info className="h-4 w-4 text-teal-600" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="text-sm font-semibold text-teal-800 mb-1">Smart Matching Technology</h4>
+                          <p className="text-xs text-teal-700 leading-relaxed">
+                            These answers help us intelligently match you with the most suitable dentists and available appointments in your area.
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setShowSmartMatchingBubble(false)}
+                        className="text-teal-400 hover:text-teal-600 ml-2 flex-shrink-0"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                    {/* Speech bubble tail */}
+                    <div className="absolute -bottom-2 right-8 w-4 h-4 bg-teal-50 border-b-2 border-r-2 border-teal-200 transform rotate-45"></div>
+                  </div>
+                </div>
+              )}
+
               <div className="mb-6">
                 <div className="flex justify-between items-center mb-2">
                   <h3 className="text-lg font-semibold">Quick Assessment</h3>
