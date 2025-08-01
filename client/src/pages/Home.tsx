@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { TreatmentType, AccessibilityNeed } from "../lib/types";
+import { TreatmentType } from "../lib/types";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import TreatmentSelection from "./TreatmentSelection";
-import AccessibilityForm from "./AccessibilityForm";
+
 import SearchModeSelection from "./SearchModeSelection";
 import MapView from "./MapView";
 import PracticeConnect from "./PracticeConnect";
@@ -24,9 +24,9 @@ import { Link } from "wouter";
 
 export default function Home() {
   const { user, logout, isAuthenticated } = useAuth();
-  const [currentStep, setCurrentStep] = useState<"treatment" | "accessibility" | "searchmode" | "budget" | "practiceConnect" | "authenticatedDiary" | "map" | "openSearch">("treatment");
+  const [currentStep, setCurrentStep] = useState<"treatment" | "searchmode" | "budget" | "practiceConnect" | "authenticatedDiary" | "map" | "openSearch">("treatment");
   const [selectedTreatment, setSelectedTreatment] = useState<TreatmentType | null>(null);
-  const [selectedAccessibility, setSelectedAccessibility] = useState<AccessibilityNeed[]>([]);
+
   const [selectedBudget, setSelectedBudget] = useState<any>(null);
   const [selectedSearchMode, setSelectedSearchMode] = useState<"open" | "practice" | "mydentist" | null>(null);
   const [practiceTag, setPracticeTag] = useState<string>("");
@@ -39,13 +39,10 @@ export default function Home() {
 
   const handleTreatmentSelect = (treatment: TreatmentType) => {
     setSelectedTreatment(treatment);
-    setCurrentStep("accessibility");
-  };
-
-  const handleAccessibilityComplete = (needs: AccessibilityNeed[]) => {
-    setSelectedAccessibility(needs);
     setCurrentStep("searchmode");
   };
+
+
 
   const handleBudgetSelect = (budget: any) => {
     setSelectedBudget(budget);
@@ -93,11 +90,9 @@ export default function Home() {
   };
 
   const handleBack = () => {
-    if (currentStep === "accessibility") {
+    if (currentStep === "searchmode") {
       setCurrentStep("treatment");
       setSelectedTreatment(null);
-    } else if (currentStep === "searchmode") {
-      setCurrentStep("accessibility");
     } else if (currentStep === "budget") {
       // Budget only appears after selecting "open" search mode
       setCurrentStep("searchmode");
@@ -105,7 +100,6 @@ export default function Home() {
       setCurrentStep("searchmode");
     } else if (currentStep === "authenticatedDiary") {
       setCurrentStep("practiceConnect");
-
     } else if (currentStep === "map") {
       // If coming from practice connect, go back to it, otherwise to search mode
       if (selectedSearchMode === "practice" || selectedSearchMode === "mydentist") {
@@ -271,10 +265,7 @@ export default function Home() {
               <div className={`w-2 h-2 rounded-full ${currentStep === "treatment" ? "bg-primary" : "bg-gray-300"}`}></div>
               <span>Treatment</span>
             </div>
-            <div className={`flex items-center space-x-1 ${currentStep === "accessibility" ? "text-primary font-medium" : ""}`}>
-              <div className={`w-2 h-2 rounded-full ${currentStep === "accessibility" ? "bg-primary" : "bg-gray-300"}`}></div>
-              <span>Preferences</span>
-            </div>
+
             <div className={`flex items-center space-x-1 ${currentStep === "searchmode" ? "text-primary font-medium" : ""}`}>
               <div className={`w-2 h-2 rounded-full ${currentStep === "searchmode" ? "bg-primary" : "bg-gray-300"}`}></div>
               <span>Search</span>
@@ -311,18 +302,12 @@ export default function Home() {
           />
         )}
         
-        {currentStep === "accessibility" && (
-          <AccessibilityForm 
-            onComplete={handleAccessibilityComplete}
-            onBack={handleBack}
-            selectedNeeds={selectedAccessibility}
-          />
-        )}
+
 
         {currentStep === "budget" && (
           <BudgetSelection
             selectedTreatment={selectedTreatment}
-            selectedAccessibility={selectedAccessibility}
+            selectedAccessibility={[]}
             onBudgetSelect={handleBudgetSelect}
             onBack={handleBack}
             selectedBudget={selectedBudget}
@@ -332,7 +317,7 @@ export default function Home() {
         {currentStep === "searchmode" && (
           <SearchModeSelection 
             selectedTreatment={selectedTreatment}
-            selectedAccessibility={selectedAccessibility}
+            selectedAccessibility={[]}
             selectedBudget={selectedBudget}
             onSearchModeSelect={handleSearchModeSelect}
             onBack={handleBack}
@@ -342,7 +327,7 @@ export default function Home() {
         {currentStep === "practiceConnect" && selectedSearchMode && (selectedSearchMode === "practice" || selectedSearchMode === "mydentist") && (
           <PracticeConnect
             selectedTreatment={selectedTreatment}
-            selectedAccessibility={selectedAccessibility}
+            selectedAccessibility={[]}
             searchMode={selectedSearchMode}
             onBack={handleBack}
             onConnect={handlePracticeConnect}
@@ -361,7 +346,7 @@ export default function Home() {
         {currentStep === "map" && (
           <MapView 
             selectedTreatment={selectedTreatment}
-            selectedAccessibility={selectedAccessibility}
+            selectedAccessibility={[]}
             selectedSearchMode={selectedSearchMode || "open"}
             onBack={handleBack}
           />
